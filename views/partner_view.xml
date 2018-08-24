@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="is_view_partner_form" model="ir.ui.view">
+            <field name="name">is_view_partner_form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='category_id']" position="after">
+                    <field name="is_type_partenaire"     attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}" />
+                    <field name="is_region_id"           attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
+                    <field name="is_secteur_activite_id" attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
+                </xpath>
+
+                <xpath expr="//field[@name='lang']" position="after">
+                    <field name="is_date_creation" attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="is_view_partner_property_form" model="ir.ui.view">
+            <field name="name">is_view_partner_property_form</field>
+            <field name="model">res.partner</field>
+            <field name="priority">2</field>
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
+            <field name="arch" type="xml">
+                <field name="property_account_position_id" position="after">
+                    <field name="is_code_client_ebp"       attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
+                    <field name="is_siren"                 attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
+                    <field name="is_afacturage"            attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
+                    <field name="is_validation_financiere" attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
+                </field>
+            </field>
+        </record>
+
+
+        <!-- Régions -->
+        <record id="is_region_form_view" model="ir.ui.view">
+            <field name="name">is_region_from_view</field>
+            <field name="model">is.region</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                            </group>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_region_tree_view">
+            <field name="name">is_region_tree_view</field>
+            <field name="model">is.region</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record id="is_region_search_view" model="ir.ui.view">
+            <field name="name">is_region_search_view</field>
+            <field name="model">is.region</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" />
+                </search>
+            </field>
+        </record>
+        <record id="is_region_action" model="ir.actions.act_window">
+            <field name="name">Régions</field>
+            <field name="res_model">is.region</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+
+
+        <!-- Secteurs d'activités -->
+        <record id="is_secteur_activite_form_view" model="ir.ui.view">
+            <field name="name">is_secteur_activite_from_view</field>
+            <field name="model">is.secteur.activite</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                            </group>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_secteur_activite_tree_view">
+            <field name="name">is_secteur_activite_tree_view</field>
+            <field name="model">is.secteur.activite</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record id="is_secteur_activite_search_view" model="ir.ui.view">
+            <field name="name">is_secteur_activite_search_view</field>
+            <field name="model">is.secteur.activite</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" />
+                </search>
+            </field>
+        </record>
+        <record id="is_secteur_activite_action" model="ir.actions.act_window">
+            <field name="name">Secteurs d'activités</field>
+            <field name="res_model">is.secteur.activite</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+</odoo>

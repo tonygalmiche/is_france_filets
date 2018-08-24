@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="is_assets_backend" name="is_france_filets assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/is_france_filets/static/src/css/style.css"/>
+        </xpath>
+    </template>
+</odoo>

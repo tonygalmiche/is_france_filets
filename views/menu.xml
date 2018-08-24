@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem 
+        id="is_ventes_table_menu"
+        sequence="900" 
+        name="Tables"
+        parent="sales_team.menu_base_partner" 
+    />
+    <menuitem 
+        id="is_region_menu" 
+        sequence="10" 
+        name="Régions"
+        parent="is_ventes_table_menu" 
+        action="is_region_action" 
+    />
+    <menuitem 
+        id="is_secteur_activite_menu" 
+        sequence="20" 
+        name="Secteurs d'activités"
+        parent="is_ventes_table_menu" 
+        action="is_secteur_activite_action" 
+    />
+</odoo>
