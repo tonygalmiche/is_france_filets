@@ -1,4 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_is_region,access_is_region,model_is_region,base.group_user,1,1,1,1
 access_is_secteur_activite,access_is_secteur_activite,model_is_secteur_activite,base.group_user,1,1,1,1
+access_is_type_prestation,access_is_type_prestation,model_is_type_prestation,base.group_user,1,1,1,1
 

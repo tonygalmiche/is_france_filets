@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="is_sale_order_form" model="ir.ui.view">
+            <field name="name">is_sale_order_form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="is_contact_id" domain="[('parent_id','=',partner_id)]"/>
+                    <field name="is_nom_chantier"/>
+                    <field name="is_date_previsionnelle"/>
+                    <field name="is_type_chantier"/>
+                    <field name="is_type_prestation_id"/>
+                </field>
+                <field name="payment_term_id" position="after">
+                    <field name="is_distance_chantier"/>
+                    <field name="is_superficie"/>
+                    <field name="is_hauteur"/>
+                    <field name="is_nb_interventions"/>
+                </field>
+                <xpath expr="//notebook" position="before">
+                    <group>
+                        <field name="is_entete_devis"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+
+        <!-- Type de prestation -->
+        <record id="is_type_prestation_form_view" model="ir.ui.view">
+            <field name="name">is_type_prestation_from_view</field>
+            <field name="model">is.type.prestation</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                            </group>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_type_prestation_tree_view">
+            <field name="name">is_type_prestation_tree_view</field>
+            <field name="model">is.type.prestation</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record id="is_type_prestation_search_view" model="ir.ui.view">
+            <field name="name">is_type_prestation_search_view</field>
+            <field name="model">is.type.prestation</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" />
+                </search>
+            </field>
+        </record>
+        <record id="is_type_prestation_action" model="ir.actions.act_window">
+            <field name="name">Types de prestations</field>
+            <field name="res_model">is.type.prestation</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

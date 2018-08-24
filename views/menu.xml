@@ -20,4 +20,12 @@
         parent="is_ventes_table_menu" 
         action="is_secteur_activite_action" 
     />
+    <menuitem 
+        id="is_type_prestation_menu" 
+        sequence="30" 
+        name="Types de prestations"
+        parent="is_ventes_table_menu" 
+        action="is_type_prestation_action" 
+    />
+
 </odoo>
