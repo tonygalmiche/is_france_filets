@@ -26,10 +26,11 @@ class IsEquipe(models.Model):
 
 class IsSaleOrderPlanning(models.Model):
     _name='is.sale.order.planning'
-    _order='order_id,date_confirmee'
+    _order='order_id,date_debut'
 
     order_id       = fields.Many2one('sale.order', 'Commande', required=True, ondelete='cascade', readonly=True)
-    date_confirmee = fields.Date('Date confirmée')
+    date_debut     = fields.Date('Date début')
+    date_fin       = fields.Date('Date fin')
     commentaire    = fields.Char('Commentaire planning')
     equipe_ids     = fields.Many2many('is.equipe','is_sale_order_planning_equipe_rel','order_id','equipe_id', string="Equipes")
     pose_depose    = fields.Selection([

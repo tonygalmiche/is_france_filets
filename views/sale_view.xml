@@ -37,7 +37,8 @@
                     <page string="Planning">
                         <field name="is_planning_ids">
                              <tree editable="bottom">
-                                <field name="date_confirmee"/>
+                                <field name="date_debut"/>
+                                <field name="date_fin"/>
                                 <field name="commentaire"/>
                                 <field name="equipe_ids" widget="many2many_tags"/>
                                 <field name="pose_depose"/>
