@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+
+<!-- Permet de remplacer complètement le header -->
+<template id="is_external_layout_header" name="is_external_layout_header" inherit_id="report.external_layout_header">
+    <xpath expr="//div[@class='header']" position="replace">
+    <div class="header">
+        <div class="row">
+            <div class="row">
+                <div class="col-xs-6">
+                    <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo" style="max-height: 100px;"/>
+                </div>
+                <div class="col-xs-6 text-right">
+                    <b><div t-field="company.name"/></b>
+                    <b><div t-field="company.rml_header1"/></b>
+                    <div><span t-field="company.street"/> - <span t-field="company.zip"/> <span t-field="company.city"/></div>
+                    <div>
+                        Tél : <span t-field="company.phone"/> - Portable : <span t-field="company.partner_id.mobile"/> - Fax : <span t-field="company.fax"/>
+                    </div>
+                    <div>Emetteur : <span t-field="o.user_id"/> - <span t-field="o.user_id.email"/></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </xpath>
+</template>
+
+<!-- Permet de remplacer complètement le footer -->
+<template id="is_external_layout_footer" name="is_external_layout_footer" inherit_id="report.external_layout_footer">
+    <xpath expr="//div[@class='footer']" position="replace">
+    <div class="footer">
+    </div>
+    </xpath>
+</template>
+
+</data>
+</openerp>

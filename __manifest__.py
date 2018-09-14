@@ -28,6 +28,8 @@ InfoSaône - Module Odoo pour France Filets
         'views/partner_view.xml',
         'views/sale_view.xml',
         'views/menu.xml',
+        'report/sale_report_templates.xml',
+        'report/layouts.xml',
     ],
     'installable': True,
     'application': True,

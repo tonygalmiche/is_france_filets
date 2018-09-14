@@ -28,4 +28,13 @@
         action="is_type_prestation_action" 
     />
 
+    <menuitem 
+        id="is_nacelle_menu" 
+        sequence="40" 
+        name="Nacelle"
+        parent="is_ventes_table_menu" 
+        action="is_nacelle_action" 
+    />
+
+
 </odoo>
