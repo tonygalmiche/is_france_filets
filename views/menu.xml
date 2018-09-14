@@ -37,4 +37,13 @@
     />
 
 
+    <menuitem 
+        id="is_equipe_menu" 
+        sequence="50" 
+        name="Equipe"
+        parent="is_ventes_table_menu" 
+        action="is_equipe_action" 
+    />
+
+
 </odoo>

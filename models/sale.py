@@ -17,6 +17,31 @@ class IsNacelle(models.Model):
     name = fields.Char(u'Nacelle')
 
 
+class IsEquipe(models.Model):
+    _name='is.equipe'
+    _order='name'
+
+    name = fields.Char(u'Equipe')
+
+
+class IsSaleOrderPlanning(models.Model):
+    _name='is.sale.order.planning'
+    _order='order_id,date_confirmee'
+
+    order_id       = fields.Many2one('sale.order', 'Commande', required=True, ondelete='cascade', readonly=True)
+    date_confirmee = fields.Date('Date confirmée')
+    commentaire    = fields.Char('Commentaire planning')
+    equipe_ids     = fields.Many2many('is.equipe','is_sale_order_planning_equipe_rel','order_id','equipe_id', string="Equipes")
+    pose_depose    = fields.Selection([
+        ('pose'  , 'Pose'),
+        ('depose', 'Dépose'),
+    ], 'Pose / Dépose')
+    realise = fields.Selection([
+        ('oui', 'Oui'),
+        ('non', 'Non'),
+    ], 'Réalisé')
+    realisation    = fields.Char('Réalisation', help=u'Réalisation du chantier')
+
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
@@ -37,6 +62,13 @@ class SaleOrder(models.Model):
     ], 'Type de chantier')
     is_type_prestation_id  = fields.Many2one('is.type.prestation', u'Type de prestation')
     is_nacelle_id          = fields.Many2one('is.nacelle', u'Nacelle')
+    is_planning_ids        = fields.One2many('is.sale.order.planning', 'order_id', u"Planning")
+
+
+
+
+
+
 
 
     @api.multi

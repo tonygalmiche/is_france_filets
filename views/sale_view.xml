@@ -31,6 +31,24 @@
                         <field name="is_pied_devis"/>
                     </group>
                 </xpath>
+
+                <xpath expr="//page[1]" position="after"> 
+                    <page string="Planning">
+                        <field name="is_planning_ids">
+                             <tree editable="bottom">
+                                <field name="date_confirmee"/>
+                                <field name="commentaire"/>
+                                <field name="equipe_ids" widget="many2many_tags"/>
+                                <field name="pose_depose"/>
+                                <field name="realise"/>
+                                <field name="realisation"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+
+
+
             </field>
         </record>
 
@@ -116,6 +134,49 @@
         <record id="is_nacelle_action" model="ir.actions.act_window">
             <field name="name">Types de prestations</field>
             <field name="res_model">is.nacelle</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+
+
+        <!-- equipe -->
+        <record id="is_equipe_form_view" model="ir.ui.view">
+            <field name="name">is_equipe_from_view</field>
+            <field name="model">is.equipe</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name" />
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_equipe_tree_view">
+            <field name="name">is_equipe_tree_view</field>
+            <field name="model">is.equipe</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record id="is_equipe_search_view" model="ir.ui.view">
+            <field name="name">is_equipe_search_view</field>
+            <field name="model">is.equipe</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" />
+                </search>
+            </field>
+        </record>
+        <record id="is_equipe_action" model="ir.actions.act_window">
+            <field name="name">Types de prestations</field>
+            <field name="res_model">is.equipe</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
