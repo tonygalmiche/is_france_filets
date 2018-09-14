@@ -34,10 +34,11 @@
     <div class="footer">
         <div class="text-center" style="border-top: 1px solid black;">
             <span t-field="company.name"/> - 
-            Numéro fiscal : <span t-field="company.vat"/> - 
+            NAF : <span t-field="company.ape"/> - 
+            N°TVA : <span t-field="company.vat"/> - 
             SIRET : <span t-field="company.siret"/> - 
             <span t-field="company.company_registry"/> - 
-            Page <span class="page"/>/<span class="topage"/>
+            <span class="page"/>/<span class="topage"/>
         </div>
     </div>
     </xpath>

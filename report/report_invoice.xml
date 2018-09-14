@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+<template id="is_report_invoice_document" name="is_report_invoice_document" inherit_id="account.report_invoice_document">
+    <xpath expr="//div[@class='page']" position="replace">
+        <div class="page">
+
+            <div class="row">
+                <div name="invoice_address" class="col-xs-5 col-xs-offset-7">
+                    <address t-field="o.partner_id"
+                        t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
+                    <span t-if="o.partner_id.vat">TIN: <span t-field="o.partner_id.vat"/></span>
+                </div>
+            </div>
+
+            <h2>
+                <span t-if="o.type == 'out_invoice' and (o.state == 'open' or o.state == 'paid')">Facture</span>
+                <span t-if="o.type == 'out_invoice' and o.state == 'proforma2'">PRO-FORMA</span>
+                <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Facture brouillon</span>
+                <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Facture annullée</span>
+                <span t-if="o.type == 'out_refund'">Avoir</span>
+                <span t-if="o.type == 'in_refund'">Vendor Refund</span>
+                <span t-if="o.type == 'in_invoice'">Vendor Bill</span>
+                <span t-field="o.number"/>
+                 du <span t-field="o.date_invoice"/>
+            </h2>
+            <br />
+
+            <div class="row mt32 mb32" style="display:none">
+                <div name="reference" class="col-xs-2" t-if="o.reference">
+                    <strong>Référence:</strong>
+                    <p t-field="o.reference"/>
+                </div>
+            </div>
+
+
+            <t t-set="chantier" t-value="0"/>
+            <t t-foreach="o.invoice_line_ids" t-as="l">
+                <div>
+                    <t t-foreach="l.sale_line_ids" t-as="line">
+                        <t t-set="chantier" t-value="line.order_id.is_nom_chantier"/>
+                    </t>
+                </div>
+            </t>
+
+
+
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Code Client</th>
+                        <th>Mode de règlement</th>
+                        <th>Date d'échéance</th>
+                        <th>Chantier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span t-field="o.partner_id.is_code_client_ebp"/></td>
+                        <td><span t-field="o.payment_term_id"/></td>
+                        <td><span t-field="o.date_due"/></td>
+                        <td><t t-esc="chantier"/></td>
+                    </tr>
+                </tbody>
+            </table>
+            <br />
+
+
+
+
+
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th class="hidden">Source</th>
+                        <th class="text-right">Quantité</th>
+                        <th class="text-right">Prix unitaire</th>
+                        <th t-if="display_discount" class="text-right">Remise</th>
+                        <th class="text-right">TVA</th>
+                        <th class="text-right">Montant HT</th>
+                    </tr>
+                </thead>
+                <tbody class="invoice_tbody">
+                    <tr t-foreach="o.invoice_line_ids" t-as="l">
+                        <td><span t-field="l.name"/></td>
+                        <td class="hidden"><span t-field="l.origin"/></td>
+                        <td class="text-right">
+                            <span t-field="l.quantity"/>
+                            <span t-field="l.uom_id"  groups="product.group_uom"/>
+                        </td>
+                        <td class="text-right">
+                            <span t-field="l.price_unit"/>
+                        </td>
+                        <td t-if="display_discount" class="text-right">
+                            <span t-field="l.discount"/>
+                        </td>
+                        <td class="text-right">
+                            <span t-esc="', '.join(map(lambda x: (x.description or x.name), l.invoice_line_tax_ids))"/>
+                        </td>
+                        <td class="text-right">
+                            <span t-field="l.price_subtotal" 
+                                t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="row">
+                <div class="col-xs-4 pull-right">
+                    <table class="table table-condensed">
+                        <tr class="border-black">
+                            <td><strong>Total HT : </strong></td>
+                            <td class="text-right">
+                                <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                        </tr>
+                        <t t-foreach="o._get_tax_amount_by_group()" t-as="amount_by_group">
+                            <tr>
+                                <td>TVA : </td>
+                                <td class="text-right">
+                                    <span t-esc="amount_by_group[1]" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+                        <tr class="border-black">
+                            <td><strong>Total TTC : </strong></td>
+                            <td class="text-right">
+                                 <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+
+            <p t-if="o.fiscal_position_id.note">
+                <b><span t-field="o.fiscal_position_id.note" style="color:blue"/></b>
+            </p>
+
+
+            <p t-if="o.partner_id.is_afacturage" style="font-size:8pt;color:red">
+                Pour être libératoire, le règlement de cette facture doit être libellé et adressé à : NATIXIS FACTOR Tél : 01 58 32 80 00 - 
+                10-12 av Winston Churchill 94676 CHARENTON LE PONT Cdx - RIB : 30007 00011 00010500791 36 - Domiciliation : NATIXIS PARIS - 
+                IBAN : FR76 3000 7000 1100 0105 0079 136 - SWIFT CODE (BIC) : NATX FR PP XXX - N° ICS : FR57ZZZ483693 - 
+                Natixis Factor a acquis notre créance par voie de subrogation dans le cadre d'un contrat d'affacturage. 
+                Natixis Factor devra être avisée de toute réclamation. 
+            </p>
+
+
+            <p>
+                Escompte pour règlement anticipé : 0%
+                En cas de retard de paiement, une pénalité égale à 3 fois le taux d'intérêt légal sera
+                exigible (Décret 2009-138 du 9 février 2009).
+                Pour les professionnels, une indemnité minimum forfaitaire de 40 euros pour frais de
+                recouvrement sera exigible (Décret 2012-1115 du 9 octobre 2012).
+            </p>
+
+
+
+        </div>
+    </xpath>
+</template>
+
+
+</data>
+</odoo>
