@@ -50,6 +50,7 @@ class SaleOrder(models.Model):
     is_date_previsionnelle = fields.Date('Date prévisionnelle du chantier')
     is_contact_id          = fields.Many2one('res.partner', u'Contact du client')
     is_distance_chantier   = fields.Integer('Distance du chantier (en km)')
+    is_num_ancien_devis    = fields.Char('N°ancien devis')
     is_entete_devis        = fields.Text('Entête devis')
     is_pied_devis          = fields.Text('Pied devis')
     is_superficie          = fields.Char('Superficie')
