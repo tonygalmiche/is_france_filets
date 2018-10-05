@@ -93,11 +93,11 @@
 
                         <style>
                             th{
-                                padding:3pt;
+                                padding:2pt;
                             }
                             td{
-                                padding:3pt;
-                                font-size:10pt
+                                padding:2pt;
+                                font-size:9pt
                             }
                         </style>
                         <table style="border:1px solid black; width:100%">
