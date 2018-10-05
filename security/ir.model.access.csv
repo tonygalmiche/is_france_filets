@@ -5,4 +5,5 @@ access_is_type_prestation,access_is_type_prestation,model_is_type_prestation,bas
 access_is_nacelle,access_is_nacelle,model_is_nacelle,base.group_user,1,1,1,1
 access_is_equipe,access_is_equipe,model_is_equipe,base.group_user,1,1,1,1
 access_is_sale_order_planning,access_is_sale_order_planning,model_is_sale_order_planning,base.group_user,1,1,1,1
+access_is_creation_planning,access_is_creation_planning,model_is_creation_planning,base.group_user,1,1,1,1
 

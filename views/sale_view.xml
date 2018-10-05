@@ -152,7 +152,7 @@
 
 
 
-        <!-- equipe -->
+        <!-- is.equipe -->
         <record id="is_equipe_form_view" model="ir.ui.view">
             <field name="name">is_equipe_from_view</field>
             <field name="model">is.equipe</field>
@@ -192,6 +192,52 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+
+
+        <!-- is.creation.planning -->
+        <record id="is_creation_planning_form_view" model="ir.ui.view">
+            <field name="name">is_creation_planning_from_view</field>
+            <field name="model">is.creation.planning</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="creation_planning_action" type="object" string="Création du planning" class="oe_highlight"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_creation_planning_tree_view">
+            <field name="name">is_creation_planning_tree_view</field>
+            <field name="model">is.creation.planning</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="date_debut"/>
+                    <field name="date_fin"/>
+                </tree>
+            </field>
+        </record>
+        <record id="is_creation_planning_search_view" model="ir.ui.view">
+            <field name="name">is_creation_planning_search_view</field>
+            <field name="model">is.creation.planning</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="date_debut"/>
+                </search>
+            </field>
+        </record>
+        <record id="is_creation_planning_action" model="ir.actions.act_window">
+            <field name="name">Planning</field>
+            <field name="res_model">is.creation.planning</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
 
     </data>
 </odoo>

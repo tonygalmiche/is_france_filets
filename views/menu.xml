@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+
+    <menuitem 
+        id="is_planning_menu"
+        sequence="800" 
+        name="Planning"
+        parent="sales_team.menu_base_partner" 
+    />
+    <menuitem 
+        id="is_creation_planning_menu" 
+        sequence="10" 
+        name="Planning"
+        parent="is_planning_menu" 
+        action="is_creation_planning_action" 
+    />
+
+
     <menuitem 
         id="is_ventes_table_menu"
         sequence="900" 
