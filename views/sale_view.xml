@@ -200,9 +200,6 @@
             <field name="model">is.creation.planning</field>
             <field name="arch" type="xml">
                 <form>
-                    <header>
-                        <button name="creation_planning_action" type="object" string="Création du planning" class="oe_highlight"/>
-                    </header>
                     <sheet>
                         <group>
                             <field name="date_debut"/>
