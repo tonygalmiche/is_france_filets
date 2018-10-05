@@ -135,16 +135,15 @@ class IsCreationPlanning(models.Model):
                     pose_depose='<span style="background-color:Red">Pose</span>'
                 if pose_depose=='depose':
                     pose_depose=u'<span style="background-color:LawnGreen">Dépose</span>'
-                html=''
+                html='<div>'
                 html+='<b>'+(row[0] or '')+'</b>'
                 if pose_depose:
                     html+=' - <b>'+pose_depose+'</b>'
-                html+='<br />'
+                html+='</div>'
                 html+='<b>'+(row[1] or '')+'</b><br />'
                 html+=(row[2] or '')+'<br />'
                 html+=(row[3] or '')+' - '+(row[4] or '')+'<br />'
-                html+=(row[5] or '')+'<br />'
-                html+='<br />'
+                html+=(row[5] or '')
                 chantiers.append(html)
         return chantiers
 
