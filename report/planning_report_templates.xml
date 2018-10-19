@@ -114,7 +114,17 @@
                                     <tr>
                                         <td style="border:1px solid black;"><span t-field="e.name"/></td>
                                         <t t-foreach="o.get_dates()" t-as="d">
-                                            <td style="border:1px solid black;">
+                                            <t t-set="absence" t-value="o.get_absence(e,d)"/>
+                                            <t t-set="style" t-value="'border:1px solid black'" />
+                                            <t t-if="absence">
+                                                <t t-set="style" t-value="'border:1px solid black;background-color:Tan'" />
+                                            </t>
+                                            <td t-att-style="style">
+                                                <t t-set="message" t-value="o.get_message(e,d)"/>
+                                                <t t-if="message">
+                                                    <b><div style="background-color:Orange" t-esc="message"/></b>
+                                                </t>
+                                                <b><span t-esc="absence"/></b>
                                                 <t t-foreach="o.get_chantiers(e,d)" t-as="c">
                                                     <div t-raw="c"/>
                                                 </t>

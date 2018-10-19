@@ -18,11 +18,31 @@ class IsNacelle(models.Model):
     name = fields.Char(u'Nacelle')
 
 
+class IsEquipeAbsence(models.Model):
+    _name='is.equipe.absence'
+    _order='date_debut'
+
+    equipe_id  = fields.Many2one('is.equipe', 'Equipe', required=True, ondelete='cascade', readonly=True)
+    date_debut = fields.Date('Date début', index=True)
+    date_fin   = fields.Date('Date fin')
+    motif      = fields.Char('Motif absence')
+
+class IsEquipeMessage(models.Model):
+    _name='is.equipe.message'
+    _order='date'
+
+    equipe_id = fields.Many2one('is.equipe', 'Equipe', required=True, ondelete='cascade', readonly=True)
+    date      = fields.Date('Date', index=True)
+    message   = fields.Char('Message')
+
+
 class IsEquipe(models.Model):
     _name='is.equipe'
     _order='name'
 
-    name = fields.Char(u'Equipe')
+    name        = fields.Char(u'Equipe')
+    absence_ids = fields.One2many('is.equipe.absence', 'equipe_id', u"Absences")
+    message_ids = fields.One2many('is.equipe.message', 'equipe_id', u"Messages")
 
 
 class IsSaleOrderPlanning(models.Model):
@@ -38,10 +58,11 @@ class IsSaleOrderPlanning(models.Model):
         ('pose'  , 'Pose'),
         ('depose', 'Dépose'),
     ], 'Pose / Dépose')
-    realise = fields.Selection([
-        ('oui', 'Oui'),
-        ('non', 'Non'),
-    ], 'Réalisé')
+    etat = fields.Selection([
+        ('a_confirmer', 'A confirmer'),
+        ('a_faire'    , 'A faire'),
+        ('fait'       , 'Fait'),
+    ], 'État', default='a_confirmer')
     realisation    = fields.Char('Réalisation', help=u'Réalisation du chantier')
 
 
@@ -81,8 +102,6 @@ class IsCreationPlanning(models.Model):
     date_debut     = fields.Date('Date de début', required=True)
     date_fin       = fields.Date('Date de fin'  , required=True)
 
-
-
     @api.multi
     def get_dates(self):
         cr = self._cr
@@ -104,6 +123,49 @@ class IsCreationPlanning(models.Model):
 
 
     @api.multi
+    def get_absence(self,equipe,date):
+        """Recherche des absences pour cette équipe et cette date"""
+        cr = self._cr
+        d=datetime.strptime(date, '%d/%m/%Y')
+        absence=False
+        for obj in self:
+            SQL="""
+                SELECT iea.motif 
+                FROM is_equipe_absence iea
+                WHERE 
+                    iea.date_debut<='"""+str(d)+"""' and 
+                    iea.date_fin>='"""+str(d)+"""' and
+                    iea.equipe_id="""+str(equipe.id)+"""
+            """
+            cr.execute(SQL)
+            res = cr.fetchall()
+            for row in res:
+                absence=row[0]
+        return absence
+
+
+    @api.multi
+    def get_message(self,equipe,date):
+        """Recherche des messages pour cette équipe et cette date"""
+        cr = self._cr
+        d=datetime.strptime(date, '%d/%m/%Y')
+        message=False
+        for obj in self:
+            SQL="""
+                SELECT iem.message 
+                FROM is_equipe_message iem
+                WHERE 
+                    iem.date='"""+str(d)+"""' and 
+                    iem.equipe_id="""+str(equipe.id)+"""
+            """
+            cr.execute(SQL)
+            res = cr.fetchall()
+            for row in res:
+                message=row[0]
+        return message
+
+
+    @api.multi
     def get_chantiers(self,equipe,date):
         cr = self._cr
         d=datetime.strptime(date, '%d/%m/%Y')
@@ -117,7 +179,8 @@ class IsCreationPlanning(models.Model):
                     so.is_type_chantier,
                     so.is_superficie,
                     isop.commentaire,
-                    isop.pose_depose
+                    isop.pose_depose,
+                    isop.etat
                 FROM is_sale_order_planning isop inner join sale_order so on isop.order_id=so.id 
                                                  inner join is_sale_order_planning_equipe_rel rel on isop.id=rel.order_id
                                                  inner join is_equipe ie on rel.equipe_id=ie.id
@@ -132,11 +195,19 @@ class IsCreationPlanning(models.Model):
             for row in res:
                 pose_depose=row[6]
                 if pose_depose=='pose':
-                    pose_depose='<span style="background-color:Red">Pose</span>'
+                    pose_depose='<span style="color:Red">Pose</span>'
                 if pose_depose=='depose':
-                    pose_depose=u'<span style="background-color:LawnGreen">Dépose</span>'
+                    pose_depose=u'<span style="color:LawnGreen">Dépose</span>'
                 html='<div>'
-                html+='<b>'+(row[0] or '')+'</b>'
+                etat=row[7]
+                color='red'
+                if etat=='a_confirmer':
+                    color='red'
+                if etat=='a_faire':
+                    color='SteelBlue'
+                if etat=='fait':
+                    color='LawnGreen'
+                html+='<b><span style="background-color:'+color+'">'+(row[0] or '')+'</span></b>'
                 if pose_depose:
                     html+=' - <b>'+pose_depose+'</b>'
                 html+='</div>'

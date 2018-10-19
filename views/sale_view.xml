@@ -42,7 +42,7 @@
                                 <field name="commentaire"/>
                                 <field name="equipe_ids" widget="many2many_tags"/>
                                 <field name="pose_depose"/>
-                                <field name="realise"/>
+                                <field name="etat"/>
                                 <field name="realisation"/>
                             </tree>
                         </field>
@@ -161,6 +161,23 @@
                     <sheet>
                         <group>
                             <field name="name" />
+                        </group>
+                        <group>
+                            <field name="absence_ids">
+                                 <tree editable="bottom">
+                                    <field name="date_debut"/>
+                                    <field name="date_fin"/>
+                                    <field name="motif"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="message_ids">
+                                 <tree editable="bottom">
+                                    <field name="date"/>
+                                    <field name="message"/>
+                                </tree>
+                            </field>
                         </group>
                     </sheet>
                </form>
