@@ -5,6 +5,13 @@ from datetime import datetime, timedelta
 from odoo.exceptions import Warning
 
 
+_ETAT_PLANNING=[
+    ('a_confirmer', 'A confirmer'),
+    ('a_faire'    , 'A faire'),
+    ('fait'       , 'Fait'),
+]
+
+
 class IsTypePrestation(models.Model):
     _name='is.type.prestation'
     _order='name'
@@ -59,11 +66,7 @@ class IsSaleOrderPlanning(models.Model):
         ('pose'  , 'Pose'),
         ('depose', 'Dépose'),
     ], 'Pose / Dépose')
-    etat = fields.Selection([
-        ('a_confirmer', 'A confirmer'),
-        ('a_faire'    , 'A faire'),
-        ('fait'       , 'Fait'),
-    ], 'État', default='a_confirmer')
+    etat = fields.Selection(_ETAT_PLANNING, 'État', default='a_confirmer')
     realisation    = fields.Char('Réalisation', help=u'Réalisation du chantier')
 
 
@@ -113,6 +116,22 @@ class IsSaleOrderPlanning(models.Model):
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+
+    @api.depends('is_planning_ids')
+    def _compute(self):
+        for obj in self:
+            etat=[]
+            for line in obj.is_planning_ids:
+                if line.etat and line.date_debut and line.date_fin:
+                    x=dict(_ETAT_PLANNING)[line.etat]
+                    etat.append(x)
+            if etat:
+                etat=', '.join(etat)
+            else:
+                etat=''
+            obj.is_etat_planning=etat
+
+
     is_nom_chantier        = fields.Char('Nom du chantier')
     is_date_previsionnelle = fields.Date('Date prévisionnelle du chantier')
     is_contact_id          = fields.Many2one('res.partner', u'Contact du client')
@@ -132,6 +151,8 @@ class SaleOrder(models.Model):
     is_type_prestation_id  = fields.Many2one('is.type.prestation', u'Type de prestation')
     is_nacelle_id          = fields.Many2one('is.nacelle', u'Nacelle')
     is_planning_ids        = fields.One2many('is.sale.order.planning', 'order_id', u"Planning")
+    is_etat_planning       = fields.Char("Etat planning", compute='_compute', readonly=True, store=True)
+
 
     @api.multi
     def get_nacelles(self):
@@ -153,6 +174,7 @@ class IsCreationPlanningPreparation(models.Model):
         ('pose'  , 'Pose'),
         ('depose', 'Dépose'),
     ], 'Pose / Dépose')
+    etat    = fields.Selection(_ETAT_PLANNING, 'État')
     message = fields.Text('Message')
 
 
@@ -321,7 +343,7 @@ class IsCreationPlanning(models.Model):
                             message='\n'.join(message)
                         else:
                             message=False
-                        if order:
+                        if order and planning.etat!='fait':
                             vals={
                                 'planning_id' : obj.id,
                                 'date'        : date,
@@ -330,6 +352,7 @@ class IsCreationPlanning(models.Model):
                                 'nom_chantier': order.is_nom_chantier,
                                 'partner_id'  : order.partner_id.id,
                                 'pose_depose' : planning.pose_depose,
+                                'etat'        : planning.etat,
                                 'message'     : message,
                             }
                             self.env['is.creation.planning.preparation'].create(vals)

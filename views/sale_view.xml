@@ -24,6 +24,7 @@
                     <field name="is_distance_chantier"/>
                     <field name="is_num_ancien_devis"/>
                     <field name="is_motif_archivage" states="draft,sent"/>
+                    <field name="is_etat_planning"/>
                 </field>
                 <xpath expr="//notebook" position="before">
                     <group>
@@ -60,8 +61,24 @@
                 <field name="invoice_status" position="before">
                     <field name="is_num_ancien_devis"/>
                 </field>
+                <field name="user_id" position="replace">
+                    <field name="is_nom_chantier"/>
+                    <field name="is_etat_planning"/>
+                </field>
             </field>
         </record>
+        <record id="is_view_sales_order_filter" model="ir.ui.view">
+            <field name="name">is_view_sales_order_filter</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_filter" />
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="is_nom_chantier"/>
+                    <field name="is_etat_planning"/>
+                </field>
+            </field>
+        </record>
+
 
 
 
@@ -296,6 +313,7 @@
                             <field name="nom_chantier"/>
                             <field name="pose_depose"/>
                             <field name="partner_id"/>
+                            <field name="etat"/>
                             <field name="message"/>
                         </group>
                     </sheet>
@@ -311,9 +329,10 @@
                     <field name="date"/>
                     <field name="equipe_id"/>
                     <field name="order_id"/>
+                    <field name="partner_id"/>
                     <field name="nom_chantier"/>
                     <field name="pose_depose"/>
-                    <field name="partner_id"/>
+                    <field name="etat"/>
                     <field name="message"/>
                 </tree>
             </field>
@@ -326,9 +345,10 @@
                     <field name="date"/>
                     <field name="equipe_id"/>
                     <field name="order_id"/>
+                    <field name="partner_id"/>
                     <field name="nom_chantier"/>
                     <field name="pose_depose"/>
-                    <field name="partner_id"/>
+                    <field name="etat"/>
                     <field name="message"/>
                 </search>
             </field>

@@ -2,8 +2,7 @@
 
 <odoo>
     <data>
-
-        <!-- paperformat -->
+        <!-- Planning -->
         <record id="is_planning_paperformat" model="report.paperformat">
             <field name="name">Planning</field>
             <field name="default" eval="True" />
@@ -19,8 +18,6 @@
             <field name="header_spacing">25</field>
             <field name="dpi">90</field>
         </record>
-
-        <!-- report -->
         <report 
             id="is_planning_reports"
             model="is.creation.planning"
@@ -32,6 +29,35 @@
         <record id="is_planning_reports" model="ir.actions.report.xml">
             <field name="paperformat_id" ref="is_france_filets.is_planning_paperformat"/>
         </record>
+
+        <!-- Fiche de travail -->
+        <record id="is_fiche_travail_paperformat" model="report.paperformat">
+            <field name="name">Fiche de travail</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">30</field>
+            <field name="margin_bottom">15</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">25</field>
+            <field name="dpi">90</field>
+        </record>
+        <report 
+            id="is_fiche_travail_reports"
+            model="is.creation.planning"
+            string="Fiche de travail"
+            report_type="qweb-pdf"
+            name="is_france_filets.is_fiche_travail_report"
+            file="is_france_filets.fiche_travail_report_templates"
+        />
+        <record id="is_fiche_travail_reports" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="is_france_filets.is_fiche_travail_paperformat"/>
+        </record>
+
     </data>
 </odoo>
 

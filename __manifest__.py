@@ -31,6 +31,7 @@ InfoSaône - Module Odoo pour France Filets
         'report/sale_report_templates.xml',
         'report/report_invoice.xml',
         'report/planning_report_templates.xml',
+        'report/fiche_travail_report_templates.xml',
         'report/layouts.xml',
         'report/report.xml',
     ],

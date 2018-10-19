@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <template id="is_fiche_travail_report_layout" inherit_id="web.layout" primary="True">
+        <!-- Add report attributes -->
+        <xpath expr="//html" position="attributes">
+            <attribute name="t-att-data-report-margin-top">data_report_margin_top if data_report_margin_top else None</attribute>
+            <attribute name="t-att-data-report-header-spacing">data_report_header_spacing if data_report_header_spacing else None</attribute>
+            <attribute name="t-att-data-report-dpi">data_report_dpi if data_report_dpi else None</attribute>
+        </xpath>
+        <!-- Add report style -->
+        <xpath expr="//head" position="inside">
+            <link href="/web/static/lib/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+            <link href="/website/static/src/css/website.css" rel="stylesheet"/>
+            <link href="/web/static/lib/fontawesome/css/font-awesome.css" rel="stylesheet"/>
+        </xpath>
+    </template>
+
+
+    <template id="is_fiche_travail_report_html_container">
+        <t t-set="body_classname" t-value="'container'"/>
+        <t t-call="is_france_filets.is_fiche_travail_report_layout">
+            <t t-raw="0"/>
+        </t>
+    </template>
+
+
+    <!-- Entête personnalisé -->
+    <template id="is_fiche_travail_report_external_layout_header">
+        <div class="header">
+            <div class="row">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo" style="max-height: 100px;"/>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <h2>Fiche de travail du <span t-field="o.date_debut"/> au <span t-field="o.date_fin"/></h2>
+                        <b><div t-field="company.name"/></b>
+                        <b><div t-field="company.rml_header1"/></b>
+                        <div><span t-field="company.street"/> - <span t-field="company.zip"/> <span t-field="company.city"/></div>
+                        <div>
+                            Tél : <span t-field="company.phone"/> - Portable : <span t-field="company.partner_id.mobile"/> - Fax : <span t-field="company.fax"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+
+    <!-- Pied de page personnalisé -->
+    <template id="is_fiche_travail_report_external_layout_footer">
+        <div class="footer">
+            <div class="text-center" style="border-top: 1px solid black">
+                <table style="width:100%">
+                    <tr>
+                        <td class="text-left" style="width:80%">
+                        </td>
+                        <td class="text-right">
+                            Page <span class="page" style="font-size:10pt;"/> / <span class="topage"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <br />
+    </template>
+
+
+    <!-- Squelette de la page personnalisé -->
+    <template id="is_fiche_travail_report_external_layout">
+        <t t-if="o and 'company_id' in o">
+            <t t-set="company" t-value="o.company_id"/>
+        </t>
+        <t t-if="not o or not 'company_id' in o">
+            <t t-set="company" t-value="res_company"/>
+        </t>
+        <t t-call="is_france_filets.is_fiche_travail_report_external_layout_header"/>
+        <t t-raw="0"/>
+        <t t-call="is_france_filets.is_fiche_travail_report_external_layout_footer"/>
+    </template>
+
+
+    <template id="is_fiche_travail_report">
+        <t t-call="is_france_filets.is_fiche_travail_report_html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="is_france_filets.is_fiche_travail_report_external_layout">
+                    <div class="page">
+                        <style>
+                            th{
+                                font-size:12pt;
+                                padding:2pt;
+                                border:1px solid black;
+                                text-align:center;
+                                background-color:LawnGreen;
+                            }
+                            td{
+                                font-size:11pt;
+                                padding:4pt;
+                                margin:4pt;
+                                border:1px solid black;
+                            }
+                            p{
+                                padding:4pt;
+                                margin:4pt;
+                            }
+                        </style>
+                        <table style="border:1px solid black; width:100%">
+                            <tr><th>RÉFÉRENCE DU CHANTIER</th></tr>
+                            <tr>
+                                <td>
+                                    <p>Date de début : <b><span t-field="o.date_debut"/></b></p>
+                                    <p>Date de fin :   <b><span t-field="o.date_fin"/></b></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
