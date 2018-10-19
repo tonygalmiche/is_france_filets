@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <menuitem 
+        id="sale.menu_sale_quotations"
+        action="is_sale_order_devis_action"
+        parent="sales_team.menu_sales"
+        sequence="11"
+    />
+    <menuitem 
+        id="is_sale_order_devis_archive_menu"
+        action="is_sale_order_devis_archive_action"
+        parent="sales_team.menu_sales"
+        sequence="12"
+    />
 
     <menuitem 
         id="is_planning_menu"

@@ -23,6 +23,7 @@
                     <field name="is_date_previsionnelle"/>
                     <field name="is_distance_chantier"/>
                     <field name="is_num_ancien_devis"/>
+                    <field name="is_motif_archivage" states="draft,sent"/>
                 </field>
                 <xpath expr="//notebook" position="before">
                     <group>
@@ -61,6 +62,25 @@
                 </field>
             </field>
         </record>
+
+
+
+        <record id="is_sale_order_devis_action" model="ir.actions.act_window">
+            <field name="name">Devis</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','in', ['draft','sent']),('is_motif_archivage','=','')]</field>
+        </record>
+        <record id="is_sale_order_devis_archive_action" model="ir.actions.act_window">
+            <field name="name">Devis archivés</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','in', ['draft','sent']),('is_motif_archivage','!=','')]</field>
+        </record>
+
+
  
 
 

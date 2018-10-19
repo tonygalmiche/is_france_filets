@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models
 from datetime import datetime, timedelta
+from odoo.exceptions import Warning
 
 
 class IsTypePrestation(models.Model):
@@ -66,6 +67,36 @@ class IsSaleOrderPlanning(models.Model):
     realisation    = fields.Char('Réalisation', help=u'Réalisation du chantier')
 
 
+    @api.onchange('date_debut','date_fin','equipe_ids')
+    def onchange_date(self):
+        messages=[]
+        for obj in self:
+            if obj.equipe_ids and obj.date_debut and obj.date_fin:
+                d1=datetime.strptime(obj.date_debut, '%Y-%m-%d')
+                d2=datetime.strptime(obj.date_fin, '%Y-%m-%d')
+                jours=(d2-d1).days+1
+                for d in range(0, jours):
+                    for equipe in obj.equipe_ids:
+                        date=d1.strftime('%d/%m/%Y')
+                        #** Recherche s'il existe une absence ******************
+                        message=self.env['is.creation.planning'].get_absence(equipe, date)
+                        if message:
+                            messages.append(equipe.name+u' est absent le '+date+u' ('+message+')')
+                        #*******************************************************
+
+                        #** Recherche s'il existe déja une autre affaire *******
+                        chantiers=self.env['is.creation.planning'].get_chantiers(equipe, date, html=False)
+                        if chantiers:
+                            for chantier in chantiers:
+                                if chantier!=obj.order_id.name:
+                                    messages.append(u'Le chantier '+chantier+u" est déjà plannifié pour l'équipe "+equipe.name+u' le '+date)
+                        #*******************************************************
+
+                    d1=d1+timedelta(days=1)
+        if messages: 
+            raise Warning('\n'.join(messages))
+
+
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
@@ -74,6 +105,7 @@ class SaleOrder(models.Model):
     is_contact_id          = fields.Many2one('res.partner', u'Contact du client')
     is_distance_chantier   = fields.Integer('Distance du chantier (en km)')
     is_num_ancien_devis    = fields.Char('N°ancien devis')
+    is_motif_archivage     = fields.Text('Motif archivage devis')
     is_entete_devis        = fields.Text('Entête devis')
     is_pied_devis          = fields.Text('Pied devis')
     is_superficie          = fields.Char('Superficie')
@@ -128,19 +160,18 @@ class IsCreationPlanning(models.Model):
         cr = self._cr
         d=datetime.strptime(date, '%d/%m/%Y')
         absence=False
-        for obj in self:
-            SQL="""
-                SELECT iea.motif 
-                FROM is_equipe_absence iea
-                WHERE 
-                    iea.date_debut<='"""+str(d)+"""' and 
-                    iea.date_fin>='"""+str(d)+"""' and
-                    iea.equipe_id="""+str(equipe.id)+"""
-            """
-            cr.execute(SQL)
-            res = cr.fetchall()
-            for row in res:
-                absence=row[0]
+        SQL="""
+            SELECT iea.motif 
+            FROM is_equipe_absence iea
+            WHERE 
+                iea.date_debut<='"""+str(d)+"""' and 
+                iea.date_fin>='"""+str(d)+"""' and
+                iea.equipe_id="""+str(equipe.id)+"""
+        """
+        cr.execute(SQL)
+        res = cr.fetchall()
+        for row in res:
+            absence=row[0]
         return absence
 
 
@@ -166,33 +197,33 @@ class IsCreationPlanning(models.Model):
 
 
     @api.multi
-    def get_chantiers(self,equipe,date):
+    def get_chantiers(self,equipe,date,html=True):
         cr = self._cr
         d=datetime.strptime(date, '%d/%m/%Y')
         chantiers=[]
-        for obj in self:
-            SQL="""
-                SELECT
-                    so.name,
-                    rp.name,
-                    so.is_nom_chantier,
-                    so.is_type_chantier,
-                    so.is_superficie,
-                    isop.commentaire,
-                    isop.pose_depose,
-                    isop.etat
-                FROM is_sale_order_planning isop inner join sale_order so on isop.order_id=so.id 
-                                                 inner join is_sale_order_planning_equipe_rel rel on isop.id=rel.order_id
-                                                 inner join is_equipe ie on rel.equipe_id=ie.id
-                                                 inner join res_partner rp on so.partner_id=rp.id
-                WHERE 
-                    isop.date_debut<='"""+str(d)+"""' and 
-                    isop.date_fin>='"""+str(d)+"""' and
-                    ie.id="""+str(equipe.id)+"""
-            """
-            cr.execute(SQL)
-            res = cr.fetchall()
-            for row in res:
+        SQL="""
+            SELECT
+                so.name,
+                rp.name,
+                so.is_nom_chantier,
+                so.is_type_chantier,
+                so.is_superficie,
+                isop.commentaire,
+                isop.pose_depose,
+                isop.etat
+            FROM is_sale_order_planning isop inner join sale_order so on isop.order_id=so.id 
+                                             inner join is_sale_order_planning_equipe_rel rel on isop.id=rel.order_id
+                                             inner join is_equipe ie on rel.equipe_id=ie.id
+                                             inner join res_partner rp on so.partner_id=rp.id
+            WHERE 
+                isop.date_debut<='"""+str(d)+"""' and 
+                isop.date_fin>='"""+str(d)+"""' and
+                ie.id="""+str(equipe.id)+"""
+        """
+        cr.execute(SQL)
+        res = cr.fetchall()
+        for row in res:
+            if html:
                 pose_depose=row[6]
                 if pose_depose=='pose':
                     pose_depose='<span style="color:Red">Pose</span>'
@@ -216,6 +247,8 @@ class IsCreationPlanning(models.Model):
                 html+=(row[3] or '')+' - '+(row[4] or '')+'<br />'
                 html+=(row[5] or '')
                 chantiers.append(html)
+            else:
+                chantiers.append(row[0])
         return chantiers
 
 
