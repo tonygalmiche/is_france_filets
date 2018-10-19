@@ -152,6 +152,7 @@ class SaleOrder(models.Model):
     is_nacelle_id          = fields.Many2one('is.nacelle', u'Nacelle')
     is_planning_ids        = fields.One2many('is.sale.order.planning', 'order_id', u"Planning")
     is_etat_planning       = fields.Char("Etat planning", compute='_compute', readonly=True, store=True)
+    is_info_fiche_travail  = fields.Text('Informations fiche de travail')
 
 
     @api.multi
@@ -258,6 +259,30 @@ class IsCreationPlanning(models.Model):
 
 
     @api.multi
+    def get_orders(self,date_debut,date_fin):
+        """Retourne les commandes pour les fiches de travail"""
+        cr = self._cr
+        SQL="""
+            SELECT DISTINCT so.id, so.name
+            FROM is_sale_order_planning isop inner join sale_order so on isop.order_id=so.id
+            WHERE 
+                isop.date_debut<='"""+str(date_fin)+"""' and 
+                isop.date_fin>='"""+str(date_debut)+"""'
+            ORDER BY so.name
+        """
+        cr.execute(SQL)
+        res = cr.fetchall()
+        orders=[]
+        for row in res:
+            if row[0]:
+                order = self.env['sale.order'].browse(row[0])
+                if order:
+                    if order not in orders:
+                        orders.append(order)
+        return orders
+
+
+    @api.multi
     def get_chantiers(self,equipe,date,retour='html'):
         cr = self._cr
         d=datetime.strptime(date, '%d/%m/%Y')
@@ -318,7 +343,6 @@ class IsCreationPlanning(models.Model):
                     'planning_id': row[9],
                 }
                 chantiers.append(vals)
-
         return chantiers
 
 

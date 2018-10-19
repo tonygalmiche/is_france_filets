@@ -103,19 +103,50 @@
                                 border:1px solid black;
                             }
                             p{
-                                padding:4pt;
-                                margin:4pt;
+                                padding:2pt;
+                                margin:2pt;
                             }
                         </style>
-                        <table style="border:1px solid black; width:100%">
-                            <tr><th>RÉFÉRENCE DU CHANTIER</th></tr>
-                            <tr>
-                                <td>
-                                    <p>Date de début : <b><span t-field="o.date_debut"/></b></p>
-                                    <p>Date de fin :   <b><span t-field="o.date_fin"/></b></p>
-                                </td>
-                            </tr>
-                        </table>
+                        <t t-foreach="o.get_orders(o.date_debut,o.date_fin)" t-as="order">
+                            <table style="border:1px solid black; width:100%">
+                                <tr><th>RÉFÉRENCE DU CHANTIER</th></tr>
+                                <tr>
+                                    <td>
+                                        <p>Commande :          <b><span t-esc="order.name"/></b></p>
+                                        <p>Client :            <b><span t-esc="order.partner_id.name"/></b></p>
+                                        <p>Contact du client : <b><span t-esc="order.is_contact_id.name"/></b> (Tél : <span t-esc="order.is_contact_id.phone"/>)</p>
+                                        <p>Nom du chantier :   <b><span t-esc="order.is_nom_chantier"/></b></p>
+
+                                        <p>Superficie :         <b><span t-esc="order.is_superficie"/></b></p>
+                                        <p>Hauteur :            <b><span t-esc="order.is_hauteur"/></b></p>
+                                        <p>Type de chantier :   <b><span t-esc="order.is_type_chantier"/></b></p>
+                                    </td>
+                                </tr>
+                                <tr><th>DATES D'INTERVENTION</th></tr>
+                                <tr>
+                                    <td>
+                                        <t t-foreach="order.is_planning_ids" t-as="line">
+                                            <p>Date de début / Date de fin : <b><span t-esc="line.date_debut"/> / <span t-esc="line.date_debut"/> / <span t-esc="line.pose_depose"/></b></p>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr><th>INTERVENANTS POUR LA POSE</th></tr>
+                                <tr>
+                                    <td style="height:20mm">
+                                        <p>Indiquer les initiales : </p>
+                                    </td>
+                                </tr>
+                                <tr><th>REALISATION DU CHANTIER</th></tr>
+                                <tr><td style="height:40mm"/></tr>
+                                <tr><th>INFORMATIONS DIVERSES</th></tr>
+                                <tr>
+                                    <td style="height:60mm">
+                                        <p t-field="order.is_info_fiche_travail"/>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div style="page-break-after:always;" />
+                        </t>
                     </div>
                 </t>
             </t>

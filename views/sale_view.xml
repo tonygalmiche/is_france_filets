@@ -33,8 +33,10 @@
                     <group>
                         <field name="is_pied_devis"/>
                     </group>
+                    <group>
+                        <field name="is_info_fiche_travail"/>
+                    </group>
                 </xpath>
-
                 <xpath expr="//page[1]" position="after"> 
                     <page string="Planning">
                         <field name="is_planning_ids">
