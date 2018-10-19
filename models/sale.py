@@ -67,9 +67,31 @@ class IsSaleOrderPlanning(models.Model):
     realisation    = fields.Char('Réalisation', help=u'Réalisation du chantier')
 
 
+
+    def get_avertissements(self,obj,equipe,date):
+        avertissements=[]
+
+        date=date.strftime('%d/%m/%Y')
+        #** Recherche s'il existe une absence ******************
+        message=self.env['is.creation.planning'].get_absence(equipe, date)
+        if message:
+            avertissements.append(equipe.name+u' est absent le '+date+u' ('+message+')')
+        #*******************************************************
+
+        #** Recherche s'il existe déja une autre affaire *******
+        chantiers=self.env['is.creation.planning'].get_chantiers(equipe, date, retour='order')
+        if chantiers:
+            for chantier in chantiers:
+                if chantier!=obj.order_id.name:
+                    avertissements.append(u'Le chantier '+chantier+u" est déjà plannifié pour l'équipe "+equipe.name+u' le '+date)
+        #*******************************************************
+
+        return avertissements
+
+
     @api.onchange('date_debut','date_fin','equipe_ids')
     def onchange_date(self):
-        messages=[]
+        avertissements=False
         for obj in self:
             if obj.equipe_ids and obj.date_debut and obj.date_fin:
                 d1=datetime.strptime(obj.date_debut, '%Y-%m-%d')
@@ -77,24 +99,15 @@ class IsSaleOrderPlanning(models.Model):
                 jours=(d2-d1).days+1
                 for d in range(0, jours):
                     for equipe in obj.equipe_ids:
-                        date=d1.strftime('%d/%m/%Y')
-                        #** Recherche s'il existe une absence ******************
-                        message=self.env['is.creation.planning'].get_absence(equipe, date)
-                        if message:
-                            messages.append(equipe.name+u' est absent le '+date+u' ('+message+')')
-                        #*******************************************************
-
-                        #** Recherche s'il existe déja une autre affaire *******
-                        chantiers=self.env['is.creation.planning'].get_chantiers(equipe, date, html=False)
-                        if chantiers:
-                            for chantier in chantiers:
-                                if chantier!=obj.order_id.name:
-                                    messages.append(u'Le chantier '+chantier+u" est déjà plannifié pour l'équipe "+equipe.name+u' le '+date)
-                        #*******************************************************
-
+                        res=self.get_avertissements(obj,equipe,d1)
+                        if res:
+                            if avertissements:
+                                avertissements.extend(res)
+                            else:
+                                avertissements=res
                     d1=d1+timedelta(days=1)
-        if messages: 
-            raise Warning('\n'.join(messages))
+        if avertissements: 
+            raise Warning('\n'.join(avertissements))
 
 
 class SaleOrder(models.Model):
@@ -126,13 +139,39 @@ class SaleOrder(models.Model):
         return nacelles
 
 
+class IsCreationPlanningPreparation(models.Model):
+    _name='is.creation.planning.preparation'
+    _order='date,equipe_id,order_id'
+
+    planning_id = fields.Many2one('is.creation.planning', 'Planning', required=True, ondelete='cascade')
+    date         = fields.Date('Date', index=True)
+    equipe_id    = fields.Many2one('is.equipe', u'Equipe')
+    order_id     = fields.Many2one('sale.order', u'Chantier')
+    nom_chantier = fields.Char('Nom du chantier')
+    partner_id   = fields.Many2one('res.partner', u'Client')
+    pose_depose  = fields.Selection([
+        ('pose'  , 'Pose'),
+        ('depose', 'Dépose'),
+    ], 'Pose / Dépose')
+    message = fields.Text('Message')
+
 
 class IsCreationPlanning(models.Model):
     _name='is.creation.planning'
     _order='date_debut desc'
 
-    date_debut     = fields.Date('Date de début', required=True)
-    date_fin       = fields.Date('Date de fin'  , required=True)
+    date_debut   = fields.Date('Date de début', required=True)
+    date_fin     = fields.Date('Date de fin'  , required=True)
+    planning_ids = fields.One2many('is.creation.planning.preparation', 'planning_id', u"Planning")
+
+
+    @api.multi
+    def name_get(self):
+        res=[]
+        for obj in self:
+            res.append((obj.id, obj.date_debut))
+        return res
+
 
     @api.multi
     def get_dates(self):
@@ -197,7 +236,7 @@ class IsCreationPlanning(models.Model):
 
 
     @api.multi
-    def get_chantiers(self,equipe,date,html=True):
+    def get_chantiers(self,equipe,date,retour='html'):
         cr = self._cr
         d=datetime.strptime(date, '%d/%m/%Y')
         chantiers=[]
@@ -210,7 +249,9 @@ class IsCreationPlanning(models.Model):
                 so.is_superficie,
                 isop.commentaire,
                 isop.pose_depose,
-                isop.etat
+                isop.etat,
+                so.id,
+                isop.id
             FROM is_sale_order_planning isop inner join sale_order so on isop.order_id=so.id 
                                              inner join is_sale_order_planning_equipe_rel rel on isop.id=rel.order_id
                                              inner join is_equipe ie on rel.equipe_id=ie.id
@@ -223,7 +264,7 @@ class IsCreationPlanning(models.Model):
         cr.execute(SQL)
         res = cr.fetchall()
         for row in res:
-            if html:
+            if retour=='html':
                 pose_depose=row[6]
                 if pose_depose=='pose':
                     pose_depose='<span style="color:Red">Pose</span>'
@@ -247,9 +288,62 @@ class IsCreationPlanning(models.Model):
                 html+=(row[3] or '')+' - '+(row[4] or '')+'<br />'
                 html+=(row[5] or '')
                 chantiers.append(html)
-            else:
+            if retour=='order':
                 chantiers.append(row[0])
+            if retour=='planning':
+                vals={
+                    'order_id'   : row[8],
+                    'planning_id': row[9],
+                }
+                chantiers.append(vals)
+
         return chantiers
 
 
+    @api.multi
+    def preparer_planning_action(self):
+        """Préparation du planning"""
+        for obj in self:
+            obj.planning_ids.unlink()
+            equipes = obj.get_equipes()
+            dates   = obj.get_dates()
+            for equipe in equipes:
+                for date in dates:
+                    chantiers   = obj.get_chantiers(equipe,date,retour='planning')
+                    for chantier in chantiers:
+                        order_id    = chantier['order_id']
+                        planning_id = chantier['planning_id']
+                        order    = self.env['sale.order'].browse(order_id)
+                        planning = self.env['is.sale.order.planning'].browse(planning_id)
+                        d=datetime.strptime(date, '%d/%m/%Y')
+                        message=self.env['is.sale.order.planning'].get_avertissements(planning,equipe,d)
+                        if message:
+                            message='\n'.join(message)
+                        else:
+                            message=False
+                        if order:
+                            vals={
+                                'planning_id' : obj.id,
+                                'date'        : date,
+                                'order_id'    : order_id,
+                                'equipe_id'   : equipe.id,
+                                'nom_chantier': order.is_nom_chantier,
+                                'partner_id'  : order.partner_id.id,
+                                'pose_depose' : planning.pose_depose,
+                                'message'     : message,
+                            }
+                            self.env['is.creation.planning.preparation'].create(vals)
+            return {
+                'name': u'Préparation planning '+str(obj.date_debut),
+                'view_mode': 'tree,form',
+                'view_type': 'form',
+                'res_model': 'is.creation.planning.preparation',
+                'domain': [
+                    ('planning_id','=',obj.id),
+                ],
+                'context':{
+                    'default_planning_id': obj.id,
+                },
+                'type': 'ir.actions.act_window',
+            }
 

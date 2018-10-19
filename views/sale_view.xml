@@ -237,6 +237,13 @@
             <field name="model">is.creation.planning</field>
             <field name="arch" type="xml">
                 <form>
+                    <header>
+                        <button
+                            name="preparer_planning_action"
+                            type="object"
+                            string="Préparer le planning"
+                        />
+                    </header>
                     <sheet>
                         <group>
                             <field name="date_debut"/>
@@ -271,6 +278,66 @@
             <field name="res_model">is.creation.planning</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <!-- is.creation.planning.preparation -->
+        <record id="is_creation_planning_preparation_form_view" model="ir.ui.view">
+            <field name="name">is_creation_planning_preparation_from_view</field>
+            <field name="model">is.creation.planning.preparation</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="planning_id"/>
+                            <field name="date"/>
+                            <field name="equipe_id"/>
+                            <field name="order_id"/>
+                            <field name="nom_chantier"/>
+                            <field name="pose_depose"/>
+                            <field name="partner_id"/>
+                            <field name="message"/>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_creation_planning_preparation_tree_view">
+            <field name="name">is_creation_planning_preparation_tree_view</field>
+            <field name="model">is.creation.planning.preparation</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree create="0">
+                    <field name="date"/>
+                    <field name="equipe_id"/>
+                    <field name="order_id"/>
+                    <field name="nom_chantier"/>
+                    <field name="pose_depose"/>
+                    <field name="partner_id"/>
+                    <field name="message"/>
+                </tree>
+            </field>
+        </record>
+        <record id="is_creation_planning_preparation_search_view" model="ir.ui.view">
+            <field name="name">is_creation_planning_preparation_search_view</field>
+            <field name="model">is.creation.planning.preparation</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="date"/>
+                    <field name="equipe_id"/>
+                    <field name="order_id"/>
+                    <field name="nom_chantier"/>
+                    <field name="pose_depose"/>
+                    <field name="partner_id"/>
+                    <field name="message"/>
+                </search>
+            </field>
+        </record>
+        <record id="is_creation_planning_preparation_action" model="ir.actions.act_window">
+            <field name="name">Préparation planning</field>
+            <field name="res_model">is.creation.planning.preparation</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
         </record>
 
     </data>

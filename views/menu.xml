@@ -27,7 +27,15 @@
         parent="is_planning_menu" 
         action="is_creation_planning_action" 
     />
-
+    <!--
+    <menuitem 
+        id="is_creation_planning_preparation_menu" 
+        sequence="20" 
+        name="Préparation Planning"
+        parent="is_planning_menu" 
+        action="is_creation_planning_preparation_action" 
+    />
+    -->
 
     <menuitem 
         id="is_ventes_table_menu"

@@ -8,4 +8,5 @@ access_is_sale_order_planning,access_is_sale_order_planning,model_is_sale_order_
 access_is_creation_planning,access_is_creation_planning,model_is_creation_planning,base.group_user,1,1,1,1
 access_is_equipe_absence,access_is_equipe_absence,model_is_equipe_absence,base.group_user,1,1,1,1
 access_is_equipe_message,access_is_equipe_message,model_is_equipe_message,base.group_user,1,1,1,1
+access_is_creation_planning_preparation,access_is_creation_planning_preparation,model_is_creation_planning_preparation,base.group_user,1,1,1,1
 
