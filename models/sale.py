@@ -157,6 +157,7 @@ class SaleOrder(models.Model):
     is_planning_ids        = fields.One2many('is.sale.order.planning', 'order_id', u"Planning")
     is_etat_planning       = fields.Char("Etat planning", compute='_compute', readonly=True, store=True)
     is_info_fiche_travail  = fields.Text('Informations fiche de travail')
+    is_piece_jointe_ids    = fields.Many2many('ir.attachment', 'sale_order_piece_jointe_attachment_rel', 'order_id', 'attachment_id', u'Pièces jointes')
 
 
     @api.multi

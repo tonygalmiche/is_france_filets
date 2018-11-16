@@ -36,6 +36,9 @@
                     <group>
                         <field name="is_info_fiche_travail"/>
                     </group>
+                    <group>
+                        <field name="is_piece_jointe_ids" widget="many2many_binary"/>
+                    </group>
                 </xpath>
                 <xpath expr="//page[1]" position="after"> 
                     <page string="Planning">
