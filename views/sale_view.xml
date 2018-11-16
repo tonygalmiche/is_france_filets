@@ -333,7 +333,7 @@
             <field name="model">is.creation.planning.preparation</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree create="0">
+                <tree create="0" colors="gray:etat=='fait'">
                     <field name="date"/>
                     <field name="equipe_id"/>
                     <field name="order_id"/>
@@ -381,8 +381,15 @@
                     <sheet>
                         <group>
                             <field name="name"/>
+                            <field name="creation_planning_id"/>
                             <field name="equipe_id"/>
-                            <field name="user_id"/>
+                        </group>
+                        <group string="Chantiers">
+                            <field name="chantier_ids" nolabel="1">
+                                 <tree editable="bottom">
+                                    <field name="chantier_id"/>
+                                </tree>
+                            </field>
                         </group>
                     </sheet>
                </form>
@@ -395,8 +402,8 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="creation_planning_id"/>
                     <field name="equipe_id"/>
-                    <field name="user_id"/>
                 </tree>
             </field>
         </record>
@@ -406,8 +413,8 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="name"/>
+                    <field name="creation_planning_id"/>
                     <field name="equipe_id"/>
-                    <field name="user_id"/>
                 </search>
             </field>
         </record>
@@ -443,7 +450,7 @@
                         </group>
                         <group string="Interventions">
                             <field name="planning_ids" nolabel="1">
-                                 <tree editable="bottom">
+                                 <tree editable="bottom" create="0">
                                     <field name="date_debut"/>
                                     <field name="date_fin"/>
                                     <field name="commentaire"/>

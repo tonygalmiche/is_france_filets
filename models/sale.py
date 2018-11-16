@@ -380,7 +380,9 @@ class IsCreationPlanning(models.Model):
                             message='\n'.join(message)
                         else:
                             message=False
-                        if order and planning.etat!='fait':
+                        #if order and planning.etat!='fait':
+
+                        if order:
                             vals={
                                 'planning_id' : obj.id,
                                 'date'        : date,
@@ -393,6 +395,29 @@ class IsCreationPlanning(models.Model):
                                 'message'     : message,
                             }
                             self.env['is.creation.planning.preparation'].create(vals)
+
+
+
+            #** Création des plannings pour chaque équipe **********************
+            equipes = obj.get_equipes()
+            for equipe in equipes:
+                plannings = self.env['is.planning'].search([('creation_planning_id','=',obj.id),('equipe_id','=',equipe.id)])
+                name=u'Planning du '+str(obj.date_debut)+' au '+str(obj.date_fin)+u' pour '+equipe.name
+                if not plannings:
+                    vals={
+                        'name'                : name,
+                        'equipe_id'           : equipe.id,
+                        'creation_planning_id': obj.id,
+                    }
+                    planning=self.env['is.planning'].create(vals)
+                else:
+                    planning=plannings[0]
+                vals={
+                        'name'                : name,
+                }
+                planning.write(vals)
+            #*******************************************************************
+
 
             #** Création des chantiers *****************************************
             self.env['is.chantier.planning'].search([('sale_order_planning_id','=',False)]).unlink()
@@ -416,10 +441,6 @@ class IsCreationPlanning(models.Model):
                     'informations'     : order.is_info_fiche_travail,
                 }
                 chantier.write(vals)
-
-
-
-
                 for line in order.is_planning_ids:
                     plannings = self.env['is.chantier.planning'].search([('sale_order_planning_id','=',line.id)])
                     if not plannings:
@@ -430,15 +451,47 @@ class IsCreationPlanning(models.Model):
                         planning=self.env['is.chantier.planning'].create(vals)
                     else:
                         planning=plannings[0]
+                    equipe_ids=[]
+                    for l in line.equipe_ids:
+                        equipe_ids.append(l.id)
                     vals={
                         'date_debut'            : line.date_debut,
                         'date_fin'              : line.date_fin,
                         'commentaire'           : line.commentaire,
+                        'equipe_ids'            : [(6,0,equipe_ids)],
                         'pose_depose'           : line.pose_depose,
                         'etat'                  : line.etat,
                     }
                     planning.write(vals)
             #*******************************************************************
+
+            #** Ajout des chantiers sur le planning ****************************
+            plannings = self.env['is.planning'].search([('creation_planning_id','=',obj.id)])
+            for planning in plannings:
+                planning.chantier_ids.unlink()
+                for order in orders:
+                    test=False
+                    for line in obj.planning_ids:
+                        if planning.equipe_id==line.equipe_id and line.order_id==order:
+                            test=True
+                    if test:
+                        chantiers = self.env['is.chantier'].search([('order_id','=',order.id)])
+                        if chantiers:
+                            chantier=chantiers[0]
+                            vals={
+                                'planning_id': planning.id,
+                                'chantier_id': chantier.id,
+                            }
+                            self.env['is.planning.line'].create(vals)
+            #*******************************************************************
+
+            #** Suppression des plannings sans chantier ************************
+            plannings = self.env['is.planning'].search([('creation_planning_id','=',obj.id)])
+            for planning in plannings:
+                if not planning.chantier_ids:
+                    planning.unlink()
+            #*******************************************************************
+
 
             return {
                 'name': u'Préparation planning '+str(obj.date_debut),
@@ -455,15 +508,22 @@ class IsCreationPlanning(models.Model):
             }
 
 
+class IsPlanningLine(models.Model):
+    _name='is.planning.line'
+    _order='chantier_id'
+
+    planning_id = fields.Many2one('is.planning', 'Planning', required=True, ondelete='cascade', readonly=True)
+    chantier_id = fields.Many2one('is.chantier', "Chantier")
+
+
 class IsPlanning(models.Model):
     _name='is.planning'
-    _order='name'
+    _order='name desc'
 
-    name      = fields.Char(u'Planning', required=True,index=True)
-    equipe_id = fields.Many2one('is.equipe', "Equipe", required=True)
-    user_id   = fields.Many2one('res.users', "Chef d'équipe", required=True)
-
-
+    name                 = fields.Char(u'Planning', required=True,index=True)
+    creation_planning_id = fields.Many2one('is.creation.planning', "Préparation Planning", required=True, index=True)
+    equipe_id            = fields.Many2one('is.equipe', "Equipe")
+    chantier_ids         = fields.One2many('is.planning.line', 'planning_id', u"Chantiers")
 
 
 class IsChantierPlanning(models.Model):
@@ -475,7 +535,7 @@ class IsChantierPlanning(models.Model):
     date_debut             = fields.Date('Date début', readonly=True,index=True)
     date_fin               = fields.Date('Date fin', readonly=True)
     commentaire            = fields.Char('Commentaire planning', readonly=True)
-    equipe_ids             = fields.Many2many('is.equipe','is_sale_order_planning_equipe_rel','order_id','equipe_id', string="Equipes", readonly=True)
+    equipe_ids             = fields.Many2many('is.equipe','is_chantier_planning_equipe_rel','chantier_id','equipe_id', string="Equipes", readonly=True)
     pose_depose            = fields.Selection([
         ('pose'  , 'Pose'),
         ('depose', 'Dépose'),
