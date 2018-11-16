@@ -199,7 +199,8 @@
                 <form>
                     <sheet>
                         <group>
-                            <field name="name" />
+                            <field name="name"/>
+                            <field name="user_id"/>
                         </group>
                         <group>
                             <field name="absence_ids">
@@ -229,6 +230,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name" />
+                    <field name="user_id"/>
                 </tree>
             </field>
         </record>
@@ -237,7 +239,8 @@
             <field name="model">is.equipe</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="name" />
+                    <field name="name"/>
+                    <field name="user_id"/>
                 </search>
             </field>
         </record>
@@ -267,6 +270,7 @@
                         <group>
                             <field name="date_debut"/>
                             <field name="date_fin"/>
+                            <field name="equipe_id"/>
                         </group>
                     </sheet>
                </form>
@@ -280,6 +284,7 @@
                 <tree>
                     <field name="date_debut"/>
                     <field name="date_fin"/>
+                    <field name="equipe_id"/>
                 </tree>
             </field>
         </record>
@@ -289,11 +294,12 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="date_debut"/>
+                    <field name="equipe_id"/>
                 </search>
             </field>
         </record>
         <record id="is_creation_planning_action" model="ir.actions.act_window">
-            <field name="name">Planning</field>
+            <field name="name">Préparation Planning</field>
             <field name="res_model">is.creation.planning</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -361,6 +367,139 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
         </record>
+
+
+
+
+
+        <!-- Planning -->
+        <record id="is_planning_form_view" model="ir.ui.view">
+            <field name="name">is_planning_from_view</field>
+            <field name="model">is.planning</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="equipe_id"/>
+                            <field name="user_id"/>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_planning_tree_view">
+            <field name="name">is_planning_tree_view</field>
+            <field name="model">is.planning</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="equipe_id"/>
+                    <field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="is_planning_search_view" model="ir.ui.view">
+            <field name="name">is_planning_search_view</field>
+            <field name="model">is.planning</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="equipe_id"/>
+                    <field name="user_id"/>
+                </search>
+            </field>
+        </record>
+        <record id="is_planning_action" model="ir.actions.act_window">
+            <field name="name">Planning</field>
+            <field name="res_model">is.planning</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <!-- Chantier -->
+        <record id="is_chantier_form_view" model="ir.ui.view">
+            <field name="name">is_chantier_from_view</field>
+            <field name="model">is.chantier</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet class="oe_form_sheet_width_wider">
+                        <group string="Références du chantier">
+                            <group>
+                                <field name="name"/>
+                                <field name="equipe_ids" widget="many2many_tags"/>
+                                <field name="order_id"/>
+                                <field name="client"/>
+                            </group>
+                            <group>
+                                <field name="nom_chantier"/>
+                                <field name="superficie"/>
+                                <field name="hauteur"/>
+                                <field name="type_chantier"/>
+                                <field name="contact_client"/>
+                            </group>
+                        </group>
+                        <group string="Interventions">
+                            <field name="planning_ids" nolabel="1">
+                                 <tree editable="bottom">
+                                    <field name="date_debut"/>
+                                    <field name="date_fin"/>
+                                    <field name="commentaire"/>
+                                    <field name="equipe_ids" widget="many2many_tags"/>
+                                    <field name="pose_depose"/>
+                                    <field name="etat"/>
+                                    <field name="realisation"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="Pièces jointes">
+                            <field name="piece_jointe_ids" nolabel="1" widget="many2many_binary"/>
+                        </group>
+                        <group string="Informations diverses">
+                            <field name="informations" nolabel="1"/>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_chantier_tree_view">
+            <field name="name">is_chantier_tree_view</field>
+            <field name="model">is.chantier</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="equipe_ids"/>
+                    <field name="client"/>
+                    <field name="contact_client"/>
+                    <field name="nom_chantier"/>
+                    <field name="type_chantier"/>
+
+                </tree>
+            </field>
+        </record>
+        <record id="is_chantier_search_view" model="ir.ui.view">
+            <field name="name">is_chantier_search_view</field>
+            <field name="model">is.chantier</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="equipe_ids"/>
+                    <field name="order_id"/>
+                </search>
+            </field>
+        </record>
+        <record id="is_chantier_action" model="ir.actions.act_window">
+            <field name="name">Planning</field>
+            <field name="res_model">is.chantier</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+
 
     </data>
 </odoo>

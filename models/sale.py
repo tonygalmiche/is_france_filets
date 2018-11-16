@@ -12,6 +12,13 @@ _ETAT_PLANNING=[
 ]
 
 
+_TYPE_CHANTIER=[
+    ('neuf'           , 'Neuf'),
+    ('renovation'     , 'Rénovation'),
+    ('neuf_renovation', 'Neuf et Rénovation'),
+]
+
+
 class IsTypePrestation(models.Model):
     _name='is.type.prestation'
     _order='name'
@@ -48,7 +55,8 @@ class IsEquipe(models.Model):
     _name='is.equipe'
     _order='name'
 
-    name        = fields.Char(u'Equipe')
+    name        = fields.Char(u'Equipe', required=True)
+    user_id     = fields.Many2one('res.users', "Chef d'équipe", required=True)
     absence_ids = fields.One2many('is.equipe.absence', 'equipe_id', u"Absences")
     message_ids = fields.One2many('is.equipe.message', 'equipe_id', u"Messages")
 
@@ -57,8 +65,8 @@ class IsSaleOrderPlanning(models.Model):
     _name='is.sale.order.planning'
     _order='order_id,date_debut'
 
-    order_id       = fields.Many2one('sale.order', 'Commande', required=True, ondelete='cascade', readonly=True)
-    date_debut     = fields.Date('Date début')
+    order_id       = fields.Many2one('sale.order', 'Commande', required=True, ondelete='cascade', readonly=True,index=True)
+    date_debut     = fields.Date('Date début',index=True)
     date_fin       = fields.Date('Date fin')
     commentaire    = fields.Char('Commentaire planning')
     equipe_ids     = fields.Many2many('is.equipe','is_sale_order_planning_equipe_rel','order_id','equipe_id', string="Equipes")
@@ -67,7 +75,7 @@ class IsSaleOrderPlanning(models.Model):
         ('depose', 'Dépose'),
     ], 'Pose / Dépose')
     etat = fields.Selection(_ETAT_PLANNING, 'État', default='a_confirmer')
-    realisation    = fields.Char('Réalisation', help=u'Réalisation du chantier')
+    realisation    = fields.Text('Réalisation', help=u'Réalisation du chantier', readonly=True)
 
 
 
@@ -143,11 +151,7 @@ class SaleOrder(models.Model):
     is_superficie          = fields.Char('Superficie')
     is_hauteur             = fields.Char('Hauteur')
     is_nb_interventions    = fields.Char("Nombre d'interventions")
-    is_type_chantier       = fields.Selection([
-        ('neuf'           , 'Neuf'),
-        ('renovation'     , 'Rénovation'),
-        ('neuf_renovation', 'Neuf et Rénovation'),
-    ], 'Type de chantier')
+    is_type_chantier       = fields.Selection(_TYPE_CHANTIER, 'Type de chantier')
     is_type_prestation_id  = fields.Many2one('is.type.prestation', u'Type de prestation')
     is_nacelle_id          = fields.Many2one('is.nacelle', u'Nacelle')
     is_planning_ids        = fields.One2many('is.sale.order.planning', 'order_id', u"Planning")
@@ -185,6 +189,7 @@ class IsCreationPlanning(models.Model):
 
     date_debut   = fields.Date('Date de début', required=True)
     date_fin     = fields.Date('Date de fin'  , required=True)
+    equipe_id    = fields.Many2one('is.equipe', u'Equipe')
     planning_ids = fields.One2many('is.creation.planning.preparation', 'planning_id', u"Planning")
 
 
@@ -353,6 +358,9 @@ class IsCreationPlanning(models.Model):
             obj.planning_ids.unlink()
             equipes = obj.get_equipes()
             dates   = obj.get_dates()
+
+            orders=[]
+
             for equipe in equipes:
                 for date in dates:
                     chantiers   = obj.get_chantiers(equipe,date,retour='planning')
@@ -363,6 +371,11 @@ class IsCreationPlanning(models.Model):
                         planning = self.env['is.sale.order.planning'].browse(planning_id)
                         d=datetime.strptime(date, '%d/%m/%Y')
                         message=self.env['is.sale.order.planning'].get_avertissements(planning,equipe,d)
+
+                        if order not in orders:
+                            orders.append(order)
+
+                        #self.creation_chantier(equipe,order,planning)
                         if message:
                             message='\n'.join(message)
                         else:
@@ -380,6 +393,53 @@ class IsCreationPlanning(models.Model):
                                 'message'     : message,
                             }
                             self.env['is.creation.planning.preparation'].create(vals)
+
+            #** Création des chantiers *****************************************
+            self.env['is.chantier.planning'].search([('sale_order_planning_id','=',False)]).unlink()
+            for order in orders:
+                chantiers = self.env['is.chantier'].search([('order_id','=',order.id)])
+                if not chantiers:
+                    vals={
+                        'order_id'         : order.id,
+                    }
+                    chantier=self.env['is.chantier'].create(vals)
+                else:
+                    chantier=chantiers[0]
+                vals={
+                    'name'             : order.name,
+                    'client'           : order.partner_id.name,
+                    'contact_client'   : order.is_contact_id.name,
+                    'nom_chantier'     : order.is_nom_chantier,
+                    'superficie'       : order.is_superficie,
+                    'hauteur'          : order.is_hauteur,
+                    'type_chantier'    : order.is_type_chantier,
+                    'informations'     : order.is_info_fiche_travail,
+                }
+                chantier.write(vals)
+
+
+
+
+                for line in order.is_planning_ids:
+                    plannings = self.env['is.chantier.planning'].search([('sale_order_planning_id','=',line.id)])
+                    if not plannings:
+                        vals={
+                            'chantier_id'           : chantier.id,
+                            'sale_order_planning_id': line.id,
+                        }
+                        planning=self.env['is.chantier.planning'].create(vals)
+                    else:
+                        planning=plannings[0]
+                    vals={
+                        'date_debut'            : line.date_debut,
+                        'date_fin'              : line.date_fin,
+                        'commentaire'           : line.commentaire,
+                        'pose_depose'           : line.pose_depose,
+                        'etat'                  : line.etat,
+                    }
+                    planning.write(vals)
+            #*******************************************************************
+
             return {
                 'name': u'Préparation planning '+str(obj.date_debut),
                 'view_mode': 'tree,form',
@@ -393,4 +453,64 @@ class IsCreationPlanning(models.Model):
                 },
                 'type': 'ir.actions.act_window',
             }
+
+
+class IsPlanning(models.Model):
+    _name='is.planning'
+    _order='name'
+
+    name      = fields.Char(u'Planning', required=True,index=True)
+    equipe_id = fields.Many2one('is.equipe', "Equipe", required=True)
+    user_id   = fields.Many2one('res.users', "Chef d'équipe", required=True)
+
+
+
+
+class IsChantierPlanning(models.Model):
+    _name='is.chantier.planning'
+    _order='chantier_id,date_debut'
+
+    chantier_id            = fields.Many2one('is.chantier', 'Chantier', required=True, ondelete='cascade', readonly=True,index=True)
+    sale_order_planning_id = fields.Many2one('is.sale.order.planning', "Ligne planning commande", readonly=True,index=True)
+    date_debut             = fields.Date('Date début', readonly=True,index=True)
+    date_fin               = fields.Date('Date fin', readonly=True)
+    commentaire            = fields.Char('Commentaire planning', readonly=True)
+    equipe_ids             = fields.Many2many('is.equipe','is_sale_order_planning_equipe_rel','order_id','equipe_id', string="Equipes", readonly=True)
+    pose_depose            = fields.Selection([
+        ('pose'  , 'Pose'),
+        ('depose', 'Dépose'),
+    ], 'Pose / Dépose', readonly=True)
+    etat = fields.Selection(_ETAT_PLANNING, 'État', default='a_confirmer', readonly=True)
+    realisation    = fields.Text('Réalisation', help=u'Réalisation du chantier')
+
+
+    @api.multi
+    def write(self,vals):
+        for obj in self:
+            if 'realisation' in vals:
+                obj.sale_order_planning_id.realisation=vals['realisation']
+        res = super(IsChantierPlanning, self).write(vals)
+
+
+class IsChantier(models.Model):
+    _name='is.chantier'
+    _order='name'
+
+    name              = fields.Char(u'Chantier / Commande', readonly=True)
+    equipe_ids        = fields.Many2many('is.equipe','is_chantier_equipe_rel','chantier_id','equipe_id', string="Equipes", readonly=True)
+    order_id          = fields.Many2one('sale.order', "Commande", readonly=True)
+    client            = fields.Char(u'Client', readonly=True)
+    contact_client    = fields.Char(u'Contact Client', readonly=True)
+    nom_chantier      = fields.Char(u'Nom du chantier', readonly=True)
+    superficie        = fields.Char(u'Superficie', readonly=True)
+    hauteur           = fields.Char(u'Hauteur', readonly=True)
+    type_chantier     = fields.Selection(_TYPE_CHANTIER, 'Type de chantier', readonly=True)
+    planning_ids      = fields.One2many('is.chantier.planning', 'chantier_id', u"Planning")
+    informations      = fields.Text(u'Informations diverses', readonly=True)
+    piece_jointe_ids  = fields.Many2many('ir.attachment', 'is_chantier_piece_jointe_attachment_rel', 'is_chantier_id', 'attachment_id', u'Pièces jointes')
+
+
+
+
+
 

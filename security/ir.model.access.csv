@@ -9,4 +9,7 @@ access_is_creation_planning,access_is_creation_planning,model_is_creation_planni
 access_is_equipe_absence,access_is_equipe_absence,model_is_equipe_absence,base.group_user,1,1,1,1
 access_is_equipe_message,access_is_equipe_message,model_is_equipe_message,base.group_user,1,1,1,1
 access_is_creation_planning_preparation,access_is_creation_planning_preparation,model_is_creation_planning_preparation,base.group_user,1,1,1,1
+access_is_planning,access_is_planning,model_is_planning,base.group_user,1,1,1,1
+access_is_chantier,access_is_chantier,model_is_chantier,base.group_user,1,1,1,1
+access_is_chantier_planning,access_is_chantier_planning,model_is_chantier_planning,base.group_user,1,1,1,1
 

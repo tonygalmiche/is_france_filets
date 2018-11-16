@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+
+
+    <menuitem 
+        id="is_chantier_top_menu"
+        sequence="1" 
+        name="Chantiers"
+    />
+    <menuitem 
+        id="is_planning_main_menu" 
+        sequence="10" 
+        name="Planning"
+        parent="is_chantier_top_menu" 
+    />
+    <menuitem 
+        id="is_planning_menu" 
+        sequence="10" 
+        name="Planning"
+        parent="is_planning_main_menu" 
+        action="is_planning_action" 
+    />
+    <menuitem 
+        id="is_chantier_main_menu" 
+        sequence="20" 
+        name="Chantiers"
+        parent="is_chantier_top_menu" 
+    />
+    <menuitem 
+        id="is_chantier_menu" 
+        sequence="10" 
+        name="Chantiers"
+        parent="is_chantier_main_menu" 
+        action="is_chantier_action" 
+    />
+
+
+
+
+
     <menuitem 
         id="sale.menu_sale_quotations"
         action="is_sale_order_devis_action"
@@ -15,16 +53,16 @@
     />
 
     <menuitem 
-        id="is_planning_menu"
+        id="is_preparation_planning_menu"
         sequence="800" 
-        name="Planning"
+        name="Préparation Planning"
         parent="sales_team.menu_base_partner" 
     />
     <menuitem 
         id="is_creation_planning_menu" 
         sequence="10" 
-        name="Planning"
-        parent="is_planning_menu" 
+        name="Préparation Planning"
+        parent="is_preparation_planning_menu" 
         action="is_creation_planning_action" 
     />
     <!--
