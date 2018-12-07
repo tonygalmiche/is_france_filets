@@ -97,18 +97,19 @@
                             name="generer_lignes_action"
                             type="object"
                             string="Générer les lignes"
-                            confirm="Cela va écraser les lignes ?"
                         />
                         <button 
                             name="%(is_export_compta_ligne_action)d"
                             type="action"
                             string="Voir les lignes"
                         />
+                        <!--
                         <button
                             name="generer_fichier_action"
                             type="object"
                             string="Générer fichier à exporter"
                         />
+                        -->
                     </header>
                     <sheet>
                         <group>

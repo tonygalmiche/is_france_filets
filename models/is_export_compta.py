@@ -22,7 +22,7 @@ class is_export_compta(models.Model):
 
     name               = fields.Char(u"N°Folio", readonly=True)
     journal = fields.Selection([
-        ('VE', 'Ventes'),
+        ('VT', 'Ventes'),
         ('HA', 'Achats'),
     ], 'Journal', default='VE',required=True)
     date_debut         = fields.Date(u"Date de début", required=True)
@@ -78,34 +78,27 @@ class is_export_compta(models.Model):
         cr=self._cr
         for obj in self:
             obj.ligne_ids.unlink()
-
-            if obj.journal=='VE':
-                sql="""
-                    SELECT  
-                        aml.date,
-                        aa.code, 
-                        aa.name,
-                        ai.number,
-                        aml.account_id,
-                        sum(aml.credit)-sum(aml.debit)
-                    FROM account_move_line aml left outer join account_invoice ai        on aml.move_id=ai.move_id
-                                               inner join account_account aa             on aml.account_id=aa.id
-                                               left outer join res_partner rp            on aml.partner_id=rp.id
-                                               inner join account_journal aj             on aml.journal_id=aj.id
-                    WHERE 
-                        aml.date>='"""+str(obj.date_debut)+"""' and 
-                        aml.date<='"""+str(obj.date_fin)+"""' and 
-                        ((aa.code>'411100' and aa.code not like '512%') or aa.code='411000') and 
-                        aj.type in ('sale','bank','general','cash')
-                    GROUP BY aml.date, aa.code, aa.name, ai.number, aml.account_id
-                    ORDER BY aml.date, aa.code, aa.name, ai.number, aml.account_id
-                """
-
-
+            sql="""
+                SELECT  
+                    aml.date,
+                    aa.code, 
+                    aa.name,
+                    ai.number,
+                    aml.account_id,
+                    aml.credit-aml.debit
+                FROM account_move_line aml left outer join account_invoice ai        on aml.move_id=ai.move_id
+                                           inner join account_account aa             on aml.account_id=aa.id
+                                           left outer join res_partner rp            on aml.partner_id=rp.id
+                                           inner join account_journal aj             on aml.journal_id=aj.id
+                WHERE 
+                    aml.date>='"""+str(obj.date_debut)+"""' and 
+                    aml.date<='"""+str(obj.date_fin)+"""' and 
+                    aj.code='FAC'
+                ORDER BY ai.number, aml.id
+            """
             cr.execute(sql)
             ct=0
             for row in cr.fetchall():
-                print row
                 ct=ct+1
                 montant=row[5]
                 debit=0
@@ -126,7 +119,7 @@ class is_export_compta(models.Model):
                         'ligne'             : ct,
                         'date_facture'      : date_facture,
                         'account_id'        : row[4],
-                        'libelle'           : row[2],
+                        'libelle'           : s(row[2][0:29]),
                         'piece'             : row[3],
                         'journal'           : obj.journal,
                         'debit'             : debit,
