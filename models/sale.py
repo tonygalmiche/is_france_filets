@@ -471,9 +471,6 @@ class IsCreationPlanning(models.Model):
                 vals={
                     'user_ids': [(6,0,user_ids)],
                 }
-
-                print vals
-
                 chantier.write(vals)
             #*******************************************************************
 
