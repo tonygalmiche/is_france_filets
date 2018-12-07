@@ -467,6 +467,10 @@
                         <group string="Pièces jointes">
                             <field name="piece_jointe_ids" nolabel="1" widget="many2many_binary"/>
                         </group>
+                        <group string="Documents de fin de chantier">
+                            <field name="fin_chantier_ids" nolabel="1" widget="many2many_binary"/>
+                        </group>
+
                         <group string="Informations diverses">
                             <field name="informations" nolabel="1"/>
                         </group>

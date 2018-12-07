@@ -100,46 +100,10 @@
                                 font-size:9pt
                             }
                         </style>
-                        <table style="border:1px solid black; width:100%">
-                            <thead>
-                                <tr>
-                                    <th style="border:1px solid black;text-align:left">Equipe</th>
-                                    <t t-foreach="o.get_dates()" t-as="d">
-                                        <th style="border:1px solid black;text-align:center" t-esc="d"/>
-                                    </t>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="o.get_equipes()" t-as="e">
-                                    <tr>
-                                        <td style="border:1px solid black;"><span t-field="e.name"/></td>
-                                        <t t-foreach="o.get_dates()" t-as="d">
-                                            <t t-set="absence" t-value="o.get_absence(e,d)"/>
-                                            <t t-set="style" t-value="'border:1px solid black'" />
-                                            <t t-if="absence">
-                                                <t t-set="style" t-value="'border:1px solid black;background-color:Tan'" />
-                                            </t>
-                                            <td t-att-style="style">
-                                                <t t-set="message" t-value="o.get_message(e,d)"/>
-                                                <t t-if="message">
-                                                    <b><div style="background-color:Orange" t-esc="message"/></b>
-                                                </t>
-                                                <b><span t-esc="absence"/></b>
-                                                <t t-foreach="o.get_chantiers(e,d)" t-as="c">
-                                                    <div t-raw="c"/>
-                                                </t>
-                                            </td>
-                                        </t>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-
-                        <div style="page-break-after:always;" />
 
 
 
-                        <t t-foreach="o.get_equipes()" t-as="e">
+                        <t t-if="not o.equipe_id">
                             <table style="border:1px solid black; width:100%">
                                 <thead>
                                     <tr>
@@ -150,29 +114,80 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td style="border:1px solid black;"><span t-field="e.name"/></td>
-                                        <t t-foreach="o.get_dates()" t-as="d">
-                                            <t t-set="absence" t-value="o.get_absence(e,d)"/>
-                                            <t t-set="style" t-value="'border:1px solid black'" />
-                                            <t t-if="absence">
-                                                <t t-set="style" t-value="'border:1px solid black;background-color:Tan'" />
+                                    <t t-foreach="o.get_equipes()" t-as="e">
+                                        <tr>
+                                            <td style="border:1px solid black;"><span t-field="e.name"/></td>
+                                            <t t-foreach="o.get_dates()" t-as="d">
+                                                <t t-set="absence" t-value="o.get_absence(e,d)"/>
+                                                <t t-set="style" t-value="'border:1px solid black'" />
+                                                <t t-if="absence">
+                                                    <t t-set="style" t-value="'border:1px solid black;background-color:Tan'" />
+                                                </t>
+                                                <td t-att-style="style">
+                                                    <t t-set="message" t-value="o.get_message(e,d)"/>
+                                                    <t t-if="message">
+                                                        <b><div style="background-color:Orange" t-esc="message"/></b>
+                                                    </t>
+                                                    <b><span t-esc="absence"/></b>
+                                                    <t t-foreach="o.get_chantiers(e,d)" t-as="c">
+                                                        <div t-raw="c"/>
+                                                    </t>
+                                                </td>
                                             </t>
-                                            <td t-att-style="style">
-                                                <t t-set="message" t-value="o.get_message(e,d)"/>
-                                                <t t-if="message">
-                                                    <b><div style="background-color:Orange" t-esc="message"/></b>
-                                                </t>
-                                                <b><span t-esc="absence"/></b>
-                                                <t t-foreach="o.get_chantiers(e,d)" t-as="c">
-                                                    <div t-raw="c"/>
-                                                </t>
-                                            </td>
-                                        </t>
-                                    </tr>
+                                        </tr>
+                                    </t>
                                 </tbody>
                             </table>
                             <div style="page-break-after:always;" />
+                        </t>
+
+
+
+                        <t t-foreach="o.get_equipes()" t-as="e">
+
+
+                            <t t-set="test" t-value="1"/>
+                            <t t-if="o.equipe_id">
+                                <t t-if="o.equipe_id!=e">
+                                    <t t-set="test" t-value="0"/>
+                                </t>
+                            </t>
+
+                            <t t-if="test">
+                                <table style="border:1px solid black; width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th style="border:1px solid black;text-align:left">Equipe</th>
+                                            <t t-foreach="o.get_dates()" t-as="d">
+                                                <th style="border:1px solid black;text-align:center" t-esc="d"/>
+                                            </t>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="border:1px solid black;"><span t-field="e.name"/></td>
+                                            <t t-foreach="o.get_dates()" t-as="d">
+                                                <t t-set="absence" t-value="o.get_absence(e,d)"/>
+                                                <t t-set="style" t-value="'border:1px solid black'" />
+                                                <t t-if="absence">
+                                                    <t t-set="style" t-value="'border:1px solid black;background-color:Tan'" />
+                                                </t>
+                                                <td t-att-style="style">
+                                                    <t t-set="message" t-value="o.get_message(e,d)"/>
+                                                    <t t-if="message">
+                                                        <b><div style="background-color:Orange" t-esc="message"/></b>
+                                                    </t>
+                                                    <b><span t-esc="absence"/></b>
+                                                    <t t-foreach="o.get_chantiers(e,d)" t-as="c">
+                                                        <div t-raw="c"/>
+                                                    </t>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div style="page-break-after:always;" />
+                            </t>
                         </t>
                     </div>
                 </t>

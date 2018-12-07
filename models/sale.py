@@ -431,17 +431,22 @@ class IsCreationPlanning(models.Model):
                     chantier=self.env['is.chantier'].create(vals)
                 else:
                     chantier=chantiers[0]
+                piece_jointe_ids=[]
+                for attachment in order.is_piece_jointe_ids:
+                    piece_jointe_ids.append(attachment.id)
                 vals={
-                    'name'             : order.name,
-                    'client'           : order.partner_id.name,
-                    'contact_client'   : order.is_contact_id.name,
-                    'nom_chantier'     : order.is_nom_chantier,
-                    'superficie'       : order.is_superficie,
-                    'hauteur'          : order.is_hauteur,
-                    'type_chantier'    : order.is_type_chantier,
-                    'informations'     : order.is_info_fiche_travail,
+                    'name'               : order.name,
+                    'client'             : order.partner_id.name,
+                    'contact_client'     : order.is_contact_id.name,
+                    'nom_chantier'       : order.is_nom_chantier,
+                    'superficie'         : order.is_superficie,
+                    'hauteur'            : order.is_hauteur,
+                    'type_chantier'      : order.is_type_chantier,
+                    'informations'       : order.is_info_fiche_travail,
+                    'piece_jointe_ids'   : [(6,0,piece_jointe_ids)],
                 }
                 chantier.write(vals)
+                equipe_ids=[]
                 for line in order.is_planning_ids:
                     plannings = self.env['is.chantier.planning'].search([('sale_order_planning_id','=',line.id)])
                     if not plannings:
@@ -452,18 +457,21 @@ class IsCreationPlanning(models.Model):
                         planning=self.env['is.chantier.planning'].create(vals)
                     else:
                         planning=plannings[0]
-                    equipe_ids=[]
+
                     for l in line.equipe_ids:
                         equipe_ids.append(l.id)
                     vals={
                         'date_debut'            : line.date_debut,
                         'date_fin'              : line.date_fin,
                         'commentaire'           : line.commentaire,
-                        'equipe_ids'            : [(6,0,equipe_ids)],
                         'pose_depose'           : line.pose_depose,
                         'etat'                  : line.etat,
                     }
                     planning.write(vals)
+                vals={
+                    'equipe_ids': [(6,0,equipe_ids)],
+                }
+                chantier.write(vals)
             #*******************************************************************
 
             #** Ajout des chantiers sur le planning ****************************
@@ -493,6 +501,31 @@ class IsCreationPlanning(models.Model):
                     planning.unlink()
             #*******************************************************************
 
+            #** Ajout des planning PDF en pièce jointe *************************
+            plannings = self.env['is.planning'].search([('creation_planning_id','=',obj.id)])
+            equipe_id=obj.equipe_id.id
+            for planning in plannings:
+                obj.equipe_id=planning.equipe_id.id
+                pdf = self.env['report'].get_pdf([obj.id], 'is_france_filets.is_planning_report')
+                model=planning._name
+                name='planning.pdf'
+                attachment_obj = self.env['ir.attachment']
+                attachments = attachment_obj.search([('res_model','=',model),('res_id','=',planning.id),('name','=',name)])
+                vals = {
+                    'name':        name,
+                    'datas_fname': name,
+                    'type':        'binary',
+                    'res_model':   model,
+                    'res_id':      planning.id,
+                    'datas':       pdf.encode('base64'),
+                }
+                if attachments:
+                    for attachment in attachments:
+                        attachment.write(vals)
+                else:
+                    attachment = attachment_obj.create(vals)
+            obj.equipe_id=equipe_id
+            #*******************************************************************
 
             return {
                 'name': u'Préparation planning '+str(obj.date_debut),
@@ -568,8 +601,8 @@ class IsChantier(models.Model):
     type_chantier     = fields.Selection(_TYPE_CHANTIER, 'Type de chantier', readonly=True)
     planning_ids      = fields.One2many('is.chantier.planning', 'chantier_id', u"Planning")
     informations      = fields.Text(u'Informations diverses', readonly=True)
-    piece_jointe_ids  = fields.Many2many('ir.attachment', 'is_chantier_piece_jointe_attachment_rel', 'is_chantier_id', 'attachment_id', u'Pièces jointes')
-
+    piece_jointe_ids  = fields.Many2many('ir.attachment', 'is_chantier_piece_jointe_attachment_rel', 'is_chantier_id', 'attachment_id', u'Pièces jointes', readonly=True)
+    fin_chantier_ids  = fields.Many2many('ir.attachment', 'is_chantier_fin_chantier_attachment_rel', 'is_chantier_id', 'attachment_id', u'Documents de fin de chantier')
 
 
 
