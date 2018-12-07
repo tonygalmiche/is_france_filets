@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 {
-    'name'     : 'InfoSaône - Module Odoo pour France Filets',
+    'name'     : u'InfoSaône - Module Odoo pour France Filets',
     'version'  : '0.1',
-    'author'   : 'InfoSaône',
-    'category' : 'InfoSaône',
+    'author'   : u'InfoSaône',
+    'category' : u'InfoSaône',
 
 
-    'description': """
+    'description': u"""
 InfoSaône - Module Odoo pour France Filets
 ===================================================
 """,
-    'maintainer' : 'InfoSaône',
+    'maintainer' : u'InfoSaône',
     'website'    : 'http://www.infosaone.com',
     'depends'    : [
         'base',

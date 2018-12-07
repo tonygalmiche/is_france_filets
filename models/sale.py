@@ -38,9 +38,9 @@ class IsEquipeAbsence(models.Model):
     _order='date_debut'
 
     equipe_id  = fields.Many2one('is.equipe', 'Equipe', required=True, ondelete='cascade', readonly=True)
-    date_debut = fields.Date('Date début', index=True)
-    date_fin   = fields.Date('Date fin')
-    motif      = fields.Char('Motif absence')
+    date_debut = fields.Date(u'Date début', index=True)
+    date_fin   = fields.Date(u'Date fin')
+    motif      = fields.Char(u'Motif absence')
 
 class IsEquipeMessage(models.Model):
     _name='is.equipe.message'
@@ -56,7 +56,7 @@ class IsEquipe(models.Model):
     _order='name'
 
     name        = fields.Char(u'Equipe', required=True)
-    user_id     = fields.Many2one('res.users', "Chef d'équipe", required=True)
+    user_id     = fields.Many2one('res.users', u"Chef d'équipe", required=True)
     absence_ids = fields.One2many('is.equipe.absence', 'equipe_id', u"Absences")
     message_ids = fields.One2many('is.equipe.message', 'equipe_id', u"Messages")
 
@@ -66,16 +66,16 @@ class IsSaleOrderPlanning(models.Model):
     _order='order_id,date_debut'
 
     order_id       = fields.Many2one('sale.order', 'Commande', required=True, ondelete='cascade', readonly=True,index=True)
-    date_debut     = fields.Date('Date début',index=True)
-    date_fin       = fields.Date('Date fin')
+    date_debut     = fields.Date(u'Date début',index=True)
+    date_fin       = fields.Date(u'Date fin')
     commentaire    = fields.Char('Commentaire planning')
     equipe_ids     = fields.Many2many('is.equipe','is_sale_order_planning_equipe_rel','order_id','equipe_id', string="Equipes")
     pose_depose    = fields.Selection([
         ('pose'  , 'Pose'),
         ('depose', 'Dépose'),
-    ], 'Pose / Dépose')
-    etat = fields.Selection(_ETAT_PLANNING, 'État', default='a_confirmer')
-    realisation    = fields.Text('Réalisation', help=u'Réalisation du chantier', readonly=True)
+    ], u'Pose / Dépose')
+    etat = fields.Selection(_ETAT_PLANNING, u'État', default='a_confirmer')
+    realisation    = fields.Text(u'Réalisation', help=u'Réalisation du chantier', readonly=True)
 
 
 
@@ -140,24 +140,24 @@ class SaleOrder(models.Model):
             obj.is_etat_planning=etat
 
 
-    is_nom_chantier        = fields.Char('Nom du chantier')
-    is_date_previsionnelle = fields.Date('Date prévisionnelle du chantier')
+    is_nom_chantier        = fields.Char(u'Nom du chantier')
+    is_date_previsionnelle = fields.Date(u'Date prévisionnelle du chantier')
     is_contact_id          = fields.Many2one('res.partner', u'Contact du client')
-    is_distance_chantier   = fields.Integer('Distance du chantier (en km)')
-    is_num_ancien_devis    = fields.Char('N°ancien devis')
-    is_ref_client          = fields.Char('Référence client')
-    is_motif_archivage     = fields.Text('Motif archivage devis')
-    is_entete_devis        = fields.Text('Entête devis')
-    is_pied_devis          = fields.Text('Pied devis')
-    is_superficie          = fields.Char('Superficie')
-    is_hauteur             = fields.Char('Hauteur')
-    is_nb_interventions    = fields.Char("Nombre d'interventions")
-    is_type_chantier       = fields.Selection(_TYPE_CHANTIER, 'Type de chantier')
+    is_distance_chantier   = fields.Integer(u'Distance du chantier (en km)')
+    is_num_ancien_devis    = fields.Char(u'N°ancien devis')
+    is_ref_client          = fields.Char(u'Référence client')
+    is_motif_archivage     = fields.Text(u'Motif archivage devis')
+    is_entete_devis        = fields.Text(u'Entête devis')
+    is_pied_devis          = fields.Text(u'Pied devis')
+    is_superficie          = fields.Char(u'Superficie')
+    is_hauteur             = fields.Char(u'Hauteur')
+    is_nb_interventions    = fields.Char(u"Nombre d'interventions")
+    is_type_chantier       = fields.Selection(_TYPE_CHANTIER, u'Type de chantier')
     is_type_prestation_id  = fields.Many2one('is.type.prestation', u'Type de prestation')
     is_nacelle_id          = fields.Many2one('is.nacelle', u'Nacelle')
     is_planning_ids        = fields.One2many('is.sale.order.planning', 'order_id', u"Planning")
-    is_etat_planning       = fields.Char("Etat planning", compute='_compute', readonly=True, store=True)
-    is_info_fiche_travail  = fields.Text('Informations fiche de travail')
+    is_etat_planning       = fields.Char(u"Etat planning", compute='_compute', readonly=True, store=True)
+    is_info_fiche_travail  = fields.Text(u'Informations fiche de travail')
     is_piece_jointe_ids    = fields.Many2many('ir.attachment', 'sale_order_piece_jointe_attachment_rel', 'order_id', 'attachment_id', u'Pièces jointes')
 
 
@@ -171,17 +171,17 @@ class IsCreationPlanningPreparation(models.Model):
     _name='is.creation.planning.preparation'
     _order='date,equipe_id,order_id'
 
-    planning_id = fields.Many2one('is.creation.planning', 'Planning', required=True, ondelete='cascade')
-    date         = fields.Date('Date', index=True)
+    planning_id  = fields.Many2one('is.creation.planning', u'Planning', required=True, ondelete='cascade')
+    date         = fields.Date(u'Date', index=True)
     equipe_id    = fields.Many2one('is.equipe', u'Equipe')
     order_id     = fields.Many2one('sale.order', u'Chantier')
-    nom_chantier = fields.Char('Nom du chantier')
+    nom_chantier = fields.Char(u'Nom du chantier')
     partner_id   = fields.Many2one('res.partner', u'Client')
     pose_depose  = fields.Selection([
         ('pose'  , 'Pose'),
         ('depose', 'Dépose'),
-    ], 'Pose / Dépose')
-    etat    = fields.Selection(_ETAT_PLANNING, 'État')
+    ], u'Pose / Dépose')
+    etat    = fields.Selection(_ETAT_PLANNING, u'État')
     message = fields.Text('Message')
 
 
@@ -189,8 +189,8 @@ class IsCreationPlanning(models.Model):
     _name='is.creation.planning'
     _order='date_debut desc'
 
-    date_debut   = fields.Date('Date de début', required=True)
-    date_fin     = fields.Date('Date de fin'  , required=True)
+    date_debut   = fields.Date(u'Date de début', required=True)
+    date_fin     = fields.Date(u'Date de fin'  , required=True)
     equipe_id    = fields.Many2one('is.equipe', u'Equipe')
     planning_ids = fields.One2many('is.creation.planning.preparation', 'planning_id', u"Planning")
 
@@ -549,8 +549,8 @@ class IsPlanningLine(models.Model):
     _name='is.planning.line'
     _order='chantier_id'
 
-    planning_id = fields.Many2one('is.planning', 'Planning', required=True, ondelete='cascade', readonly=True)
-    chantier_id = fields.Many2one('is.chantier', "Chantier")
+    planning_id = fields.Many2one('is.planning', u'Planning', required=True, ondelete='cascade', readonly=True)
+    chantier_id = fields.Many2one('is.chantier', u"Chantier")
 
 
 class IsPlanning(models.Model):
@@ -558,8 +558,8 @@ class IsPlanning(models.Model):
     _order='name desc'
 
     name                 = fields.Char(u'Planning', required=True,index=True)
-    creation_planning_id = fields.Many2one('is.creation.planning', "Préparation Planning", required=True, index=True)
-    equipe_id            = fields.Many2one('is.equipe', "Equipe")
+    creation_planning_id = fields.Many2one('is.creation.planning', u"Préparation Planning", required=True, index=True)
+    equipe_id            = fields.Many2one('is.equipe', u"Equipe")
     chantier_ids         = fields.One2many('is.planning.line', 'planning_id', u"Chantiers")
 
 
@@ -567,18 +567,18 @@ class IsChantierPlanning(models.Model):
     _name='is.chantier.planning'
     _order='chantier_id,date_debut'
 
-    chantier_id            = fields.Many2one('is.chantier', 'Chantier', required=True, ondelete='cascade', readonly=True,index=True)
-    sale_order_planning_id = fields.Many2one('is.sale.order.planning', "Ligne planning commande", readonly=True,index=True)
-    date_debut             = fields.Date('Date début', readonly=True,index=True)
-    date_fin               = fields.Date('Date fin', readonly=True)
-    commentaire            = fields.Char('Commentaire planning', readonly=True)
-    equipe_ids             = fields.Many2many('is.equipe','is_chantier_planning_equipe_rel','chantier_id','equipe_id', string="Equipes", readonly=True)
+    chantier_id            = fields.Many2one('is.chantier', u'Chantier', required=True, ondelete='cascade', readonly=True,index=True)
+    sale_order_planning_id = fields.Many2one('is.sale.order.planning', u"Ligne planning commande", readonly=True,index=True)
+    date_debut             = fields.Date(u'Date début', readonly=True,index=True)
+    date_fin               = fields.Date(u'Date fin', readonly=True)
+    commentaire            = fields.Char(u'Commentaire planning', readonly=True)
+    equipe_ids             = fields.Many2many('is.equipe','is_chantier_planning_equipe_rel','chantier_id','equipe_id', string=u"Equipes", readonly=True)
     pose_depose            = fields.Selection([
         ('pose'  , 'Pose'),
         ('depose', 'Dépose'),
-    ], 'Pose / Dépose', readonly=True)
-    etat = fields.Selection(_ETAT_PLANNING, 'État', default='a_confirmer', readonly=True)
-    realisation    = fields.Text('Réalisation', help=u'Réalisation du chantier')
+    ], u'Pose / Dépose', readonly=True)
+    etat = fields.Selection(_ETAT_PLANNING, u'État', default='a_confirmer', readonly=True)
+    realisation    = fields.Text(u'Réalisation', help=u'Réalisation du chantier')
 
 
     @api.multi
@@ -594,14 +594,14 @@ class IsChantier(models.Model):
     _order='name'
 
     name              = fields.Char(u'Chantier / Commande', readonly=True)
-    user_ids          = fields.Many2many('res.users','is_chantier_user_rel','chantier_id','user_id', string="Chefs d'équipes", readonly=True)
-    order_id          = fields.Many2one('sale.order', "Commande", readonly=True)
+    user_ids          = fields.Many2many('res.users','is_chantier_user_rel','chantier_id','user_id', string=u"Chefs d'équipes", readonly=True)
+    order_id          = fields.Many2one('sale.order', u"Commande", readonly=True)
     client            = fields.Char(u'Client', readonly=True)
     contact_client    = fields.Char(u'Contact Client', readonly=True)
     nom_chantier      = fields.Char(u'Nom du chantier', readonly=True)
     superficie        = fields.Char(u'Superficie', readonly=True)
     hauteur           = fields.Char(u'Hauteur', readonly=True)
-    type_chantier     = fields.Selection(_TYPE_CHANTIER, 'Type de chantier', readonly=True)
+    type_chantier     = fields.Selection(_TYPE_CHANTIER, u'Type de chantier', readonly=True)
     planning_ids      = fields.One2many('is.chantier.planning', 'chantier_id', u"Planning")
     informations      = fields.Text(u'Informations diverses', readonly=True)
     piece_jointe_ids  = fields.Many2many('ir.attachment', 'is_chantier_piece_jointe_attachment_rel', 'is_chantier_id', 'attachment_id', u'Pièces jointes', readonly=True)

@@ -26,7 +26,7 @@ class IsSecteurActivite(models.Model):
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    is_code_client_ebp = fields.Char('Code Client EBP')
+    is_code_client_ebp = fields.Char(u'Code Client EBP')
     is_date_creation   = fields.Date(u'Date de création', default=lambda *a: _date_creation())
     is_siren           = fields.Char('SIREN')
     is_afacturage      = fields.Selection([
