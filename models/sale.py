@@ -446,7 +446,7 @@ class IsCreationPlanning(models.Model):
                     'piece_jointe_ids'   : [(6,0,piece_jointe_ids)],
                 }
                 chantier.write(vals)
-                equipe_ids=[]
+                user_ids=[]
                 for line in order.is_planning_ids:
                     plannings = self.env['is.chantier.planning'].search([('sale_order_planning_id','=',line.id)])
                     if not plannings:
@@ -459,7 +459,7 @@ class IsCreationPlanning(models.Model):
                         planning=plannings[0]
 
                     for l in line.equipe_ids:
-                        equipe_ids.append(l.id)
+                        user_ids.append(l.user_id.id)
                     vals={
                         'date_debut'            : line.date_debut,
                         'date_fin'              : line.date_fin,
@@ -469,8 +469,11 @@ class IsCreationPlanning(models.Model):
                     }
                     planning.write(vals)
                 vals={
-                    'equipe_ids': [(6,0,equipe_ids)],
+                    'user_ids': [(6,0,user_ids)],
                 }
+
+                print vals
+
                 chantier.write(vals)
             #*******************************************************************
 
@@ -582,7 +585,7 @@ class IsChantierPlanning(models.Model):
     def write(self,vals):
         for obj in self:
             if 'realisation' in vals:
-                obj.sale_order_planning_id.realisation=vals['realisation']
+                obj.sudo().sale_order_planning_id.realisation=vals['realisation']
         res = super(IsChantierPlanning, self).write(vals)
 
 
@@ -591,7 +594,7 @@ class IsChantier(models.Model):
     _order='name'
 
     name              = fields.Char(u'Chantier / Commande', readonly=True)
-    equipe_ids        = fields.Many2many('is.equipe','is_chantier_equipe_rel','chantier_id','equipe_id', string="Equipes", readonly=True)
+    user_ids          = fields.Many2many('res.users','is_chantier_user_rel','chantier_id','user_id', string="Chefs d'équipes", readonly=True)
     order_id          = fields.Many2one('sale.order', "Commande", readonly=True)
     client            = fields.Char(u'Client', readonly=True)
     contact_client    = fields.Char(u'Contact Client', readonly=True)

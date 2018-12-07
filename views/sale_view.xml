@@ -380,15 +380,15 @@
             <field name="name">is_planning_from_view</field>
             <field name="model">is.planning</field>
             <field name="arch" type="xml">
-                <form>
+                <form create="0" edit="0">
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="creation_planning_id"/>
-                            <field name="equipe_id"/>
+                            <field name="name" readonly="1"/>
+                            <field name="creation_planning_id" groups="sales_team.group_sale_manager" readonly="1"/>
+                            <field name="equipe_id" readonly="1"/>
                         </group>
                         <group string="Chantiers">
-                            <field name="chantier_ids" nolabel="1">
+                            <field name="chantier_ids" nolabel="1" readonly="1">
                                  <tree editable="bottom">
                                     <field name="chantier_id"/>
                                 </tree>
@@ -403,9 +403,8 @@
             <field name="model">is.planning</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree create="0">
                     <field name="name"/>
-                    <field name="creation_planning_id"/>
                     <field name="equipe_id"/>
                 </tree>
             </field>
@@ -416,7 +415,6 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="name"/>
-                    <field name="creation_planning_id"/>
                     <field name="equipe_id"/>
                 </search>
             </field>
@@ -434,13 +432,13 @@
             <field name="name">is_chantier_from_view</field>
             <field name="model">is.chantier</field>
             <field name="arch" type="xml">
-                <form>
+                <form create="0">
                     <sheet class="oe_form_sheet_width_wider">
                         <group string="Références du chantier">
                             <group>
                                 <field name="name"/>
-                                <field name="equipe_ids" widget="many2many_tags"/>
-                                <field name="order_id"/>
+                                <field name="user_ids" widget="many2many_tags"/>
+                                <field name="order_id" groups="sales_team.group_sale_manager"/>
                                 <field name="client"/>
                             </group>
                             <group>
@@ -483,9 +481,9 @@
             <field name="model">is.chantier</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree create="0">
                     <field name="name"/>
-                    <field name="equipe_ids"/>
+                    <field name="user_ids"/>
                     <field name="client"/>
                     <field name="contact_client"/>
                     <field name="nom_chantier"/>
@@ -500,7 +498,7 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="name"/>
-                    <field name="equipe_ids"/>
+                    <field name="user_ids"/>
                     <field name="order_id"/>
                 </search>
             </field>
