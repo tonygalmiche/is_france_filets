@@ -126,7 +126,7 @@
                                                 <td t-att-style="style">
                                                     <t t-set="message" t-value="o.get_message(e,d)"/>
                                                     <t t-if="message">
-                                                        <b><div style="background-color:Orange" t-esc="message"/></b>
+                                                        <b><div style="background-color:Orange" t-raw="message"/></b>
                                                     </t>
                                                     <b><span t-esc="absence"/></b>
                                                     <t t-foreach="o.get_chantiers(e,d)" t-as="c">
@@ -175,7 +175,7 @@
                                                 <td t-att-style="style">
                                                     <t t-set="message" t-value="o.get_message(e,d)"/>
                                                     <t t-if="message">
-                                                        <b><div style="background-color:Orange" t-esc="message"/></b>
+                                                        <b><div style="background-color:Orange" t-raw="message"/></b>
                                                     </t>
                                                     <b><span t-esc="absence"/></b>
                                                     <t t-foreach="o.get_chantiers(e,d)" t-as="c">

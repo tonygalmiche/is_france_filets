@@ -248,7 +248,7 @@ class IsCreationPlanning(models.Model):
         """Recherche des messages pour cette équipe et cette date"""
         cr = self._cr
         d=datetime.strptime(date, '%d/%m/%Y')
-        message=False
+        message=[]
         for obj in self:
             SQL="""
                 SELECT iem.message 
@@ -259,9 +259,11 @@ class IsCreationPlanning(models.Model):
             """
             cr.execute(SQL)
             res = cr.fetchall()
+            
+
             for row in res:
-                message=row[0]
-        return message
+                message.append(row[0])
+        return '<br />'.join(message)
 
 
     @api.multi
