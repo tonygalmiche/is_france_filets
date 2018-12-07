@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record model="res.groups" id="is_chef_chantier_group" >
-        <field name="name">Chef de chantier</field>
+        <field name="name">Chef de chantiers</field>
         <field name="comment"></field>
     </record>
 </odoo>
