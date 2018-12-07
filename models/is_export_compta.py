@@ -24,7 +24,7 @@ class is_export_compta(models.Model):
     journal = fields.Selection([
         ('VT', 'Ventes'),
         ('HA', 'Achats'),
-    ], 'Journal', default='VE',required=True)
+    ], 'Journal', default='VT',required=True)
     date_debut         = fields.Date(u"Date de début", required=True)
     date_fin           = fields.Date(u"Date de fin"  , required=True)
     ligne_ids          = fields.One2many('is.export.compta.ligne', 'export_compta_id', u'Lignes')
