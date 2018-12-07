@@ -145,6 +145,7 @@ class SaleOrder(models.Model):
     is_contact_id          = fields.Many2one('res.partner', u'Contact du client')
     is_distance_chantier   = fields.Integer('Distance du chantier (en km)')
     is_num_ancien_devis    = fields.Char('N°ancien devis')
+    is_ref_client          = fields.Char('Référence client')
     is_motif_archivage     = fields.Text('Motif archivage devis')
     is_entete_devis        = fields.Text('Entête devis')
     is_pied_devis          = fields.Text('Pied devis')

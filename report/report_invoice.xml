@@ -6,7 +6,7 @@
     <xpath expr="//div[@class='page']" position="replace">
         <div class="page">
 
-            <div class="row">
+            <div class="row" style="padding-top:12mm">
                 <div name="invoice_address" class="col-xs-5 col-xs-offset-7">
                     <address t-field="o.partner_id"
                         t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
@@ -44,7 +44,14 @@
                 </div>
             </t>
 
-
+            <t t-set="ref_client" t-value="0"/>
+            <t t-foreach="o.invoice_line_ids" t-as="l">
+                <div>
+                    <t t-foreach="l.sale_line_ids" t-as="line">
+                        <t t-set="ref_client" t-value="line.order_id.is_ref_client"/>
+                    </t>
+                </div>
+            </t>
 
             <table class="table table-condensed">
                 <thead>
@@ -53,6 +60,7 @@
                         <th>Mode de règlement</th>
                         <th>Date d'échéance</th>
                         <th>Chantier</th>
+                        <t t-if="ref_client"><th>Votre référence</th></t>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,6 +69,7 @@
                         <td><span t-field="o.payment_term_id"/></td>
                         <td><span t-field="o.date_due"/></td>
                         <td><t t-esc="chantier"/></td>
+                        <t t-if="ref_client"><td><t t-esc="ref_client"/></td></t>
                     </tr>
                 </tbody>
             </table>

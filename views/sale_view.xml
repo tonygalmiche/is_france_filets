@@ -23,6 +23,7 @@
                     <field name="is_date_previsionnelle"/>
                     <field name="is_distance_chantier"/>
                     <field name="is_num_ancien_devis"/>
+                    <field name="is_ref_client"/>
                     <field name="is_motif_archivage" states="draft,sent"/>
                     <field name="is_etat_planning"/>
                 </field>
