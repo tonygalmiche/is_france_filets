@@ -171,7 +171,7 @@ class is_export_compta(models.Model):
                 f.write('"'+(row.piece or '')+'"\t')
                 f.write('\r\n')
             f.write('##Section\tJnl\r\n')
-            f.write('"CAI"\t"Caisse"\t"T"\r\n')
+            f.write('"VT"\t"Ventes"\t"T"\r\n')
             f.close()
             r = open(dest,'rb').read().encode('base64')
             vals = {
@@ -204,7 +204,6 @@ class is_export_compta_ligne(models.Model):
     commentaire      = fields.Char(u"Commentaire")
 
     _defaults = {
-        'journal': 'VTE',
         'devise' : 'E',
     }
 
