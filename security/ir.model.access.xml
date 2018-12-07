@@ -55,5 +55,33 @@
     </record>
 
 
+    <!-- Accès à tous les plannings au Chef de chantiers -->
+    <record id="is_planning_chef_chantier_access"  model="ir.rule" >
+        <field name="name">Accès à tous les plannings pour le chef de chantiers</field>
+        <field name="model_id" ref="model_is_planning"/>
+        <field name="domain_force">[]</field>
+        <field name="groups" eval="[(6,0,[
+            ref('is_france_filets.is_chef_chantier_group'),
+        ])]"/>
+        <field name="perm_create" eval="0" />
+        <field name="perm_read"   eval="1" />
+        <field name="perm_write"  eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+    <record id="is_chantier_chef_chantier_access"  model="ir.rule" >
+        <field name="name">Accès à tous les chantiers pour le chef de chantiers</field>
+        <field name="model_id" ref="model_is_chantier"/>
+        <field name="domain_force">[]</field>
+        <field name="groups" eval="[(6,0,[
+            ref('is_france_filets.is_chef_chantier_group'),
+        ])]"/>
+        <field name="perm_create" eval="0" />
+        <field name="perm_read"   eval="1" />
+        <field name="perm_write"  eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+
+
 
 </odoo>
