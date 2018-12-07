@@ -22,7 +22,6 @@
                     <field name="account_id"/>
                     <field name="libelle"/>
                     <field name="piece"/>
-                    <field name="libelle_piece"/>
                     <field name="debit"  sum="Total"/>
                     <field name="credit" sum="Total"/>
                 </tree>
@@ -41,7 +40,6 @@
                                 <field name="account_id"/>
                                 <field name="libelle"/>
                                 <field name="piece"/>
-                                <field name="libelle_piece"/>
                                 <field name="debit"/>
                                 <field name="credit"/>
                             </group>
@@ -58,7 +56,6 @@
                     <field name="account_id"/>
                     <field name="libelle"/>
                     <field name="piece"/>
-                    <field name="libelle_piece"/>
                     <field name="commentaire" />
                     <group expand="0" string="Regrouper par...">
                         <filter string="Compte"        context="{'group_by':'account_id'}"/>
@@ -97,32 +94,28 @@
                 <form>
                     <header>
                         <button
-                            name="action_export_compta"
+                            name="generer_lignes_action"
                             type="object"
                             string="Générer les lignes"
-                            attrs="{'invisible': [('journal', 'not in', ['CAI','HA'])]}"
                             confirm="Cela va écraser les lignes ?"
                         />
                         <button 
                             name="%(is_export_compta_ligne_action)d"
                             type="action"
                             string="Voir les lignes"
-                            attrs="{'invisible': [('ligne_ids', '=', [])]}"
                         />
                         <button
-                            name="action_generer_fichier"
+                            name="generer_fichier_action"
                             type="object"
                             string="Générer fichier à exporter"
-                            attrs="{'invisible': [('journal', 'not in', ['BQ','OD'])]}"
                         />
-
                     </header>
                     <sheet>
                         <group>
                             <field name="name" />
                             <field name="journal" />
-                            <field name="date_debut"       attrs="{'invisible': [('journal', '!=', 'CAI')]}"/>
-                            <field name="date_fin"         attrs="{'invisible': [('journal', '!=', 'CAI')]}"/>
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
                             <field name="ligne_ids" invisible="1"/>
                         </group>
                     </sheet>
