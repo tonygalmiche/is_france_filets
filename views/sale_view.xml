@@ -85,27 +85,20 @@
             </field>
         </record>
 
-
-
-
         <record id="is_sale_order_devis_action" model="ir.actions.act_window">
             <field name="name">Devis</field>
             <field name="res_model">sale.order</field>
             <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
             <field name="domain">[('state','in', ['draft','sent']),'|',('is_motif_archivage','=',''),('is_motif_archivage','=',False)]</field>
         </record>
         <record id="is_sale_order_devis_archive_action" model="ir.actions.act_window">
             <field name="name">Devis archivés</field>
             <field name="res_model">sale.order</field>
             <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
             <field name="domain">[('state','in', ['draft','sent']),('is_motif_archivage','!=','')]</field>
         </record>
-
-
- 
-
 
         <!-- Type de prestation -->
         <record id="is_type_prestation_form_view" model="ir.ui.view">
