@@ -366,7 +366,7 @@ class IsCreationPlanning(models.Model):
                 if mail and mail not in mails:
                     mails.append(mail)
             print(mails)
-            email_to=mails
+            email_to=','.join(mails)
 
             subject=u'Planning du '+str(obj.date_debut)+u' au '+str(obj.date_fin)
             user  = self.env['res.users'].browse(self._uid)
@@ -378,7 +378,7 @@ class IsCreationPlanning(models.Model):
 
             body_html=u"""
                 <p>Bonjour,</p>
-                <p>Le <a href='"""+url+u"""'>Planning</a> vient d'être modifié.</p>
+                <p>Le nouveau <a href='"""+url+u"""'>Planning</a> est disponible.</p>
                 <p>Merci d'en prendre connaissance.</p>
             """
             vals={
