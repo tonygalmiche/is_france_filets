@@ -262,6 +262,11 @@
                             type="object"
                             string="Préparer le planning"
                         />
+                        <button
+                            name="mail_planning_action"
+                            type="object"
+                            string="Envoyer le mail"
+                        />
                     </header>
                     <sheet>
                         <group>

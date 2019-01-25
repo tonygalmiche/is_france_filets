@@ -356,6 +356,44 @@ class IsCreationPlanning(models.Model):
 
 
     @api.multi
+    def mail_planning_action(self):
+        """Mail du planning"""
+        mails=[]
+        for obj in self:
+
+            for planning in obj.planning_ids:
+                mail=planning.equipe_id.user_id.partner_id.email
+                if mail and mail not in mails:
+                    mails.append(mail)
+            print(mails)
+            email_to=mails
+
+            subject=u'Planning du '+str(obj.date_debut)+u' au '+str(obj.date_fin)
+            user  = self.env['res.users'].browse(self._uid)
+            email_from = user.email
+            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+            url=base_url+u'/web'
+
+            print(url)
+
+            body_html=u"""
+                <p>Bonjour,</p>
+                <p>Le <a href='"""+url+u"""'>Planning</a> vient d'être modifié.</p>
+                <p>Merci d'en prendre connaissance.</p>
+            """
+            vals={
+                'email_from'    : email_from, 
+                'email_to'      : email_to, 
+                'email_cc'      : email_from,
+                'subject'       : subject,
+                'body_html'     : body_html, 
+            }
+            email=self.env['mail.mail'].create(vals)
+            if email:
+                self.env['mail.mail'].send(email)
+
+
+    @api.multi
     def preparer_planning_action(self):
         """Préparation du planning"""
         for obj in self:
