@@ -96,6 +96,14 @@
         action="is_secteur_activite_action" 
     />
     <menuitem 
+        id="is_origine_menu"
+        sequence="25"
+        name="Origine Client"
+        parent="is_ventes_table_menu"
+        action="is_origine_action"
+    />
+
+    <menuitem 
         id="is_type_prestation_menu" 
         sequence="30" 
         name="Types de prestations"
@@ -119,6 +127,15 @@
         parent="is_ventes_table_menu" 
         action="is_equipe_action" 
     />
+
+    <menuitem 
+        id="is_motif_archivage_menu" 
+        sequence="60" 
+        name="Motif archivage devis"
+        parent="is_ventes_table_menu" 
+        action="is_motif_archivage_action" 
+    />
+
 
 
 </odoo>

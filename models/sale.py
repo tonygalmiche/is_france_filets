@@ -19,6 +19,13 @@ _TYPE_CHANTIER=[
 ]
 
 
+class IsMotifArchivage(models.Model):
+    _name='is.motif.archivage'
+    _order='name'
+
+    name = fields.Char(u"Motif d'Archivage")
+
+
 class IsTypePrestation(models.Model):
     _name='is.type.prestation'
     _order='name'
@@ -140,16 +147,25 @@ class SaleOrder(models.Model):
             obj.is_etat_planning=etat
 
 
+    def _compute_ca_m2(self):
+        for obj in self:
+            if obj.is_superficie_m2:
+                obj.is_ca_m2=obj.amount_untaxed/obj.is_superficie_m2
+
+
     is_nom_chantier        = fields.Char(u'Nom du chantier')
     is_date_previsionnelle = fields.Date(u'Date prévisionnelle du chantier')
     is_contact_id          = fields.Many2one('res.partner', u'Contact du client')
     is_distance_chantier   = fields.Integer(u'Distance du chantier (en km)')
     is_num_ancien_devis    = fields.Char(u'N°ancien devis')
     is_ref_client          = fields.Char(u'Référence client')
-    is_motif_archivage     = fields.Text(u'Motif archivage devis')
+    is_motif_archivage_id  = fields.Many2one('is.motif.archivage', u'Motif archivage devis')
+    is_motif_archivage     = fields.Text(u'Motif archivage devis (commentaire)')
     is_entete_devis        = fields.Text(u'Entête devis')
     is_pied_devis          = fields.Text(u'Pied devis')
-    is_superficie          = fields.Char(u'Superficie')
+    is_superficie          = fields.Char(u'Superficie', help="Champ utilisé pour le devis client")
+    is_superficie_m2       = fields.Integer(u'Superficie (m2)', help="Champ utilisé pour les calculs du CA/m2")
+    is_ca_m2               = fields.Float("CA / m2", digits=(14,2), compute='_compute_ca_m2', readonly=True)
     is_hauteur             = fields.Char(u'Hauteur')
     is_nb_interventions    = fields.Char(u"Nombre d'interventions")
     is_type_chantier       = fields.Selection(_TYPE_CHANTIER, u'Type de chantier')
@@ -159,6 +175,8 @@ class SaleOrder(models.Model):
     is_etat_planning       = fields.Char(u"Etat planning", compute='_compute', readonly=True, store=True)
     is_info_fiche_travail  = fields.Text(u'Informations fiche de travail')
     is_piece_jointe_ids    = fields.Many2many('ir.attachment', 'sale_order_piece_jointe_attachment_rel', 'order_id', 'attachment_id', u'Pièces jointes')
+    is_region_id           = fields.Many2one('is.region'          , u'Région'            , related='partner_id.is_region_id'          , readonly=True)
+    is_secteur_activite_id = fields.Many2one('is.secteur.activite', u"Secteur d'activité", related='partner_id.is_secteur_activite_id', readonly=True)
 
 
     @api.multi

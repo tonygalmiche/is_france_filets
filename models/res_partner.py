@@ -23,6 +23,13 @@ class IsSecteurActivite(models.Model):
     name = fields.Char(u"Secteur d'activité")
 
 
+class IsOrigine(models.Model):
+    _name='is.origine'
+    _order='name'
+
+    name = fields.Char(u"Origine Client")
+
+
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
@@ -42,8 +49,10 @@ class ResPartner(models.Model):
         ('Prospect'    , 'Prospect'),
         ('Prescripteur', 'Prescripteur'),
     ], 'Type de partenaire')
+    is_date_commande       = fields.Date(u'Date première commande')
     is_region_id           = fields.Many2one('is.region'          , u'Région')
     is_secteur_activite_id = fields.Many2one('is.secteur.activite', u"Secteur d'activité")
+    is_origine_id          = fields.Many2one('is.origine'         , u'Origine Client')
 
 
 

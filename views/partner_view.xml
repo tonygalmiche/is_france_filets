@@ -8,12 +8,13 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='category_id']" position="after">
                     <field name="is_type_partenaire"     attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}" />
+                    <field name="is_date_commande"       attrs="{'invisible': ['|','|',('is_company', '=', False),('customer', '=', False),('is_type_partenaire', '!=', 'Client')]}" />
                     <field name="is_region_id"           attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
-                    <field name="is_secteur_activite_id" attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='lang']" position="after">
                     <field name="is_date_creation" attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
+                    <field name="is_origine_id" attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}"/>
                 </xpath>
             </field>
         </record>
@@ -119,6 +120,50 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
+
+
+        <!-- Origine Client -->
+        <record id="is_origine_form_view" model="ir.ui.view">
+            <field name="name">is_origine_from_view</field>
+            <field name="model">is.origine</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                            </group>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_origine_tree_view">
+            <field name="name">is_origine_tree_view</field>
+            <field name="model">is.origine</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record id="is_origine_search_view" model="ir.ui.view">
+            <field name="name">is_origine_search_view</field>
+            <field name="model">is.origine</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" />
+                </search>
+            </field>
+        </record>
+        <record id="is_origine_action" model="ir.actions.act_window">
+            <field name="name">Origine Client</field>
+            <field name="res_model">is.origine</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
 
 
 </odoo>

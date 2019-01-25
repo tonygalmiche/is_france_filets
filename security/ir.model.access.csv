@@ -13,19 +13,15 @@ access_is_planning,access_is_planning,model_is_planning,sales_team.group_sale_ma
 access_is_planning_line,access_is_planning_line,model_is_planning_line,sales_team.group_sale_manager,1,1,1,1
 access_is_chantier,access_is_chantier,model_is_chantier,sales_team.group_sale_manager,1,1,1,1
 access_is_chantier_planning,access_is_chantier_planning,model_is_chantier_planning,sales_team.group_sale_manager,1,1,1,1
-
 access_is_export_compta,access_is_export_compta,model_is_export_compta,sales_team.group_sale_manager,1,1,1,1
 access_is_export_compta_ligne,access_is_export_compta_ligne,model_is_export_compta_ligne,sales_team.group_sale_manager,1,1,1,1
-
-
 access_is_equipe_base,access_is_equipe_base,model_is_equipe,base.group_user,1,0,0,0
-
 access_is_planning_base,access_is_planning_base,model_is_planning,base.group_user,1,0,0,0
 access_is_planning_line_base,access_is_planning_line_base,model_is_planning_line,base.group_user,1,0,0,0
-
 access_is_chantier_base,access_is_chantier_base,model_is_chantier,base.group_user,1,1,0,0
 access_is_chantier_planning_base,access_is_chantier_planning_base,model_is_chantier_planning,base.group_user,1,1,0,0
-
+access_is_origine,access_is_origine,model_is_origine,sales_team.group_sale_manager,1,1,1,1
+access_is_motif_archivage,access_is_motif_archivage,model_is_motif_archivage,sales_team.group_sale_manager,1,1,1,1
 
 
 

@@ -10,9 +10,13 @@
                     <attribute name="class">oe_form_sheet_width_wider</attribute>
                 </xpath>
                 <field name="partner_id" position="after">
+                    <field name="is_region_id"/>
+                    <field name="is_secteur_activite_id"/>
                     <field name="is_contact_id" domain="[('parent_id','=',partner_id)]"/>
                     <field name="is_nom_chantier"/>
                     <field name="is_superficie"/>
+                    <field name="is_superficie_m2"/>
+                    <field name="is_ca_m2"/>
                     <field name="is_hauteur"/>
                     <field name="is_nb_interventions"/>
                     <field name="is_type_chantier"/>
@@ -24,7 +28,8 @@
                     <field name="is_distance_chantier"/>
                     <field name="is_num_ancien_devis"/>
                     <field name="is_ref_client"/>
-                    <field name="is_motif_archivage" states="draft,sent"/>
+                    <field name="is_motif_archivage_id" states="draft,sent"/>
+                    <field name="is_motif_archivage"    states="draft,sent"/>
                     <field name="is_etat_planning"/>
                 </field>
                 <xpath expr="//notebook" position="before">
@@ -70,6 +75,10 @@
                 <field name="user_id" position="replace">
                     <field name="is_nom_chantier"/>
                     <field name="is_etat_planning"/>
+                    <field name="is_region_id"/>
+                    <field name="is_secteur_activite_id"/>
+                    <field name="is_superficie_m2"/>
+                    <field name="is_ca_m2"/>
                 </field>
             </field>
         </record>
@@ -92,11 +101,37 @@
             <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
             <field name="domain">[('state','in', ['draft','sent']),'|',('is_motif_archivage','=',''),('is_motif_archivage','=',False)]</field>
         </record>
+
+
+
+
+        <record id="is_sale_order_archive_tree" model="ir.ui.view">
+            <field name="name">is_sale_order_archive_tree</field>
+            <field name="model">sale.order</field>
+            <field name="priority" eval="90" />
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="date_order"/>
+                    <field name="partner_id"/>
+                    <field name="is_nom_chantier"/>
+                    <field name="is_region_id"/>
+                    <field name="is_secteur_activite_id"/>
+                    <field name="is_superficie_m2"/>
+                    <field name="is_ca_m2"/>
+                    <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
+                    <field name="is_motif_archivage_id"/>
+                    <field name="is_motif_archivage"/>
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
         <record id="is_sale_order_devis_archive_action" model="ir.actions.act_window">
             <field name="name">Devis archivés</field>
             <field name="res_model">sale.order</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+            <field name="view_id" ref="is_sale_order_archive_tree"/>
             <field name="domain">[('state','in', ['draft','sent']),('is_motif_archivage','!=','')]</field>
         </record>
 
@@ -143,6 +178,48 @@
         </record>
 
 
+
+        <!-- Motif d'archivage -->
+        <record id="is_motif_archivage_form_view" model="ir.ui.view">
+            <field name="name">is_motif_archivage_from_view</field>
+            <field name="model">is.motif.archivage</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                            </group>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_motif_archivage_tree_view">
+            <field name="name">is_motif_archivage_tree_view</field>
+            <field name="model">is.motif.archivage</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record id="is_motif_archivage_search_view" model="ir.ui.view">
+            <field name="name">is_motif_archivage_search_view</field>
+            <field name="model">is.motif.archivage</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" />
+                </search>
+            </field>
+        </record>
+        <record id="is_motif_archivage_action" model="ir.actions.act_window">
+            <field name="name">Motif d'archivage</field>
+            <field name="res_model">is.motif.archivage</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
 
 
         <!-- Nacelle -->
