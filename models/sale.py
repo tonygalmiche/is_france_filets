@@ -668,6 +668,14 @@ class IsChantierPlanning(models.Model):
     pv_realise = fields.Char(u"PV réalisé", compute='_compute', readonly=True, store=True)
 
 
+#    @api.multi
+#    def _get_etat(self,etat):
+#        res=''
+#        if etat in _CHOIX_PV:
+#            res=_CHOIX_PV[etat]
+#        return res
+
+
     @api.depends('etat_mailles','reprise_mailles','point_encrage','jointement','tension_filets')
     def _compute(self):
         for obj in self:

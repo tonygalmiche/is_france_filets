@@ -58,6 +58,38 @@
             <field name="paperformat_id" ref="is_france_filets.is_fiche_travail_paperformat"/>
         </record>
 
+
+
+        <!-- PV de réception -->
+        <record id="is_pv_reception_paperformat" model="report.paperformat">
+            <field name="name">PV de réception</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">45</field>
+            <field name="margin_bottom">15</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">40</field>
+            <field name="dpi">90</field>
+        </record>
+        <report 
+            id="is_pv_reception_reports"
+            model="is.chantier.planning"
+            string="PV de réception"
+            report_type="qweb-pdf"
+            name="is_france_filets.is_pv_reception_report"
+            file="is_france_filets.pv_reception_report_templates"
+        />
+        <record id="is_pv_reception_reports" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="is_france_filets.is_pv_reception_paperformat"/>
+        </record>
+
+
+
     </data>
 </odoo>
 
