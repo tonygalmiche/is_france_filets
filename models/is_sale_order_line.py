@@ -29,18 +29,18 @@ class IsSaleOrderLine(models.Model):
     is_region_id           = fields.Many2one('is.region'          , u'Région')
     is_secteur_activite_id = fields.Many2one('is.secteur.activite', u"Secteur d'activité")
     product_id             = fields.Many2one('product.template', 'Article')
-    default_code           = fields.Char('Référence interne')
-    description            = fields.Text('Description')
-    product_uom_qty        = fields.Float("Qté commandée", digits=(14,2))
-    price_unit             = fields.Float("Prix unitaire", digits=(14,2))
-    price_subtotal         = fields.Float("Total HT"     , digits=(14,2))
+    default_code           = fields.Char(u'Référence interne')
+    description            = fields.Text(u'Description')
+    product_uom_qty        = fields.Float(u"Qté commandée", digits=(14,2))
+    price_unit             = fields.Float(u"Prix unitaire", digits=(14,2))
+    price_subtotal         = fields.Float(u"Total HT"     , digits=(14,2))
     state = fields.Selection([
         ('draft' , 'Devis'),
         ('sent'  , 'Devis envoyé'),
         ('sale'  , 'Bon de commande'),
         ('done'  , 'Vérouillé'),
         ('cancel', 'Annulé'),
-    ], 'État')
+    ], u'État')
 
 
 

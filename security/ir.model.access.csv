@@ -23,4 +23,5 @@ access_is_chantier_planning_base,access_is_chantier_planning_base,model_is_chant
 access_is_origine,access_is_origine,model_is_origine,sales_team.group_sale_manager,1,1,1,1
 access_is_motif_archivage,access_is_motif_archivage,model_is_motif_archivage,sales_team.group_sale_manager,1,1,1,1
 access_is_sale_order_line,access_is_sale_order_line,model_is_sale_order_line,sales_team.group_sale_manager,1,0,0,0
+access_is_account_invoice_line,access_is_account_invoice_line,model_is_account_invoice_line,sales_team.group_sale_manager,1,0,0,0
 
