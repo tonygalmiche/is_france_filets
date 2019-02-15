@@ -668,7 +668,6 @@ class IsChantierPlanning(models.Model):
     pv_realise = fields.Char(u"PV réalisé", compute='_compute', readonly=True, store=True)
 
 
-
     @api.depends('etat_mailles','reprise_mailles','point_encrage','jointement','tension_filets')
     def _compute(self):
         for obj in self:
@@ -676,7 +675,6 @@ class IsChantierPlanning(models.Model):
             if obj.etat_mailles and obj.reprise_mailles and obj.point_encrage and obj.jointement and obj.tension_filets:
                 pv_realise='OK'
             obj.pv_realise=pv_realise
-            obj.sudo().sale_order_planning_id.pv_realise=pv_realise
 
 
     @api.multi
