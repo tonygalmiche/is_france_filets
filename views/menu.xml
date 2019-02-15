@@ -137,5 +137,53 @@
     />
 
 
+    <menuitem 
+        id="is_analyses_top_menu"
+        sequence="90" 
+        name="Analyses"
+    />
+    <menuitem 
+        id="is_analyses_main_menu" 
+        sequence="10" 
+        name="Lignes de commandes"
+        parent="is_analyses_top_menu" 
+    />
+    <menuitem 
+        id="is_sale_order_line_menu" 
+        sequence="10" 
+        name="Lignes de commandes"
+        parent="is_analyses_main_menu" 
+        action="is_sale_order_line_action" 
+    />
+    <menuitem 
+        id="is_sale_order_line_region_menu" 
+        sequence="20" 
+        name="par Région"
+        parent="is_analyses_main_menu" 
+        action="is_sale_order_line_region_action" 
+    />
+    <menuitem 
+        id="is_sale_order_line_secteur_menu" 
+        sequence="30" 
+        name="par Secteur"
+        parent="is_analyses_main_menu" 
+        action="is_sale_order_line_secteur_action" 
+    />
+    <menuitem 
+        id="is_sale_order_line_product_menu" 
+        sequence="40" 
+        name="par Secteur"
+        parent="is_analyses_main_menu" 
+        action="is_sale_order_line_product_action" 
+    />
+    <menuitem 
+        id="is_sale_order_line_state_menu" 
+        sequence="50" 
+        name="par État"
+        parent="is_analyses_main_menu" 
+        action="is_sale_order_line_state_action" 
+    />
+
+
 
 </odoo>
