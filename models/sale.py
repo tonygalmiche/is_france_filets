@@ -383,7 +383,6 @@ class IsCreationPlanning(models.Model):
                 mail=planning.equipe_id.user_id.partner_id.email
                 if mail and mail not in mails:
                     mails.append(mail)
-            print(mails)
             email_to=','.join(mails)
 
             subject=u'Planning du '+str(obj.date_debut)+u' au '+str(obj.date_fin)
@@ -391,9 +390,6 @@ class IsCreationPlanning(models.Model):
             email_from = user.email
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             url=base_url+u'/web'
-
-            print(url)
-
             body_html=u"""
                 <p>Bonjour,</p>
                 <p>Le nouveau <a href='"""+url+u"""'>Planning</a> est disponible.</p>
@@ -556,7 +552,16 @@ class IsCreationPlanning(models.Model):
             #** Suppression des plannings sans chantier ************************
             plannings = self.env['is.planning'].search([('creation_planning_id','=',obj.id)])
             for planning in plannings:
-                if not planning.chantier_ids:
+                unlink=True
+                o=planning.creation_planning_id
+                e=planning.equipe_id
+                if o and e:
+                    dates=o.get_dates()
+                    for d in dates:
+                        msg=o.get_message(e,d)
+                        if msg:
+                            unlink=False
+                if not planning.chantier_ids and unlink:
                     planning.unlink()
             #*******************************************************************
 
