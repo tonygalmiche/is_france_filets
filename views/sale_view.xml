@@ -57,6 +57,7 @@
                                 <field name="pose_depose"/>
                                 <field name="etat"/>
                                 <field name="realisation"/>
+                                <field name="pv_realise" readonly="1"/>
                             </tree>
                         </field>
                     </page>
@@ -535,6 +536,7 @@
                                     <field name="pose_depose"/>
                                     <field name="etat"/>
                                     <field name="realisation"/>
+                                    <button string="Saisie du PV" name="saisie_pv_action" type="object" icon="fa-search-plus" />
                                 </tree>
                             </field>
                         </group>
@@ -586,8 +588,83 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+        <!-- Chantier Planning -->
+        <record id="is_chantier_planning_form_view" model="ir.ui.view">
+            <field name="name">is_chantier_planning_from_view</field>
+            <field name="model">is.chantier.planning</field>
+            <field name="arch" type="xml">
+                <form create="0">
+                    <sheet>
+                        <group string="Chantier">
+                            <group>
+                                <field name="chantier_id"/>
+                                <field name="pose_depose"/>
+                            </group>
+                            <group>
+                                <field name="date_debut"/>
+                                <field name="date_fin"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="commentaire"/>
+                        </group>
+                        <group string="Réalisation">
+                                <field name="realisation"/>
+                        </group>
+                        <group string="PV de réception">
+                                <field name="zone_concernee"/>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="etat_mailles"/>
+                            </group>
+                            <group>
+                                <field name="etat_mailles_obs"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="reprise_mailles"/>
+                            </group>
+                            <group>
+                                <field name="reprise_mailles_obs"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="point_encrage"/>
+                            </group>
+                            <group>
+                                <field name="point_encrage_obs"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="jointement"/>
+                            </group>
+                            <group>
+                                <field name="jointement_obs"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="tension_filets"/>
+                            </group>
+                            <group>
+                                <field name="tension_filets_obs"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="observation"/>
+                        </group>
+                        <group>
+                            <field name="pv_realise"/>
+                            <field name="sale_order_planning_id" invisible="1"/>
+                        </group>
 
-
-
+                    </sheet>
+                </form>
+            </field>
+        </record>
     </data>
 </odoo>

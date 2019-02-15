@@ -19,6 +19,12 @@ _TYPE_CHANTIER=[
 ]
 
 
+_CHOIX_PV=[
+    ('C' , 'Conforme'),
+    ('NC', 'non Conforme'),
+]
+
+
 class IsMotifArchivage(models.Model):
     _name='is.motif.archivage'
     _order='name'
@@ -83,7 +89,7 @@ class IsSaleOrderPlanning(models.Model):
     ], u'Pose / Dépose')
     etat = fields.Selection(_ETAT_PLANNING, u'État', default='a_confirmer')
     realisation    = fields.Text(u'Réalisation', help=u'Réalisation du chantier', readonly=True)
-
+    pv_realise = fields.Char('PV')
 
 
     def get_avertissements(self,obj,equipe,date):
@@ -640,14 +646,60 @@ class IsChantierPlanning(models.Model):
     ], u'Pose / Dépose', readonly=True)
     etat = fields.Selection(_ETAT_PLANNING, u'État', default='a_confirmer', readonly=True)
     realisation    = fields.Text(u'Réalisation', help=u'Réalisation du chantier')
+    zone_concernee = fields.Text(u'Zone concernée')
+
+    etat_mailles = fields.Selection(_CHOIX_PV, u'Etat des mailles des filets')
+    etat_mailles_obs = fields.Text(u'Observation')
+
+    reprise_mailles = fields.Selection(_CHOIX_PV, u'Reprise des mailles par couturage')
+    reprise_mailles_obs = fields.Text(u'Observation')
+
+    point_encrage = fields.Selection(_CHOIX_PV, u"Point d'ancrage des filets")
+    point_encrage_obs = fields.Text(u'Observation')
+
+    jointement = fields.Selection(_CHOIX_PV, u"Jointement des filets (entre eux et par rapport aux rives)")
+    jointement_obs = fields.Text(u'Observation')
+
+    tension_filets = fields.Selection(_CHOIX_PV, u"Tension des filets")
+    tension_filets_obs = fields.Text(u'Observation')
+
+    observation = fields.Text(u'Autres observations')
+
+    pv_realise = fields.Char(u"PV réalisé", compute='_compute', readonly=True, store=True)
+
+
+
+    @api.depends('etat_mailles','reprise_mailles','point_encrage','jointement','tension_filets')
+    def _compute(self):
+        for obj in self:
+            pv_realise=''
+            if obj.etat_mailles and obj.reprise_mailles and obj.point_encrage and obj.jointement and obj.tension_filets:
+                pv_realise='OK'
+            obj.pv_realise=pv_realise
+            obj.sudo().sale_order_planning_id.pv_realise=pv_realise
 
 
     @api.multi
     def write(self,vals):
+        res = super(IsChantierPlanning, self).write(vals)
         for obj in self:
+            obj.sudo().sale_order_planning_id.pv_realise=obj.pv_realise
             if 'realisation' in vals:
                 obj.sudo().sale_order_planning_id.realisation=vals['realisation']
-        res = super(IsChantierPlanning, self).write(vals)
+        return res
+
+
+    @api.multi
+    def saisie_pv_action(self):
+        for obj in self:
+            return {
+                'name': "Saisie PV du chantier "+str(obj.chantier_id.name),
+                'view_mode': 'form,tree',
+                'view_type': 'form',
+                'res_model': 'is.chantier.planning',
+                'type': 'ir.actions.act_window',
+                'res_id': obj.id,
+            }
 
 
 class IsChantier(models.Model):
@@ -667,6 +719,8 @@ class IsChantier(models.Model):
     informations      = fields.Text(u'Informations diverses', readonly=True)
     piece_jointe_ids  = fields.Many2many('ir.attachment', 'is_chantier_piece_jointe_attachment_rel', 'is_chantier_id', 'attachment_id', u'Pièces jointes', readonly=True)
     fin_chantier_ids  = fields.Many2many('ir.attachment', 'is_chantier_fin_chantier_attachment_rel', 'is_chantier_id', 'attachment_id', u'Documents de fin de chantier')
+
+
 
 
 
