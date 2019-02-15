@@ -55,6 +55,7 @@ class IsAccountInvoiceLine(models.Model):
                                    inner join res_partner      rp on ai.partner_id=rp.id
                                    inner join product_product  pp on ail.product_id=pp.id
                                    inner join product_template pt on pp.product_tmpl_id=pt.id
+                where ai.state<>'cancel'
             )
         """)
 

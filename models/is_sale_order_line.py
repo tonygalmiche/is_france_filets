@@ -71,6 +71,7 @@ class IsSaleOrderLine(models.Model):
                                    inner join res_partner      rp on so.partner_id=rp.id
                                    inner join product_product  pp on sol.product_id=pp.id
                                    inner join product_template pt on pp.product_tmpl_id=pt.id
+                where so.state<>'cancel'
             )
         """)
 
