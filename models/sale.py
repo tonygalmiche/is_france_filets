@@ -281,11 +281,6 @@ class SaleOrder(models.Model):
     is_ecart_achat          = fields.Integer(u'Écart Achat'         , compute='_compute_totaux'  , readonly=True, store=True)
 
 
-
-
-
-
-
     @api.multi
     def get_nacelles(self):
         nacelles = self.env['is.nacelle'].search([])
@@ -295,17 +290,14 @@ class SaleOrder(models.Model):
     @api.multi
     def init_controle_gestion_action(self):
         for obj in self:
-            print obj.is_controle_gestion_ids
             if not obj.is_controle_gestion_ids:
                 lines = self.env['is.controle.gestion'].search([])
                 for line in lines:
-
                     vals={
                         'order_id'           : obj.id,
                         'controle_gestion_id': line.id
                     }
                     res = self.env['is.sale.order.controle.gestion'].create(vals)
-                    print line.name,res
 
 
 class IsCreationPlanningPreparation(models.Model):
