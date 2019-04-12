@@ -92,6 +92,16 @@ class IsSaleOrderPlanning(models.Model):
     pv_realise = fields.Char('PV')
 
 
+    def onchange_dates(self,date_debut,date_fin):
+        if date_debut and date_fin:
+            if date_fin < date_debut:
+                warning = {
+                    'title': 'Attention !',
+                    'message' : u'La date de fin est inférieure à la date de début'
+                }
+                return {'warning': warning}
+
+
     def get_avertissements(self,obj,equipe,date):
         avertissements=[]
 
