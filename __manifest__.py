@@ -27,6 +27,7 @@ InfoSaône - Module Odoo pour France Filets
         'security/ir.model.access.csv',
         'security/ir.model.access.xml',
         'views/assets.xml',
+        'views/res_company_view.xml',
         'views/partner_view.xml',
         'views/sale_view.xml',
         'views/account_invoice_view.xml',

@@ -149,22 +149,11 @@
             </p>
 
 
-            <p t-if="o.partner_id.is_afacturage" style="font-size:8pt;color:red">
-                Pour être libératoire, le règlement de cette facture doit être libellé et adressé à : NATIXIS FACTOR Tél : 01 58 32 80 00 - 
-                10-12 av Winston Churchill 94676 CHARENTON LE PONT Cdx - RIB : 30007 00011 00010500791 36 - Domiciliation : NATIXIS PARIS - 
-                IBAN : FR76 3000 7000 1100 0105 0079 136 - SWIFT CODE (BIC) : NATX FR PP XXX - N° ICS : FR57ZZZ483693 - 
-                Natixis Factor a acquis notre créance par voie de subrogation dans le cadre d'un contrat d'affacturage. 
-                Natixis Factor devra être avisée de toute réclamation. 
+            <p t-if="o.partner_id.is_afacturage">
+                <div style="font-size:8pt;color:red" t-field="o.company_id.is_affacturage"/>
             </p>
-
-
-            <p>
-                Escompte pour règlement anticipé : 0%
-                En cas de retard de paiement, une pénalité égale à 3 fois le taux d'intérêt légal sera
-                exigible (Décret 2009-138 du 9 février 2009).
-                Pour les professionnels, une indemnité minimum forfaitaire de 40 euros pour frais de
-                recouvrement sera exigible (Décret 2012-1115 du 9 octobre 2012).
-            </p>
+            <p />
+            <p t-field="o.company_id.is_conditions_generales"/>
 
 
 
