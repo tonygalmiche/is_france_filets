@@ -12,6 +12,9 @@
                     <field name="is_secteur_activite_id"/>
                     <field name="is_region_id"/>
                     <field name="is_code_client_ebp"/>
+                    <field name="is_type_partenaire"/>
+                    <field name="is_date_commande"/>
+                    <field name="create_date"/>
                 </field>
             </field>
         </record>
