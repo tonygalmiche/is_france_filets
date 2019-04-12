@@ -52,6 +52,15 @@
         sequence="12"
     />
 
+
+    <menuitem 
+        id="is_sale_order_controle_gestion_menu"
+        action="is_sale_order_controle_gestion_action"
+        parent="sales_team.menu_sales"
+        sequence="13"
+    />
+
+
     <menuitem 
         id="is_preparation_planning_menu"
         sequence="800" 
@@ -135,6 +144,16 @@
         parent="is_ventes_table_menu" 
         action="is_motif_archivage_action" 
     />
+
+
+    <menuitem 
+        id="is_controle_gestion_menu"
+        sequence="70" 
+        name="Contrôle de gestion"
+        parent="is_ventes_table_menu"
+        action="is_controle_gestion_action"
+    />
+
 
 
     <menuitem 

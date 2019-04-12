@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
+
+
+        <record id="is_controle_gestion_action_server" model="ir.actions.server">
+             <field name="name">Initialiser tableau contrôle de gestion</field>
+            <field name="model_id" ref="model_sale_order"/>
+            <field name="code">records.init_controle_gestion_action()</field>
+        </record>
+        <record id="is_controle_gestion_ir_value" model="ir.values">
+            <field eval="'client_action_multi'" name="key2"/>
+            <field eval="'sale.order'" name="model"/>
+            <field name="name">Initialiser tableau contrôle de gestion</field>
+            <field eval="'ir.actions.server,%d'%is_controle_gestion_action_server" name="value"/>
+        </record>
+
+
+
         <record id="is_sale_order_form" model="ir.ui.view">
             <field name="name">is_sale_order_form</field>
             <field name="model">sale.order</field>
@@ -60,6 +76,37 @@
                                 <field name="pv_realise" readonly="1"/>
                             </tree>
                         </field>
+                    </page>
+                    <page string="Contrôle de gestion">
+                        <field name="is_controle_gestion_ids">
+                             <tree editable="bottom">
+                                <field name="ordre"/>
+                                <field name="controle_gestion_id"/>
+                                <field name="type_cout"/>
+                                <field name="montant_prevu"   sum="Total"/>
+                                <field name="montant_realise" sum="Total"/>
+                                <field name="ecart"           sum="Total"/>
+                            </tree>
+                        </field>
+                        <group>
+                            <group string="Prévu">
+                                <field name="is_total_mo_prevu"/>
+                                <field name="is_total_achats_prevu"/>
+                            </group>
+                            <group string="Réalisé">
+                                <field name="is_total_mo_realise"/>
+                                <field name="is_total_achats_realise"/>
+                            </group>
+                            <group string="Ecarts">
+                                <field name="is_ecart_mo"/>
+                                <field name="is_ecart_achat"/>
+                            </group>
+                            <group string="Nb jours">
+                                <field name="is_nb_jours_prevu"/>
+                                <field name="is_nb_jours_realise"/>
+                                <field name="is_ecart_jours"/>
+                            </group>
+                        </group>
                     </page>
                 </xpath>
             </field>
@@ -135,6 +182,45 @@
             <field name="view_id" ref="is_sale_order_archive_tree"/>
             <field name="domain">[('state','in', ['draft','sent']),('is_motif_archivage','!=','')]</field>
         </record>
+
+
+
+
+
+        <record id="is_sale_order_controle_gestion_tree" model="ir.ui.view">
+            <field name="name">is_sale_order_controle_gestion_tree</field>
+            <field name="model">sale.order</field>
+            <field name="priority" eval="90" />
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="date_order"/>
+                    <field name="partner_id"/>
+                    <field name="is_nom_chantier"/>
+                    <field name="is_region_id"/>
+                    <field name="is_secteur_activite_id"/>
+                    <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
+                    <field name="is_nb_jours_prevu" sum="Total"/>
+                    <field name="is_nb_jours_realise" sum="Total"/>
+                    <field name="is_ecart_jours" sum="Total"/>
+                    <field name="is_total_mo_prevu" sum="Total"/>
+                    <field name="is_total_mo_realise" sum="Total"/>
+                    <field name="is_ecart_mo" sum="Total"/>
+                    <field name="is_total_achats_prevu" sum="Total"/>
+                    <field name="is_total_achats_realise" sum="Total"/>
+                    <field name="is_ecart_achat" sum="Total"/>
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="is_sale_order_controle_gestion_action" model="ir.actions.act_window">
+            <field name="name">Contrôle de gestion</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+            <field name="view_id" ref="is_sale_order_controle_gestion_tree"/>
+        </record>
+
 
         <!-- Type de prestation -->
         <record id="is_type_prestation_form_view" model="ir.ui.view">
@@ -264,6 +350,51 @@
         </record>
 
 
+        <!-- is.controle.gestion -->
+        <record id="is_controle_gestion_form_view" model="ir.ui.view">
+            <field name="name">is_controle_gestion_from_view</field>
+            <field name="model">is.controle.gestion</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="ordre"/>
+                            <field name="type_cout"/>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_controle_gestion_tree_view">
+            <field name="name">is_controle_gestion_tree_view</field>
+            <field name="model">is.controle.gestion</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ordre"/>
+                    <field name="name"/>
+                    <field name="type_cout"/>
+                </tree>
+            </field>
+        </record>
+        <record id="is_controle_gestion_search_view" model="ir.ui.view">
+            <field name="name">is_controle_gestion_search_view</field>
+            <field name="model">is.controle.gestion</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="ordre"/>
+                    <field name="type_cout"/>
+                </search>
+            </field>
+        </record>
+        <record id="is_controle_gestion_action" model="ir.actions.act_window">
+            <field name="name">Contrôle de gestion</field>
+            <field name="res_model">is.controle.gestion</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
 
 
         <!-- is.equipe -->

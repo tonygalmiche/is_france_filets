@@ -25,6 +25,53 @@ _CHOIX_PV=[
 ]
 
 
+_TYPE_COUT=[
+    ('MO'  , 'MO'),
+    ('Achats', 'Achats'),
+]
+
+
+class IsControleGestion(models.Model):
+    _name='is.controle.gestion'
+    _order='ordre,name'
+
+    name      = fields.Char(u"Contrôle de gestion", required=True)
+    ordre     = fields.Integer(u"Ordre", required=True)
+    type_cout = fields.Selection(_TYPE_COUT, u'Type de coût', default='MO', required=True)
+
+
+class IsSaleOrderControleGestion(models.Model):
+    _name='is.sale.order.controle.gestion'
+    _order='order_id,ordre,controle_gestion_id'
+
+    order_id            = fields.Many2one('sale.order', 'Commande', required=True, ondelete='cascade', readonly=True,index=True)
+    controle_gestion_id = fields.Many2one('is.controle.gestion', u'Description')
+    ordre               = fields.Integer(u"Ordre"             , compute='_compute', readonly=True, store=True)
+    type_cout           = fields.Selection(_TYPE_COUT, u'Type', compute='_compute', readonly=True, store=True)
+    montant_prevu       = fields.Integer(u"Montant prévu")
+    montant_realise     = fields.Integer(u"Montant réalisé")
+    ecart               = fields.Integer(u"Ecart", compute='_compute', readonly=True, store=True)
+
+    @api.depends('controle_gestion_id','montant_prevu','montant_realise')
+    def _compute(self):
+        for obj in self:
+            ordre = 0
+            type_cout = False
+            if  obj.controle_gestion_id:
+                ordre     = obj.controle_gestion_id.ordre
+                type_cout = obj.controle_gestion_id.type_cout
+            obj.ordre     = ordre
+            obj.type_cout = type_cout
+            obj.ecart     = obj.montant_prevu - obj.montant_realise
+
+
+
+
+
+
+
+
+
 class IsMotifArchivage(models.Model):
     _name='is.motif.archivage'
     _order='name'
@@ -169,36 +216,96 @@ class SaleOrder(models.Model):
                 obj.is_ca_m2=obj.amount_untaxed/obj.is_superficie_m2
 
 
-    is_nom_chantier        = fields.Char(u'Nom du chantier')
-    is_date_previsionnelle = fields.Date(u'Date prévisionnelle du chantier')
-    is_contact_id          = fields.Many2one('res.partner', u'Contact du client')
-    is_distance_chantier   = fields.Integer(u'Distance du chantier (en km)')
-    is_num_ancien_devis    = fields.Char(u'N°ancien devis')
-    is_ref_client          = fields.Char(u'Référence client')
-    is_motif_archivage_id  = fields.Many2one('is.motif.archivage', u'Motif archivage devis')
-    is_motif_archivage     = fields.Text(u'Motif archivage devis (commentaire)')
-    is_entete_devis        = fields.Text(u'Entête devis')
-    is_pied_devis          = fields.Text(u'Pied devis')
-    is_superficie          = fields.Char(u'Superficie', help=u"Champ utilisé pour le devis client")
-    is_superficie_m2       = fields.Integer(u'Superficie (m2)', help=u"Champ utilisé pour les calculs du CA/m2")
-    is_ca_m2               = fields.Float(u"CA / m2", digits=(14,2), compute='_compute_ca_m2', readonly=True)
-    is_hauteur             = fields.Char(u'Hauteur')
-    is_nb_interventions    = fields.Char(u"Nombre d'interventions")
-    is_type_chantier       = fields.Selection(_TYPE_CHANTIER, u'Type de chantier')
-    is_type_prestation_id  = fields.Many2one('is.type.prestation', u'Type de prestation')
-    is_nacelle_id          = fields.Many2one('is.nacelle', u'Nacelle')
-    is_planning_ids        = fields.One2many('is.sale.order.planning', 'order_id', u"Planning")
-    is_etat_planning       = fields.Char(u"Etat planning", compute='_compute', readonly=True, store=True)
-    is_info_fiche_travail  = fields.Text(u'Informations fiche de travail')
-    is_piece_jointe_ids    = fields.Many2many('ir.attachment', 'sale_order_piece_jointe_attachment_rel', 'order_id', 'attachment_id', u'Pièces jointes')
-    is_region_id           = fields.Many2one('is.region'          , u'Région'            , related='partner_id.is_region_id'          , readonly=True)
-    is_secteur_activite_id = fields.Many2one('is.secteur.activite', u"Secteur d'activité", related='partner_id.is_secteur_activite_id', readonly=True)
+    @api.depends('is_controle_gestion_ids')
+    def _compute_totaux(self):
+        for obj in self:
+            total_mo_prevu       = 0
+            total_achats_prevu   = 0
+            total_mo_realise     = 0
+            total_achats_realise = 0
+            for line in obj.is_controle_gestion_ids:
+                if line.type_cout == 'MO':
+                    total_mo_prevu   += line.montant_prevu
+                    total_mo_realise += line.montant_realise
+                if line.type_cout == 'Achats':
+                    total_achats_prevu   += line.montant_prevu
+                    total_achats_realise += line.montant_realise
+            obj.is_total_mo_prevu       = total_mo_prevu
+            obj.is_total_achats_prevu   = total_achats_prevu
+            obj.is_total_mo_realise     = total_mo_realise
+            obj.is_total_achats_realise = total_achats_realise
+            obj.is_ecart_mo             = total_mo_prevu - total_mo_realise
+            obj.is_ecart_achat          = total_achats_prevu - total_achats_realise
+
+
+    @api.depends('is_nb_jours_prevu','is_nb_jours_realise')
+    def _compute_nb_jours(self):
+        for obj in self:
+            obj.is_ecart_jours = obj.is_nb_jours_prevu - obj.is_nb_jours_realise
+
+
+    is_nom_chantier         = fields.Char(u'Nom du chantier')
+    is_date_previsionnelle  = fields.Date(u'Date prévisionnelle du chantier')
+    is_contact_id           = fields.Many2one('res.partner', u'Contact du client')
+    is_distance_chantier    = fields.Integer(u'Distance du chantier (en km)')
+    is_num_ancien_devis     = fields.Char(u'N°ancien devis')
+    is_ref_client           = fields.Char(u'Référence client')
+    is_motif_archivage_id   = fields.Many2one('is.motif.archivage', u'Motif archivage devis')
+    is_motif_archivage      = fields.Text(u'Motif archivage devis (commentaire)')
+    is_entete_devis         = fields.Text(u'Entête devis')
+    is_pied_devis           = fields.Text(u'Pied devis')
+    is_superficie           = fields.Char(u'Superficie', help=u"Champ utilisé pour le devis client")
+    is_superficie_m2        = fields.Integer(u'Superficie (m2)', help=u"Champ utilisé pour les calculs du CA/m2")
+    is_ca_m2                = fields.Float(u"CA / m2", digits=(14,2), compute='_compute_ca_m2', readonly=True)
+    is_hauteur              = fields.Char(u'Hauteur')
+    is_nb_interventions     = fields.Char(u"Nombre d'interventions")
+    is_type_chantier        = fields.Selection(_TYPE_CHANTIER, u'Type de chantier')
+    is_type_prestation_id   = fields.Many2one('is.type.prestation', u'Type de prestation')
+    is_nacelle_id           = fields.Many2one('is.nacelle', u'Nacelle')
+    is_planning_ids         = fields.One2many('is.sale.order.planning', 'order_id', u"Planning")
+    is_etat_planning        = fields.Char(u"Etat planning", compute='_compute', readonly=True, store=True)
+    is_info_fiche_travail   = fields.Text(u'Informations fiche de travail')
+    is_piece_jointe_ids     = fields.Many2many('ir.attachment', 'sale_order_piece_jointe_attachment_rel', 'order_id', 'attachment_id', u'Pièces jointes')
+    is_region_id            = fields.Many2one('is.region'          , u'Région'            , related='partner_id.is_region_id'          , readonly=True)
+    is_secteur_activite_id  = fields.Many2one('is.secteur.activite', u"Secteur d'activité", related='partner_id.is_secteur_activite_id', readonly=True)
+    is_controle_gestion_ids = fields.One2many('is.sale.order.controle.gestion', 'order_id', u"Contrôle de gestion")
+
+    is_nb_jours_prevu       = fields.Integer(u'Nb jours prévu')
+    is_nb_jours_realise     = fields.Integer(u'Nb jours réalisé')
+    is_ecart_jours          = fields.Integer(u'Écart jours'         , compute='_compute_nb_jours', readonly=True, store=True)
+    is_total_mo_prevu       = fields.Integer(u'Total MO prévu'      , compute='_compute_totaux'  , readonly=True, store=True)
+    is_total_achats_prevu   = fields.Integer(u'Total Achats prévu'  , compute='_compute_totaux'  , readonly=True, store=True)
+    is_total_mo_realise     = fields.Integer(u'Total MO réalisé'    , compute='_compute_totaux'  , readonly=True, store=True)
+    is_total_achats_realise = fields.Integer(u'Total Achats réalisé', compute='_compute_totaux'  , readonly=True, store=True)
+    is_ecart_mo             = fields.Integer(u'Écart MO'            , compute='_compute_totaux'  , readonly=True, store=True)
+    is_ecart_achat          = fields.Integer(u'Écart Achat'         , compute='_compute_totaux'  , readonly=True, store=True)
+
+
+
+
+
 
 
     @api.multi
     def get_nacelles(self):
         nacelles = self.env['is.nacelle'].search([])
         return nacelles
+
+
+    @api.multi
+    def init_controle_gestion_action(self):
+        for obj in self:
+            print obj.is_controle_gestion_ids
+            if not obj.is_controle_gestion_ids:
+                lines = self.env['is.controle.gestion'].search([])
+                for line in lines:
+
+                    vals={
+                        'order_id'           : obj.id,
+                        'controle_gestion_id': line.id
+                    }
+                    res = self.env['is.sale.order.controle.gestion'].create(vals)
+                    print line.name,res
 
 
 class IsCreationPlanningPreparation(models.Model):
