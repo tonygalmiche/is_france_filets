@@ -666,8 +666,9 @@
                                     <field name="equipe_ids" widget="many2many_tags"/>
                                     <field name="pose_depose"/>
                                     <field name="etat"/>
+                                    <button string="Actualiser la liste des filets pour ce chantier" name="actualiser_filets_action" type="object" icon="fa-refresh"/>
                                     <field name="realisation"/>
-                                    <button string="Saisie du PV" name="saisie_pv_action" type="object" icon="fa-search-plus" />
+                                    <button string="Saisie du PV" name="saisie_pv_action" type="object" icon="fa-search-plus"/>
                                 </tree>
                             </field>
                         </group>

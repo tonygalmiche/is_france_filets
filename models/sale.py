@@ -817,6 +817,26 @@ class IsChantierPlanning(models.Model):
             }
 
 
+    @api.multi
+    def actualiser_filets_action(self):
+        cr = self._cr
+        for obj in self:
+            if obj.chantier_id.id:
+                SQL="""
+                    SELECT dimensions,count(*)
+                    FROM is_filet
+                    WHERE chantier_id="""+str(obj.chantier_id.id)+"""
+                    GROUP BY dimensions
+                    ORDER BY dimensions
+                """
+                cr.execute(SQL)
+                res = cr.fetchall()
+                filets=[]
+                for row in res:
+                    filets.append(str(row[1])+" x "+str(row[0]))
+                obj.realisation='\n'.join(filets)
+
+
 class IsChantier(models.Model):
     _name='is.chantier'
     _order='name'

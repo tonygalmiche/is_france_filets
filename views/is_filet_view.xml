@@ -20,6 +20,9 @@
                     <field name="num_serie"/>
                     <field name="date_fabrication"/>
                     <field name="etat_filet"/>
+                    <field name="position"/>
+                    <field name="depuis_le"/>
+                    <field name="chantier_id"/>
                 </tree>
             </field>
         </record>
@@ -30,13 +33,20 @@
                 <form>
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="type_filet"/>
-                            <field name="dimensions"/>
-                            <field name="fabriquant"/>
-                            <field name="num_serie"/>
-                            <field name="date_fabrication"/>
-                            <field name="etat_filet"/>
+                            <group string="Identification">
+                                <field name="name"/>
+                                <field name="type_filet"/>
+                                <field name="dimensions"/>
+                                <field name="fabriquant"/>
+                                <field name="num_serie"/>
+                                <field name="date_fabrication"/>
+                                <field name="etat_filet"/>
+                            </group>
+                            <group string="Position actuelle">
+                                <field name="position"/>
+                                <field name="depuis_le"/>
+                                <field name="chantier_id"/>
+                            </group>
                         </group>
                         <field name="mouvement_ids">
                              <tree editable="top">
@@ -60,6 +70,8 @@
                     <field name="fabriquant"/>
                     <field name="num_serie"/>
                     <field name="etat_filet"/>
+                    <field name="position"/>
+                    <field name="chantier_id"/>
                </search>
             </field>
         </record>
