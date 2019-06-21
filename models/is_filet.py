@@ -74,6 +74,6 @@ class is_filet_mouvement(models.Model):
 
     filet_id = fields.Many2one('is.filet', 'Filet', required=True, ondelete='cascade',index=True)
     name = fields.Datetime(u"Heure du mouvement", default=lambda self: fields.Datetime.now(),required=True)
-    position = fields.Selection(_POSITIONS, 'Position', default='depot',required=True)
+    position = fields.Selection(_POSITIONS, 'Position',required=True)
     chantier_id = fields.Many2one('is.chantier', u'Chantier')
 
