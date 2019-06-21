@@ -19,6 +19,7 @@
                     <field name="fabriquant"/>
                     <field name="num_serie"/>
                     <field name="date_fabrication"/>
+                    <field name="prix_achat"/>
                     <field name="etat_filet"/>
                     <field name="position"/>
                     <field name="depuis_le"/>
@@ -40,6 +41,7 @@
                                 <field name="fabriquant"/>
                                 <field name="num_serie"/>
                                 <field name="date_fabrication"/>
+                                <field name="prix_achat"/>
                                 <field name="etat_filet"/>
                             </group>
                             <group string="Position actuelle">

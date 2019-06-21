@@ -4,9 +4,10 @@ import datetime
 
 
 _POSITIONS = [
-    ('depot'      , u'Dépôt'),
-    ('camionnette', u'Camionnette'),
-    ('chantier'   , u'Chantier'),
+    ('depot-dijon'  , u'Dépôt Dijon'),
+    ('depot-pexiora', u'Dépôt Pexiora'),
+    ('camionnette'  , u'Camionnette'),
+    ('chantier'     , u'Chantier'),
 ]
 
 
@@ -23,6 +24,7 @@ class is_filet(models.Model):
     fabriquant       = fields.Char(u"Fabriquant", required=True)
     num_serie        = fields.Char(u"N°de série", required=True)
     date_fabrication = fields.Date(u"Date de fabrication", required=True)
+    prix_achat       = fields.Float(u"Prix d'achat", digits=(14,2))
     etat_filet = fields.Selection([
         ('conforme' , u'Conforme'),
         ('a-reparer', u'A réparer'),
