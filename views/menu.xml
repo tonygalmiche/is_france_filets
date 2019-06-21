@@ -250,6 +250,29 @@
     />
 
 
+    <!-- Filets -->
+    <menuitem 
+        id="is_filet_main_menu" 
+        sequence="0" 
+        name="Filets"
+        parent="purchase.menu_purchase_root"
+    />
+    <menuitem 
+        id="is_filet_menu" 
+        sequence="10" 
+        name="Filets"
+        parent="is_filet_main_menu" 
+        action="is_filet_action" 
+    />
+    <menuitem 
+        id="is_filet_mouvement_menu" 
+        sequence="20" 
+        name="Mouvements"
+        parent="is_filet_main_menu" 
+        action="is_filet_mouvement_action" 
+    />
+
+
 
 
 </odoo>
