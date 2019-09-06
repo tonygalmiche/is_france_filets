@@ -90,6 +90,39 @@
 
 
 
+
+
+        <!-- Suivi Budget -->
+        <record id="is_suivi_budget_paperformat" model="report.paperformat">
+            <field name="name">Suivi Budget</field>
+            <field name="default" eval="True" />
+            <field name="format">A3</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">7</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+        <report 
+            id="is_suivi_budget_reports"
+            model="is.suivi.budget"
+            string="Suivi Budget"
+            report_type="qweb-pdf"
+            name="is_france_filets.is_suivi_budget_report"
+            file="is_france_filets.is_suivi_budget_report_templates"
+        />
+        <record id="is_suivi_budget_reports" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="is_france_filets.is_suivi_budget_paperformat"/>
+        </record>
+
+
+
+
     </data>
 </odoo>
 

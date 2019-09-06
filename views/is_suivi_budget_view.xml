@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="is_suivi_budget_tree" model="ir.ui.view">
+            <field name="name">is.suivi.budget.tree</field>
+            <field name="model">is.suivi.budget</field>
+            <field name="arch" type="xml">
+                <tree >
+                    <field name="name"/>
+                    <field name="taux_transformation"/>
+                    <field name="montant_facture"/>
+                    <field name="commentaire"/>
+                </tree>
+            </field>
+        </record>
+        <record id="is_suivi_budget_form" model="ir.ui.view">
+            <field name="name">is.suivi.budget.form</field>
+            <field name="model">is.suivi.budget</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="taux_transformation"/>
+                            <field name="montant_facture"/>
+                            <field name="commentaire"/>
+                        </group>
+                        <field name="mois_ids">
+                             <tree editable="bottom">
+                                <field name="mois"/>
+                                <field name="ca_budget"       sum="Total"/>
+                                <field name="re_previsionnel" sum="Total"/>
+                                <field name="re_realise"      sum="Total"/>
+                                <field name="objectif_ca_sud" sum="Total"/>
+                            </tree>
+                        </field>
+                        <field name="top_client_ids">
+                             <tree editable="bottom">
+                                <field name="partner_id"/>
+                                <field name="objectif" sum="Total"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="is_suivi_budget_search" model="ir.ui.view">
+            <field name="name">is.suivi.budget.search</field>
+            <field name="model">is.suivi.budget</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="commentaire"/>
+               </search>
+            </field>
+        </record>
+        <record id="is_suivi_budget_action" model="ir.actions.act_window">
+            <field name="name">Suivi budget</field>
+            <field name="res_model">is.suivi.budget</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+    </data>
+</openerp>
+
+

@@ -74,15 +74,26 @@
         parent="is_preparation_planning_menu" 
         action="is_creation_planning_action" 
     />
-    <!--
+
+
+
+
     <menuitem 
-        id="is_creation_planning_preparation_menu" 
-        sequence="20" 
-        name="Préparation Planning"
-        parent="is_planning_menu" 
-        action="is_creation_planning_preparation_action" 
+        id="is_suivi_budget_main_menu"
+        sequence="810" 
+        name="Suivi budget"
+        parent="sales_team.menu_base_partner" 
     />
-    -->
+    <menuitem 
+        id="is_suivi_budget_menu" 
+        sequence="10" 
+        name="Suivi budget"
+        parent="is_suivi_budget_main_menu" 
+        action="is_suivi_budget_action" 
+    />
+
+
+
 
     <menuitem 
         id="is_ventes_table_menu"
