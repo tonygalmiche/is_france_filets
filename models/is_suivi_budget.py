@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from openerp import models,fields,api
-import datetime
+from datetime import datetime,timedelta
+from dateutil.relativedelta import relativedelta
 
 
 class IsSuiviBudget(models.Model):
@@ -15,16 +16,146 @@ class IsSuiviBudget(models.Model):
     top_client_ids      = fields.One2many('is.suivi.budget.top.client', 'suivi_id', u"Top Client"    , copy=True)
 
 
+
+    @api.multi
+    def val2html(self,val):
+        html=''
+        if val:
+            html='<span>'+'{:,.0f}'.format(val).replace(","," ").replace(".",",")+' €</span>'
+        return html
+
+
+    @api.multi
+    def val2htmlcolor(self,val):
+        color='green'
+        if val<0:
+            color='red'
+        html=''
+        if val:
+            html='<span style="color:'+color+'">'+'{:,.0f}'.format(val).replace(","," ").replace(".",",")+' €</span>'
+        return html
+
+
     @api.multi
     def get_mois(self):
         mois=[]
         for obj in self:
             for m in obj.mois_ids:
-                print m
+                m.ca_budget_html       = self.val2html(m.ca_budget)
+                m.re_previsionnel_html = self.val2htmlcolor(m.re_previsionnel)
+                m.re_realise_html      = self.val2htmlcolor(m.re_realise)
+                m.objectif_ca_sud_html = self.val2html(m.objectif_ca_sud)
                 mois.append(m)
         return mois
 
 
+
+    @api.multi
+    def get_clients(self):
+        clients=[]
+        for obj in self:
+            for c in obj.top_client_ids:
+                clients.append(c)
+        return clients
+
+
+    @api.multi
+    def get_periode(self,m):
+        d = datetime.strptime(m.mois, '%Y-%m-%d')
+        r={}
+        r['mois']  = d.strftime('%m/%Y')
+        r['debut'] = d - timedelta(days=d.day-1)
+        r['fin']   = r['debut'] + relativedelta(months=1)
+        return r
+
+
+    @api.multi
+    def get_annee(self):
+        r={}
+        for obj in self:
+            for m in obj.mois_ids:
+                d = datetime.strptime(m.mois, '%Y-%m-%d')
+                r['debut'] = d - timedelta(days=d.day-1)
+                r['fin']   = r['debut'] + relativedelta(years=1)
+                return r
+        return r
+
+
+    @api.multi
+    def get_top(self):
+        ids=[]
+        for obj in self:
+            for l in obj.top_client_ids:
+                ids.append(str(l.partner_id.id))
+        return ids
+
+
+    @api.multi
+    def get_nouveaux_clients(self):
+        cr = self._cr
+        annee = self.get_annee()
+        SQL="""
+            SELECT id
+            FROM res_partner
+            WHERE 
+                is_date_commande>='"""+str(annee['debut'])+"""' and
+                is_date_commande<'"""+str(annee['fin'])+"""'
+        """
+        cr.execute(SQL)
+        res = cr.fetchall()
+        ids=[]
+        for row in res:
+            ids.append(str(row[0]))
+        return ids
+
+
+    @api.multi
+    def get_ca_realise_nouveau(self,m):
+        partner_ids=self.get_nouveaux_clients()
+        return self.get_ca_realise(m,partner_ids)
+
+
+    @api.multi
+    def get_ca_realise_autre(self,m):
+        ids1 = self.get_top()
+        ids2 = self.get_nouveaux_clients()
+        partner_ids = ids1 + ids2
+        return self.get_ca_realise(m,partner_ids,not_in=True)
+
+
+    @api.multi
+    def get_ca_realise_top(self,m):
+        partner_ids = self.get_top()
+        return self.get_ca_realise(m,partner_ids)
+
+
+    @api.multi
+    def get_ca_realise(self,m,partner_ids=False,not_in=False):
+        cr = self._cr
+        periode = self.get_periode(m)
+        SQL="""
+            SELECT
+                sum(ai.amount_untaxed)
+            FROM account_invoice ai
+            WHERE 
+                ai.date_invoice>='"""+str(periode['debut'])+"""' and
+                ai.date_invoice<'"""+str(periode['fin'])+"""' and
+                ai.type='out_invoice' and
+                ai.state in ('open','paid')
+        """
+        if partner_ids:
+            partner_ids=','.join(partner_ids)
+            if not_in:
+                SQL=SQL+' and partner_id not in ('+partner_ids+') '
+            else:
+                SQL=SQL+' and partner_id in ('+partner_ids+') '
+        cr.execute(SQL)
+        res = cr.fetchall()
+        val = 0
+        for row in res:
+            if row[0]:
+                val=row[0]
+        return self.val2html(val)
 
 
 class IsSuiviBudgetMois(models.Model):

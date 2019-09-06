@@ -65,7 +65,7 @@
                                 text-align:center;
                             }
                             th{
-                                font-size:12pt;
+                                font-size:11pt;
                                 padding:2pt;
                                 border:1px solid black;
                                 text-align:center;
@@ -73,14 +73,25 @@
                             }
                             td{
                                 font-size:11pt;
-                                padding:4pt;
-                                margin:4pt;
+                                padding:3pt;
+                                margin:3pt;
                                 border:1px solid black;
                             }
-                            p{
-                                padding:2pt;
+                            .titre{
+                                font-size:12pt;
+                                font-weight: bold;
+                                background-color:Gainsboro;
                                 margin:2pt;
                             }
+                            .style1{
+                                font-size:11pt;
+                                text-align: right;
+                                padding-right: 1em;
+                                white-space: nowrap;
+                            }
+
+
+
                         </style>
                         <h1 t-field="o.name"/>
 
@@ -89,18 +100,166 @@
                             <tr>
                                 <td>Mois</td>
                                 <t t-foreach="o.get_mois()" t-as="m">
-                                    <th><span t-esc="m.mois"/></th>
+                                    <th><span t-esc="o.get_periode(m)['mois']"/></th>
                                 </t>
                             </tr>
 
                             <tr>
                                 <td>CA Budget</td>
                                 <t t-foreach="o.get_mois()" t-as="m">
-                                    <td><span t-esc="m.mois"/></td>
+                                    <td class="style1"><span t-raw="m.objectif_ca_sud_html"/></td>
                                 </t>
                             </tr>
 
 
+                            <tr>
+                                <td colspan="13" class="titre">CA Prévisionnel</td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td>Carnet de commande (ferme)</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td> </td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td>Prévisionnel (avec taux transformation)</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td> </td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td>TOTAL Prévision</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td> </td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td>Écart avec budget</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td> </td>
+                                </t>
+                            </tr>
+
+
+                            <tr>
+                                <td colspan="13" class="titre">CA Réalisé</td>
+                            </tr>
+                            <tr>
+                                <td>CA Réalisé HT</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td class="style1"><span t-raw="o.get_ca_realise(m)"/></td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td>Écart avec budget en valeur</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td> </td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td>Écart avec budget en % </td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td> </td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td colspan="13" class="titre">Résultat réalisé</td>
+                            </tr>
+                            <tr>
+                                <td>RE  prévisionnel en valeur</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td class="style1"><span t-raw="m.re_previsionnel_html"/></td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td>RE  réalisé en valeur</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td class="style1"><span t-raw="m.re_realise_html"/></td>
+                                </t>
+                            </tr>
+
+                            <tr>
+                                <td colspan="13" class="titre">Indicateur de carnet Cde</td>
+                            </tr>
+
+                            <tr>
+                                <td>Cde Moyenne</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td> </td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td>Facture > 30 Keuro (en quantité)</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td> </td>
+                                </t>
+                            </tr>
+
+
+                            <tr>
+                                <td colspan="13" class="titre">Suivi  Top Clients (11)</td>
+                            </tr>
+
+                            <t t-foreach="o.get_clients()" t-as="c">
+                                <tr>
+                                    <td><span t-raw="c.partner_id.name"/></td>
+                                    <t t-foreach="o.get_mois()" t-as="m">
+                                        <td class="style1"><span t-raw="o.get_ca_realise(m,[str(c.partner_id.id)])"/></td>
+                                    </t>
+                                </tr>
+                            </t>
+
+                            <tr>
+                                <td>Total</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td class="style1"><b><span t-raw="o.get_ca_realise_top(m)"/></b></td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td>Autres clients</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td class="style1"><b><span t-raw="o.get_ca_realise_autre(m)"/></b></td>
+                                </t>
+                            </tr>
+
+                            <tr>
+                                <td colspan="13" class="titre">Nouvelles affaires</td>
+                            </tr>
+
+                            <tr>
+                                <td>En Valeur</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td class="style1"><span t-raw="o.get_ca_realise_nouveau(m)"/></td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td>En % du CA mensuel</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td> </td>
+                                </t>
+                            </tr>
+
+
+                            <tr>
+                                <td colspan="13" class="titre">Dont CA Sud Ouest et Sud Est</td>
+                            </tr>
+
+
+                            <tr>
+                                <td>Objectif mensuel</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td class="style1"><span t-raw="m.objectif_ca_sud_html"/></td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td>Réalisé en Valeur</td>
+                                <t t-foreach="o.get_mois()" t-as="m">
+                                    <td> </td>
+                                </t>
+                            </tr>
                         </table>
 
                     </div>
