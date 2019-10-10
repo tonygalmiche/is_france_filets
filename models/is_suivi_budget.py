@@ -18,6 +18,111 @@ class IsSuiviBudget(models.Model):
     mois_ids                 = fields.One2many('is.suivi.budget.mois', 'suivi_id', u"Mois du suivi budget", copy=True)
     top_client_ids           = fields.One2many('is.suivi.budget.top.client', 'suivi_id', u"Top Client"    , copy=True)
 
+    date_debut               = fields.Date(u"Date début (Journal des ventes)")
+    date_fin                 = fields.Date(u"Date fin (Journal des ventes)")
+
+    @api.multi
+    def get_journal_vente_html(self):
+        cr = self._cr
+        for obj in self:
+            new_partner_ids = obj.get_nouveaux_clients()
+            top_partner_ids=[]
+            for line in obj.top_client_ids:
+                top_partner_ids.append(line.partner_id.id)
+            SQL="""
+                SELECT
+                    rp.name,
+                    ir.name,
+                    io.name,
+                    ai.date_invoice,
+                    ai.number,
+                    ai.amount_untaxed,
+                    ai.partner_id
+                FROM account_invoice ai inner join res_partner     rp on ai.partner_id=rp.id
+                                        left outer join is_region  ir on rp.is_region_id=ir.id
+                                        left outer join is_origine io on rp.is_origine_id=io.id
+                WHERE 
+                    ai.date_invoice>='"""+str(obj.date_debut)+"""' and
+                    ai.date_invoice<='"""+str(obj.date_fin)+"""' and
+                    ai.type='out_invoice' and
+                    ai.state in ('open','paid') and
+                    ai.amount_untaxed>0
+                ORDER BY ai.number desc
+            """
+            cr.execute(SQL)
+            res = cr.fetchall()
+            html=u'<table style="border:1px solid black; width:100%;border-collapse: collapse;">'
+            html+=u'<tr><th>N°</th><th>Client</th><th>Région</th><th>Origine</th><th>Date</th><th>Facture</th><th>Total HT</th></tr>'
+            ct=0
+            total=0
+            cde_moyenne = 0
+            top = 0
+            clair_top = 0
+            nouveau = 0
+            so = 0
+            autre = 0
+            for row in res:
+                color=u''
+                partner_id = row[6]
+                if partner_id in top_partner_ids:
+                    color = u'LightPink'
+                    top+=row[5]
+
+                if str(partner_id) in new_partner_ids:
+                    color = u'Khaki'
+                    nouveau+=row[5]
+
+                if row[1]=='SO' or row[1]=='SE':
+                    color = u'LightGreen'
+                    so+=row[5]
+
+                ct+=1
+                amount_untaxed = '{:,.0f}'.format(row[5]).replace(","," ").replace(".",",")
+                html+=u'<tr style="background-color:'+color+u'">'
+                html+=u'<td style="text-align:center">'+str(ct)+u'</td>'
+                html+=u'<td style="text-align:left">'+row[0]+u'</td>'
+                html+=u'<td style="text-align:center">'+str(row[1] or '')+u'</td>'
+                html+=u'<td style="text-align:center">'+str(row[2] or '')+u'</td>'
+                html+=u'<td style="text-align:center">'+str(row[3])+u'</td>'
+                html+=u'<td style="text-align:center">'+str(row[4])+u'</td>'
+                html+=u'<td style="text-align:right">'+str(amount_untaxed)+u' €</td>'
+                html+=u'</tr>'
+                total+=row[5]
+
+
+            cde_moyenne = total / len(res)
+            autre = total - nouveau
+
+            total = '{:,.0f}'.format(total).replace(","," ").replace(".",",")
+            html+=u'<tr><th colspan="6" style="text-align:right">Total : </th><th style="text-align:right">'+total+u' €</th></tr>'
+
+            html+=u'</table><br />'
+
+            html+=u'<table style="border:1px solid black; width:30%;border-collapse: collapse;">'
+
+
+            cde_moyenne = '{:,.0f}'.format(cde_moyenne).replace(","," ").replace(".",",")
+            html+=u'<tr style="background-color:white"><td style="text-align:left">Cde moyenne : </td><td style="text-align:right">'+cde_moyenne+u' €</td></tr>'
+
+            top = '{:,.0f}'.format(top).replace(","," ").replace(".",",")
+            html+=u'<tr style="background-color:LightPink"><td style="text-align:left">Top : </td><td style="text-align:right">'+top+u' €</td></tr>'
+
+            clair_top = '{:,.0f}'.format(clair_top).replace(","," ").replace(".",",")
+            html+=u'<tr style="background-color:white"><td style="text-align:left">Clair Top : </td><td style="text-align:right">'+clair_top+u' €</td></tr>'
+
+            nouveau = '{:,.0f}'.format(nouveau).replace(","," ").replace(".",",")
+            html+=u'<tr style="background-color:Khaki"><td style="text-align:left">Nouveau : </td><td style="text-align:right">'+nouveau+u' €</td></tr>'
+
+            so = '{:,.0f}'.format(so).replace(","," ").replace(".",",")
+            html+=u'<tr style="background-color:LightGreen"><td style="text-align:left">SO / SE : </td><td style="text-align:right">'+so+u' €</td></tr>'
+
+            autre = '{:,.0f}'.format(autre).replace(","," ").replace(".",",")
+            html+=u'<tr style="background-color:white"><td style="text-align:left">Autres clients : </td><td style="text-align:right">'+autre+u' €</td></tr>'
+
+
+            html+=u'</table>'
+
+            return html
 
 
     @api.multi
@@ -350,11 +455,12 @@ class IsSuiviBudget(models.Model):
         cr = self._cr
         annee = self.get_annee()
         SQL="""
-            SELECT id
+            SELECT id,name
             FROM res_partner
             WHERE 
                 is_date_commande>='"""+str(annee['debut'])+"""' and
                 is_date_commande<'"""+str(annee['fin'])+"""'
+            ORDER BY name
         """
         cr.execute(SQL)
         res = cr.fetchall()

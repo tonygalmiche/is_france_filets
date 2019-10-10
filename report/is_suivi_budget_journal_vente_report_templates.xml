@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <template id="is_suivi_budget_journal_vente_report_layout" inherit_id="web.layout" primary="True">
+        <!-- Add report attributes -->
+        <xpath expr="//html" position="attributes">
+            <attribute name="t-att-data-report-margin-top">data_report_margin_top if data_report_margin_top else None</attribute>
+            <attribute name="t-att-data-report-header-spacing">data_report_header_spacing if data_report_header_spacing else None</attribute>
+            <attribute name="t-att-data-report-dpi">data_report_dpi if data_report_dpi else None</attribute>
+        </xpath>
+        <!-- Add report style -->
+        <xpath expr="//head" position="inside">
+            <link href="/web/static/lib/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+            <link href="/website/static/src/css/website.css" rel="stylesheet"/>
+            <link href="/web/static/lib/fontawesome/css/font-awesome.css" rel="stylesheet"/>
+        </xpath>
+    </template>
+
+
+    <template id="is_suivi_budget_journal_vente_report_html_container">
+        <t t-set="body_classname" t-value="'container'"/>
+        <t t-call="is_france_filets.is_suivi_budget_journal_vente_report_layout">
+            <t t-raw="0"/>
+        </t>
+    </template>
+
+
+    <!-- Entête personnalisé -->
+    <template id="is_suivi_budget_journal_vente_report_external_layout_header">
+        <div class="header">
+        </div>
+    </template>
+
+
+
+    <!-- Pied de page personnalisé -->
+    <template id="is_suivi_budget_journal_vente_report_external_layout_footer">
+        <div class="footer">
+        </div>
+    </template>
+
+
+    <!-- Squelette de la page personnalisé -->
+    <template id="is_suivi_budget_journal_vente_report_external_layout">
+        <t t-if="o and 'company_id' in o">
+            <t t-set="company" t-value="o.company_id"/>
+        </t>
+        <t t-if="not o or not 'company_id' in o">
+            <t t-set="company" t-value="res_company"/>
+        </t>
+        <t t-call="is_france_filets.is_suivi_budget_journal_vente_report_external_layout_header"/>
+        <t t-raw="0"/>
+        <t t-call="is_france_filets.is_suivi_budget_journal_vente_report_external_layout_footer"/>
+    </template>
+
+
+    <template id="is_suivi_budget_journal_vente_report">
+        <t t-call="is_france_filets.is_suivi_budget_journal_vente_report_html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="is_france_filets.is_suivi_budget_journal_vente_report_external_layout">
+                    <div class="page">
+                        <style>
+                            h1{
+                                text-align:center;
+                                font-size:13pt;
+                            }
+                            th{
+                                font-size:11pt;
+                                padding:1pt;
+                                border:1px solid black;
+                                text-align:center;
+                                background-color:LawnGreen;
+                            }
+                            td{
+                                font-size:11pt;
+                                padding:0pt;
+                                margin:0pt;
+                                padding-left:5pt;
+                                padding-right:5pt;
+                                border:1px solid black;
+                            }
+                            .titre{
+                                font-size:12pt;
+                                font-weight: bold;
+                                background-color:Gainsboro;
+                                margin:2pt;
+                            }
+                            .style1{
+                                font-size:11pt;
+                                text-align: right;
+                                padding-right: 1em;
+                                white-space: nowrap;
+                            }
+                        </style>
+                        <h1>Journal des ventes du <span t-field="o.date_debut"/> au <span t-field="o.date_fin"/></h1>
+                        <div t-raw="o.get_journal_vente_html()"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

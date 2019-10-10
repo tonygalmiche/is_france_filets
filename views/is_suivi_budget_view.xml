@@ -27,13 +27,24 @@
                                 <field name="name"/>
                                 <field name="taux_transformation"/>
                                 <field name="montant_facture"/>
-                                <field name="commentaire"/>
+
                             </group>
                             <group>
                                 <field name="objectif_autre"/>
                                 <field name="objectif_new_affaire_val"/>
                                 <field name="objectif_new_affaire_pou"/>
                             </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="date_debut"/>
+                            </group>
+                            <group>
+                                <field name="date_fin"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="commentaire"/>
                         </group>
                         <field name="mois_ids">
                              <tree editable="bottom">
