@@ -95,7 +95,12 @@
                         </style>
                         <h1 t-field="o.name"/>
 
+                        <div t-raw="o.get_html()"/>
 
+
+
+
+                        <!--
                         <table style="border:1px solid black; width:100%;border-collapse: collapse;">
                             <tr>
                                 <td>Mois</td>
@@ -107,7 +112,7 @@
                             <tr>
                                 <td>CA Budget</td>
                                 <t t-foreach="o.get_mois()" t-as="m">
-                                    <td class="style1"><span t-raw="m.objectif_ca_sud_html"/></td>
+                                    <td class="style1"><span t-raw="m.ca_budget_html"/></td>
                                 </t>
                             </tr>
 
@@ -121,25 +126,25 @@
                             <tr>
                                 <td>Carnet de commande (ferme)</td>
                                 <t t-foreach="o.get_mois()" t-as="m">
-                                    <td> </td>
+                                    <td class="style1"><span t-raw="o.val2html(m.ca_carnet_commande_ferme)"/></td>
                                 </t>
                             </tr>
                             <tr>
                                 <td>Prévisionnel (avec taux transformation)</td>
                                 <t t-foreach="o.get_mois()" t-as="m">
-                                    <td> </td>
+                                    <td class="style1"><span t-raw="o.val2html(m.ca_carnet_commande_prev)"/></td>
                                 </t>
                             </tr>
                             <tr>
                                 <td>TOTAL Prévision</td>
                                 <t t-foreach="o.get_mois()" t-as="m">
-                                    <td> </td>
+                                    <td class="style1"><span t-raw="o.val2html(m.total_prevision)"/></td>
                                 </t>
                             </tr>
                             <tr>
                                 <td>Écart avec budget</td>
                                 <t t-foreach="o.get_mois()" t-as="m">
-                                    <td> </td>
+                                    <td class="style1"><span t-raw="o.val2htmlcolor(m.ecart_budget)"/></td>
                                 </t>
                             </tr>
 
@@ -150,7 +155,7 @@
                             <tr>
                                 <td>CA Réalisé HT</td>
                                 <t t-foreach="o.get_mois()" t-as="m">
-                                    <td class="style1"><span t-raw="o.get_ca_realise(m)"/></td>
+                                    <td class="style1"><span t-raw="o.val2html(o.get_ca_realise(m))"/></td>
                                 </t>
                             </tr>
                             <tr>
@@ -207,7 +212,7 @@
                                 <tr>
                                     <td><span t-raw="c.partner_id.name"/></td>
                                     <t t-foreach="o.get_mois()" t-as="m">
-                                        <td class="style1"><span t-raw="o.get_ca_realise(m,[str(c.partner_id.id)])"/></td>
+                                        <td class="style1"><span t-raw="o.val2html(o.get_ca_realise(m,[str(c.partner_id.id)]))"/></td>
                                     </t>
                                 </tr>
                             </t>
@@ -261,6 +266,7 @@
                                 </t>
                             </tr>
                         </table>
+                        -->
 
                     </div>
                 </t>

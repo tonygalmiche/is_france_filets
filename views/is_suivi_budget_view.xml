@@ -9,6 +9,9 @@
                     <field name="name"/>
                     <field name="taux_transformation"/>
                     <field name="montant_facture"/>
+                    <field name="objectif_autre"/>
+                    <field name="objectif_new_affaire_val"/>
+                    <field name="objectif_new_affaire_pou"/>
                     <field name="commentaire"/>
                 </tree>
             </field>
@@ -20,10 +23,17 @@
                 <form>
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="taux_transformation"/>
-                            <field name="montant_facture"/>
-                            <field name="commentaire"/>
+                            <group>
+                                <field name="name"/>
+                                <field name="taux_transformation"/>
+                                <field name="montant_facture"/>
+                                <field name="commentaire"/>
+                            </group>
+                            <group>
+                                <field name="objectif_autre"/>
+                                <field name="objectif_new_affaire_val"/>
+                                <field name="objectif_new_affaire_pou"/>
+                            </group>
                         </group>
                         <field name="mois_ids">
                              <tree editable="bottom">
