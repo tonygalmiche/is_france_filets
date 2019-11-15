@@ -57,31 +57,32 @@ class IsSuiviBudget(models.Model):
             total=0
             cde_moyenne = 0
             top = 0
-            clair_top = 0
+            #clair_top = 0
             nouveau = 0
             so = 0
             autre = 0
             for row in res:
-                color=u''
+                color_partner=u''
                 partner_id = row[6]
                 if partner_id in top_partner_ids:
-                    color = u'LightPink'
+                    color_partner = u'LightPink'
                     top+=row[5]
 
                 if str(partner_id) in new_partner_ids:
-                    color = u'Khaki'
+                    color_partner = u'Khaki'
                     nouveau+=row[5]
 
+                color_region=u''
                 if row[1]=='SO' or row[1]=='SE':
-                    color = u'LightGreen'
+                    color_region = u'LightGreen'
                     so+=row[5]
 
                 ct+=1
                 amount_untaxed = '{:,.0f}'.format(row[5]).replace(","," ").replace(".",",")
-                html+=u'<tr style="background-color:'+color+u'">'
+                html+=u'<tr>'
                 html+=u'<td style="text-align:center">'+str(ct)+u'</td>'
-                html+=u'<td style="text-align:left">'+row[0]+u'</td>'
-                html+=u'<td style="text-align:center">'+str(row[1] or '')+u'</td>'
+                html+=u'<td style="text-align:left;background-color:'+color_partner+u'">'+row[0]+u'</td>'
+                html+=u'<td style="text-align:center;background-color:'+color_region+u'">'+str(row[1] or '')+u'</td>'
                 html+=u'<td style="text-align:center">'+str(row[2] or '')+u'</td>'
                 html+=u'<td style="text-align:center">'+str(row[3])+u'</td>'
                 html+=u'<td style="text-align:center">'+str(row[4])+u'</td>'
@@ -107,8 +108,8 @@ class IsSuiviBudget(models.Model):
             top = '{:,.0f}'.format(top).replace(","," ").replace(".",",")
             html+=u'<tr style="background-color:LightPink"><td style="text-align:left">Top : </td><td style="text-align:right">'+top+u' €</td></tr>'
 
-            clair_top = '{:,.0f}'.format(clair_top).replace(","," ").replace(".",",")
-            html+=u'<tr style="background-color:white"><td style="text-align:left">Clair Top : </td><td style="text-align:right">'+clair_top+u' €</td></tr>'
+            #clair_top = '{:,.0f}'.format(clair_top).replace(","," ").replace(".",",")
+            #html+=u'<tr style="background-color:white"><td style="text-align:left">Clair Top : </td><td style="text-align:right">'+clair_top+u' €</td></tr>'
 
             nouveau = '{:,.0f}'.format(nouveau).replace(","," ").replace(".",",")
             html+=u'<tr style="background-color:Khaki"><td style="text-align:left">Nouveau : </td><td style="text-align:right">'+nouveau+u' €</td></tr>'
