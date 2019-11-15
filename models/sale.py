@@ -300,6 +300,12 @@ class SaleOrder(models.Model):
                     res = self.env['is.sale.order.controle.gestion'].create(vals)
 
 
+    @api.multi
+    def forcer_entierement_facture_action(self):
+        for obj in self:
+            obj.invoice_status = 'invoiced'
+
+
 class IsCreationPlanningPreparation(models.Model):
     _name='is.creation.planning.preparation'
     _order='date,equipe_id,order_id'

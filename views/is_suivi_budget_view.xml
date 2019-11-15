@@ -61,6 +61,12 @@
                                 <field name="objectif" sum="Total"/>
                             </tree>
                         </field>
+                        <field name="secteur_activite_ids">
+                             <tree editable="bottom">
+                                <field name="secteur_activite_id"/>
+                                <field name="objectif" sum="Total"/>
+                            </tree>
+                        </field>
                     </sheet>
                 </form>
             </field>
