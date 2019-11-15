@@ -93,8 +93,7 @@
 
 
                         </style>
-                        <h1 t-field="o.name"/>
-
+                        <h1><span t-field="o.name"/> imprimé le <t t-raw="o.get_now()"/></h1>
                         <div t-raw="o.get_html()"/>
 
 

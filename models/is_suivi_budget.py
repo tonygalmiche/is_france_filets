@@ -92,7 +92,7 @@ class IsSuiviBudget(models.Model):
 
 
             cde_moyenne = total / len(res)
-            autre = total - nouveau
+            autre = total - nouveau - top
 
             total = '{:,.0f}'.format(total).replace(","," ").replace(".",",")
             html+=u'<tr><th colspan="6" style="text-align:right">Total : </th><th style="text-align:right">'+total+u' €</th></tr>'
@@ -124,6 +124,12 @@ class IsSuiviBudget(models.Model):
             html+=u'</table>'
 
             return html
+
+
+    @api.multi
+    def get_now(self):
+        now = datetime.now().strftime('%d/%m/%y')+u' à '+datetime.now().strftime('%H:%M')
+        return now
 
 
     @api.multi
@@ -260,15 +266,28 @@ class IsSuiviBudget(models.Model):
 
             html+=u'<tr><td colspan="15" class="titre">Indicateur de carnet Cde</td></tr>'
 
+
             html+=u'<tr><td>Cde Moyenne</td>'
             total = 0
             for m in obj.get_mois():
-                val = obj.get_commande_moyenne(m)
+                periode = self.get_periode(m)
+                val = obj.get_commande_moyenne(periode['debut'],periode['fin'])
                 html+=u'<td class="style1">'+obj.val2html(val)+u'</td>'
                 total+=val
-            html+=u'<td class="style1">'+obj.val2html(total)+u'</td>'
+            now   = datetime.now()
+            debut = now
+            fin   = now
+            for m in obj.get_mois():
+                periode = self.get_periode(m)
+                if debut>periode['debut']:
+                    debut=periode['debut']
+                if fin<periode['fin']:
+                    fin=periode['fin']
+            val = obj.get_commande_moyenne(debut,fin)
+            html+=u'<td class="style1">'+obj.val2html(val)+u'</td>'
             html+=u'<td></td>'
             html+=u'</tr>'
+
 
             html+=u'<tr><td>Facture > '+str(obj.montant_facture)+u' € (en quantité)</td>'
             total = 0
@@ -592,23 +611,22 @@ class IsSuiviBudget(models.Model):
 
 
     @api.multi
-    def get_commande_moyenne(self,m):
+    def get_commande_moyenne(self,debut,fin):
         """Ca facturé sur la période / Nombre de factures"""
         cr = self._cr
-        periode = self.get_periode(m)
+        val = 0
         SQL="""
             SELECT
                 sum(ai.amount_untaxed)/count(*)
             FROM account_invoice ai
             WHERE 
-                ai.date_invoice>='"""+str(periode['debut'])+"""' and
-                ai.date_invoice<'"""+str(periode['fin'])+"""' and
+                ai.date_invoice>='"""+str(debut)+"""' and
+                ai.date_invoice<'"""+str(fin)+"""' and
                 ai.type='out_invoice' and
                 ai.state in ('open','paid')
         """
         cr.execute(SQL)
         res = cr.fetchall()
-        val = 0
         for row in res:
             if row[0]:
                 val=row[0]
