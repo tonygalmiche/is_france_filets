@@ -594,10 +594,6 @@ class IsCreationPlanning(models.Model):
                     cde = 'curl --data "'+param+'" https://www.ovh.com/cgi-bin/sms/http2sms.cgi'
                     print 'cde=',cde
 
-                    #cde= curl --data "account=sms-gt14399-1&login=infosaone&password=CX99DJ47&from=InfoSaone&to=0033658074587&message=" https://www.ovh.com/cgi-bin/sms/http2sms.cgi
-
-
-
                 line.sms_heure = date_debut
                 line.sms_resultat = err
                 line.sms_mobile = mobile or '?'
