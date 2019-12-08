@@ -138,6 +138,11 @@ class IsSaleOrderPlanning(models.Model):
     realisation    = fields.Text(u'Réalisation', help=u'Réalisation du chantier', readonly=True)
     pv_realise = fields.Char('PV')
 
+    sms_heure    = fields.Datetime(u"Heure d'envoi du SMS")
+    sms_mobile   = fields.Char(u"Mobile")
+    sms_message  = fields.Text(u"Message")
+    sms_resultat = fields.Char(u"Résultat")
+
 
     def onchange_dates(self,date_debut,date_fin):
         if date_debut and date_fin:
@@ -526,6 +531,86 @@ class IsCreationPlanning(models.Model):
             email=self.env['mail.mail'].create(vals)
             if email:
                 self.env['mail.mail'].send(email)
+
+
+    @api.multi
+    def sms_planning_action(self):
+        """SMS du planning"""
+        cr , uid, context = self.env.args
+        #Offset à prendre pour tenir compte des jours ouvrés
+        offsets={
+            0: 3, #Lundi
+            1: 3, #Mardi
+            2: 5, #Mercredi
+            3: 5, #Jeudi
+            4: 5, #Vendredi
+            5: 5, #Samedi
+            6: 4, #Dimanche
+        }
+        for obj in self:
+            date_debut = datetime.today()
+            jour = date_debut.weekday()
+            offset = offsets[jour]
+            date_fin = date_debut + timedelta(days=offset)
+            lines = self.env['is.sale.order.planning'].search([
+                ('date_debut','>=',date_debut),
+                ('date_debut','<=',date_fin),
+                ('pose_depose','=','pose'),
+                ('sms_heure','=',False),
+            ])
+            for line in lines:
+                print line.date_debut,line.order_id
+                order = line.order_id
+
+                mobile = order.is_contact_id.mobile or order.is_contact_id.phone
+                err=''
+                if not mobile:
+                    err=u'Mobile non renseigné pour le contact'
+                else:
+                    mobile = mobile.replace(' ','')
+                    if len(mobile)!=10:
+                        err=u'Le numéro doit contenir 10 chiffres'
+                    else:
+                        if mobile[0:2]!='06' and mobile[0:2]!='07':
+                            err=u'Le numéro du mobile doit commencer par 06 ou 07'
+                        else:
+                            mobile='0033'+mobile[-9:]
+                print order.name,order.is_contact_id,mobile,err
+                if err=='':
+                    err='OK'
+
+                    user = self.env['res.users'].browse(uid)
+                    company = user.company_id
+                    message = company.is_sms_message or ''
+                    message = message.replace('\n','\\n')
+                    param = \
+                        'account='+(company.is_sms_account or '')+\
+                        '&login='+(company.is_sms_login or '')+\
+                        '&password='+(company.is_sms_password or '')+\
+                        '&from='+(company.is_sms_from or '')+\
+                        '&to='+mobile+\
+                        '&message='+message
+
+                    cde = 'curl --data "'+param+'" https://www.ovh.com/cgi-bin/sms/http2sms.cgi'
+                    print 'cde=',cde
+
+                    #cde= curl --data "account=sms-gt14399-1&login=infosaone&password=CX99DJ47&from=InfoSaone&to=0033658074587&message=" https://www.ovh.com/cgi-bin/sms/http2sms.cgi
+
+
+
+                line.sms_heure = date_debut
+                line.sms_resultat = err
+                line.sms_mobile = mobile or '?'
+            return {
+                'name': u'SMS',
+                'view_mode': 'tree,form',
+                'view_type': 'form',
+                'res_model': 'is.sale.order.planning',
+                'domain': [
+                    ('sms_mobile','!=', ''),
+                ],
+                'type': 'ir.actions.act_window',
+            }
 
 
     @api.multi

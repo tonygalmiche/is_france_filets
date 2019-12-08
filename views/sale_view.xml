@@ -88,7 +88,9 @@
                                 <field name="pose_depose"/>
                                 <field name="etat"/>
                                 <field name="realisation"/>
-                                <field name="pv_realise" readonly="1"/>
+                                <field name="pv_realise"   readonly="1"/>
+                                <field name="sms_heure"    readonly="1" string="SMS"/>
+                                <field name="sms_resultat" readonly="1" string="Err"/>
                             </tree>
                         </field>
                     </page>
@@ -234,6 +236,69 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
             <field name="view_id" ref="is_sale_order_controle_gestion_tree"/>
+        </record>
+
+
+        <!-- is.sale.order.planning -->
+        <record id="is_sale_order_planning_sms_form" model="ir.ui.view">
+            <field name="name">is_sale_order_planning_sms_form</field>
+            <field name="model">is.sale.order.planning</field>
+            <field name="arch" type="xml">
+                <form create="0">
+                    <sheet>
+                        <group>
+                            <field name="date_debut"   readonly="1"/>
+                            <field name="date_fin"     readonly="1"/>
+                            <field name="commentaire"  readonly="1"/>
+                            <field name="equipe_ids"   readonly="1" widget="many2many_tags" />
+                            <field name="pose_depose"  readonly="1"/>
+                            <field name="etat"         readonly="1"/>
+                            <field name="sms_heure"/>
+                            <field name="sms_mobile"   readonly="1"/>
+                            <field name="sms_resultat" readonly="1"/>
+                            <field name="sms_message"  readonly="1"/>
+                            <field name="order_id"     readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="is_sale_order_planning_sms_tree" model="ir.ui.view">
+            <field name="name">is_sale_order_planning_sms_tree</field>
+            <field name="model">is.sale.order.planning</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="date_debut"/>
+                    <field name="date_fin"/>
+                    <field name="pose_depose"/>
+                    <field name="etat"/>
+                    <field name="sms_heure"/>
+                    <field name="sms_mobile"/>
+                    <field name="sms_resultat"/>
+                    <field name="order_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="is_sale_order_planning_search" model="ir.ui.view">
+            <field name="name">is_sale_order_planning_search</field>
+            <field name="model">is.sale.order.planning</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="pose_depose"/>
+                    <field name="etat"/>
+                    <field name="sms_heure"/>
+                    <field name="sms_mobile"/>
+                    <field name="sms_resultat"/>
+                    <field name="order_id"/>
+               </search>
+            </field>
+        </record>
+        <record id="is_sale_order_planning_action" model="ir.actions.act_window">
+            <field name="name">SMS</field>
+            <field name="res_model">is.sale.order.planning</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('sms_mobile','!=', '')]</field>
         </record>
 
 
@@ -490,6 +555,11 @@
                             name="mail_planning_action"
                             type="object"
                             string="Envoyer le mail"
+                        />
+                        <button
+                            name="sms_planning_action"
+                            type="object"
+                            string="Envoyer les SMS"
                         />
                     </header>
                     <sheet>

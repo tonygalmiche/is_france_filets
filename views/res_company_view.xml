@@ -8,9 +8,16 @@
             <field name="arch" type="xml">
                 <notebook position="inside">
                     <page string="Configuration France Filets">
-                        <group>
+                        <group string="Facturation">
                             <field name="is_affacturage"/>
                             <field name="is_conditions_generales"/>
+                        </group>
+                        <group string="SMS via OVH">
+                            <field name="is_sms_account"/>
+                            <field name="is_sms_login"/>
+                            <field name="is_sms_password" password="True"/>
+                            <field name="is_sms_from"/>
+                            <field name="is_sms_message"/>
                         </group>
                     </page>
                 </notebook>

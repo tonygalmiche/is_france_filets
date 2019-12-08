@@ -52,6 +52,14 @@
         sequence="12"
     />
 
+    <menuitem 
+        id="is_sale_order_planning_menu"
+        action="is_sale_order_planning_action"
+        parent="sales_team.menu_sales"
+        sequence="12"
+    />
+
+
 
     <menuitem 
         id="is_sale_order_controle_gestion_menu"
