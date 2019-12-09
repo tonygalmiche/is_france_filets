@@ -15,5 +15,6 @@ class res_company(models.Model):
     is_sms_password = fields.Char(u'SMS password')
     is_sms_from     = fields.Char(u'SMS from')
     is_sms_message  = fields.Text(u'SMS message')
+    is_sms_mobile   = fields.Char(u'SMS Mobile de test')
 
 

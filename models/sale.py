@@ -3,6 +3,8 @@
 from odoo import api, fields, models
 from datetime import datetime, timedelta
 from odoo.exceptions import Warning
+import os
+import unicodedata
 
 
 _ETAT_PLANNING=[
@@ -142,6 +144,7 @@ class IsSaleOrderPlanning(models.Model):
     sms_mobile   = fields.Char(u"Mobile")
     sms_message  = fields.Text(u"Message")
     sms_resultat = fields.Char(u"Résultat")
+    sms_quota    = fields.Integer(u"Quota OVH")
 
 
     def onchange_dates(self,date_debut,date_fin):
@@ -532,6 +535,23 @@ class IsCreationPlanning(models.Model):
             if email:
                 self.env['mail.mail'].send(email)
 
+    def _format_mobile(self,mobile):
+        err=''
+        if not mobile:
+            err=u'Mobile non renseigné pour le contact'
+        else:
+            mobile = mobile.replace(' ','')
+            if len(mobile)!=10:
+                err=u'Le numéro doit contenir 10 chiffres'
+            else:
+                if mobile[0:2]!='06' and mobile[0:2]!='07':
+                    err=u'Le numéro du mobile doit commencer par 06 ou 07'
+                else:
+                    mobile='0033'+mobile[-9:]
+        return mobile,err
+
+
+        return mobile
 
     @api.multi
     def sms_planning_action(self):
@@ -561,42 +581,57 @@ class IsCreationPlanning(models.Model):
             for line in lines:
                 print line.date_debut,line.order_id
                 order = line.order_id
-
                 mobile = order.is_contact_id.mobile or order.is_contact_id.phone
-                err=''
-                if not mobile:
-                    err=u'Mobile non renseigné pour le contact'
-                else:
-                    mobile = mobile.replace(' ','')
-                    if len(mobile)!=10:
-                        err=u'Le numéro doit contenir 10 chiffres'
-                    else:
-                        if mobile[0:2]!='06' and mobile[0:2]!='07':
-                            err=u'Le numéro du mobile doit commencer par 06 ou 07'
-                        else:
-                            mobile='0033'+mobile[-9:]
+                mobile,err = self._format_mobile(mobile)
                 print order.name,order.is_contact_id,mobile,err
+                message=''
+                quota=0
                 if err=='':
-                    err='OK'
-
+                    err='ok'
                     user = self.env['res.users'].browse(uid)
                     company = user.company_id
                     message = company.is_sms_message or ''
-                    message = message.replace('\n','\\n')
+                    message = message.replace('[date_debut]',date_fin.strftime('%d/%m/%Y'))
+                    message = message.replace('\n',' ')
+                    #message = unicode(message,'utf-8')
+                    message = unicodedata.normalize('NFD', message).encode('ascii', 'ignore')
+                    if company.is_sms_mobile:
+                        to,err2 = self._format_mobile(company.is_sms_mobile)
+                    else:
+                        to = mobile
                     param = \
                         'account='+(company.is_sms_account or '')+\
                         '&login='+(company.is_sms_login or '')+\
                         '&password='+(company.is_sms_password or '')+\
                         '&from='+(company.is_sms_from or '')+\
-                        '&to='+mobile+\
+                        '&to='+to+\
                         '&message='+message
-
                     cde = 'curl --data "'+param+'" https://www.ovh.com/cgi-bin/sms/http2sms.cgi'
                     print 'cde=',cde
+                    res=os.popen(cde).readlines()
 
-                line.sms_heure = date_debut
-                line.sms_resultat = err
-                line.sms_mobile = mobile or '?'
+                    print 'res =',res
+
+                    if len(res)>=2:
+                        if res[0].strip()=='OK':
+                            err='OK'
+
+                            print 'res[1] =',res[1].strip()
+
+                            quota = int(float(res[1].strip()))
+                    else:
+                        err='\n'.res
+                    ct=0
+                    for l in res:
+                        ct+=1
+                        print ct,l.strip()
+                line.write({
+                    'sms_heure' : date_debut,
+                    'sms_message': message,
+                    'sms_resultat': err,
+                    'sms_mobile'  : mobile or '?',
+                    'sms_quota'   : quota,
+                })
             return {
                 'name': u'SMS',
                 'view_mode': 'tree,form',

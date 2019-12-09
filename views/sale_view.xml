@@ -257,6 +257,7 @@
                             <field name="sms_mobile"   readonly="1"/>
                             <field name="sms_resultat" readonly="1"/>
                             <field name="sms_message"  readonly="1"/>
+                            <field name="sms_quota"    readonly="1"/>
                             <field name="order_id"     readonly="1"/>
                         </group>
                     </sheet>
@@ -275,6 +276,7 @@
                     <field name="sms_heure"/>
                     <field name="sms_mobile"/>
                     <field name="sms_resultat"/>
+                    <field name="sms_quota"/>
                     <field name="order_id"/>
                 </tree>
             </field>
