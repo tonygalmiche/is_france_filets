@@ -620,7 +620,7 @@ class IsCreationPlanning(models.Model):
 
                             quota = int(float(res[1].strip()))
                     else:
-                        err='\n'.res
+                        err='\n'.join(res)
                     ct=0
                     for l in res:
                         ct+=1
