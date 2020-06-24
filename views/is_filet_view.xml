@@ -20,9 +20,11 @@
                     <field name="num_serie"/>
                     <field name="date_fabrication"/>
                     <field name="prix_achat"/>
-                    <field name="etat_filet"/>
-                    <field name="position"/>
                     <field name="depuis_le"/>
+                    <field name="position"/>
+                    <field name="latitude"/>
+                    <field name="longitude"/>
+                    <field name="etat_filet"/>
                     <field name="chantier_id"/>
                 </tree>
             </field>
@@ -32,7 +34,7 @@
             <field name="model">is.filet</field>
             <field name="arch" type="xml">
                 <form>
-                    <sheet>
+                    <sheet class="oe_form_sheet_width_wider">
                         <group>
                             <group string="Identification">
                                 <field name="name"/>
@@ -42,11 +44,13 @@
                                 <field name="num_serie"/>
                                 <field name="date_fabrication"/>
                                 <field name="prix_achat"/>
-                                <field name="etat_filet"/>
                             </group>
                             <group string="Position actuelle">
-                                <field name="position"/>
                                 <field name="depuis_le"/>
+                                <field name="position"/>
+                                <field name="latitude"/>
+                                <field name="longitude"/>
+                                <field name="etat_filet"/>
                                 <field name="chantier_id"/>
                             </group>
                         </group>
@@ -54,6 +58,9 @@
                              <tree editable="top">
                                 <field name="name"/>
                                 <field name="position"/>
+                                <field name="latitude"/>
+                                <field name="longitude"/>
+                                <field name="etat_filet"/>
                                 <field name="chantier_id"/>
                             </tree>
                         </field>
@@ -71,8 +78,10 @@
                     <field name="dimensions"/>
                     <field name="fabriquant"/>
                     <field name="num_serie"/>
-                    <field name="etat_filet"/>
                     <field name="position"/>
+                    <field name="latitude"/>
+                    <field name="longitude"/>
+                    <field name="etat_filet"/>
                     <field name="chantier_id"/>
                </search>
             </field>
@@ -96,6 +105,9 @@
                     <field name="filet_id"/>
                     <field name="name"/>
                     <field name="position"/>
+                    <field name="latitude"/>
+                    <field name="longitude"/>
+                    <field name="etat_filet"/>
                     <field name="chantier_id"/>
                 </tree>
             </field>
@@ -110,6 +122,9 @@
                             <field name="filet_id"/>
                             <field name="name"/>
                             <field name="position"/>
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                            <field name="etat_filet"/>
                             <field name="chantier_id"/>
                         </group>
                     </sheet>
@@ -124,6 +139,7 @@
                     <field name="filet_id"/>
                     <field name="name"/>
                     <field name="position"/>
+                    <field name="etat_filet"/>
                     <field name="chantier_id"/>
                </search>
             </field>
