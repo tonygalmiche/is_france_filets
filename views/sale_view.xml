@@ -42,6 +42,7 @@
                 </xpath>
                 <field name="partner_id" position="after">
                     <field name="is_region_id"/>
+                    <field name="is_classification"/>
                     <field name="is_secteur_activite_id"/>
                     <field name="is_contact_id" domain="[('parent_id','=',partner_id)]"/>
                     <field name="is_nom_chantier"/>
@@ -155,6 +156,8 @@
                 <field name="partner_id" position="after">
                     <field name="is_nom_chantier"/>
                     <field name="is_etat_planning"/>
+                    <field name="is_classification"/>
+                    <field name="is_region_id"/>
                 </field>
             </field>
         </record>
@@ -204,6 +207,9 @@
 
 
 
+
+
+
         <record id="is_sale_order_controle_gestion_tree" model="ir.ui.view">
             <field name="name">is_sale_order_controle_gestion_tree</field>
             <field name="model">sale.order</field>
@@ -236,6 +242,36 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
             <field name="view_id" ref="is_sale_order_controle_gestion_tree"/>
+        </record>
+
+
+        <record id="is_gestion_offres_tree" model="ir.ui.view">
+            <field name="name">is_gestion_offres_tree</field>
+            <field name="model">sale.order</field>
+            <field name="priority" eval="90" />
+            <field name="arch" type="xml">
+                <tree colors="gray:state!='sale'">
+                    <field name="name"/>
+                    <field name="date_order"/>
+                    <field name="partner_id"/>
+                    <field name="is_region_id"/>
+                    <field name="is_classification"/>
+                    <field name="is_superficie_m2"/>
+                    <field name="amount_total" string="CA TTC" sum="Total"/>
+                    <field name="is_ca_m2"/>
+                    <field name="state"/>
+                    <field name="is_date_previsionnelle"/>
+                    <field name="is_motif_archivage_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="is_gestion_offres_action" model="ir.actions.act_window">
+            <field name="name">Gestion des offres</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+            <field name="view_id" ref="is_gestion_offres_tree"/>
+            <field name="domain">[('state','not in', ['cancel'])]</field>
         </record>
 
 

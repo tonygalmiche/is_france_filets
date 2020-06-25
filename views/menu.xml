@@ -36,9 +36,7 @@
     />
 
 
-
-
-
+    <!-- Ventes -->
     <menuitem 
         id="sale.menu_sale_quotations"
         action="is_sale_order_devis_action"
@@ -51,21 +49,23 @@
         parent="sales_team.menu_sales"
         sequence="12"
     />
-
     <menuitem 
         id="is_sale_order_planning_menu"
         action="is_sale_order_planning_action"
         parent="sales_team.menu_sales"
         sequence="12"
     />
-
-
-
     <menuitem 
         id="is_sale_order_controle_gestion_menu"
         action="is_sale_order_controle_gestion_action"
         parent="sales_team.menu_sales"
         sequence="13"
+    />
+    <menuitem 
+        id="is_gestion_offres_menu"
+        action="is_gestion_offres_action"
+        parent="sales_team.menu_sales"
+        sequence="14"
     />
 
 
@@ -82,8 +82,6 @@
         parent="is_preparation_planning_menu" 
         action="is_creation_planning_action" 
     />
-
-
 
 
     <menuitem 

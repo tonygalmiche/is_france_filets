@@ -252,6 +252,21 @@ class SaleOrder(models.Model):
             obj.is_ecart_jours = obj.is_nb_jours_prevu - obj.is_nb_jours_realise
 
 
+
+    @api.depends('order_line')
+    def _compute_classification(self):
+        for obj in self:
+            ids=[]
+            for line in obj.order_line:
+                x = line.product_id.default_code
+                if x:
+                    x=x.split(' ')
+                    if x[0] not in ids:
+                        ids.append(x[0])
+            ids.sort()
+            obj.is_classification = ','.join(ids)
+
+
     is_nom_chantier         = fields.Char(u'Nom du chantier')
     is_date_previsionnelle  = fields.Date(u'Date prévisionnelle du chantier')
     is_contact_id           = fields.Many2one('res.partner', u'Contact du client')
@@ -287,6 +302,8 @@ class SaleOrder(models.Model):
     is_total_achats_realise = fields.Integer(u'Total Achats réalisé', compute='_compute_totaux'  , readonly=True, store=True)
     is_ecart_mo             = fields.Integer(u'Écart MO'            , compute='_compute_totaux'  , readonly=True, store=True)
     is_ecart_achat          = fields.Integer(u'Écart Achat'         , compute='_compute_totaux'  , readonly=True, store=True)
+
+    is_classification       = fields.Char(u'Classification'         , compute='_compute_classification', readonly=True, store=True)
 
 
     @api.multi
