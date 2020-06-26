@@ -221,7 +221,7 @@ class SaleOrder(models.Model):
     def _compute_ca_m2(self):
         for obj in self:
             if obj.is_superficie_m2:
-                obj.is_ca_m2=obj.amount_untaxed/obj.is_superficie_m2
+                obj.is_ca_m2=obj.is_ca_hors_nacelle/obj.is_superficie_m2
 
 
     @api.depends('is_controle_gestion_ids')
@@ -267,6 +267,30 @@ class SaleOrder(models.Model):
             obj.is_classification = ','.join(ids)
 
 
+    @api.depends('partner_id','partner_id.is_type_partenaire')
+    def _compute_type_partenaire(self):
+        for obj in self:
+            obj.is_type_partenaire = obj.partner_id.is_type_partenaire
+
+
+    @api.depends('order_line')
+    def _compute_ca_nacelle(self):
+        for obj in self:
+            ca=0
+            for line in obj.order_line:
+                if line.product_id and line.product_id.default_code:
+                    if line.product_id.default_code=='location nacelle':
+                        ca+=line.price_subtotal
+            obj.is_ca_nacelle = ca
+            obj.is_ca_hors_nacelle = obj.amount_untaxed - ca
+
+
+    @api.depends('order_line','is_suivi')
+    def _compute_suivi_ht(self):
+        for obj in self:
+            obj.is_suivi_ht = obj.amount_untaxed*obj.is_suivi/100
+
+
     is_nom_chantier         = fields.Char(u'Nom du chantier')
     is_date_previsionnelle  = fields.Date(u'Date prévisionnelle du chantier')
     is_contact_id           = fields.Many2one('res.partner', u'Contact du client')
@@ -279,6 +303,8 @@ class SaleOrder(models.Model):
     is_pied_devis           = fields.Text(u'Pied devis')
     is_superficie           = fields.Char(u'Superficie', help=u"Champ utilisé pour le devis client")
     is_superficie_m2        = fields.Integer(u'Superficie (m2)', help=u"Champ utilisé pour les calculs du CA/m2")
+    is_ca_nacelle           = fields.Float(u"CA nacelle"     , digits=(14,2), compute='_compute_ca_nacelle', readonly=True)
+    is_ca_hors_nacelle      = fields.Float(u"CA hors nacelle", digits=(14,2), compute='_compute_ca_nacelle', readonly=True)
     is_ca_m2                = fields.Float(u"CA / m2", digits=(14,2), compute='_compute_ca_m2', readonly=True)
     is_hauteur              = fields.Char(u'Hauteur')
     is_nb_interventions     = fields.Char(u"Nombre d'interventions")
@@ -305,6 +331,14 @@ class SaleOrder(models.Model):
 
     is_classification       = fields.Char(u'Classification'         , compute='_compute_classification', readonly=True, store=True)
 
+    is_type_partenaire = fields.Selection([
+        ('Client'      , 'Client'),
+        ('Prospect'    , 'Prospect'),
+        ('Prescripteur', 'Prescripteur'),
+    ], u'Type de partenaire' , compute='_compute_type_partenaire', readonly=True, store=True)
+
+    is_suivi    = fields.Integer(u'Suivi(%)' , help=u'Utilisé dans la gestion des offres')
+    is_suivi_ht = fields.Integer(u'Suivi (€)', help=u'Utilisé dans la gestion des offres', compute='_compute_suivi_ht', readonly=True, store=True)
 
     @api.multi
     def get_nacelles(self):
