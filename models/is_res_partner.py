@@ -41,24 +41,24 @@ class is_res_partner(models.Model):
                 from (
 
                     select 
-                        id,
-                        parent_id,
-                        name,
-                        is_company,
-                        street,
-                        zip,
-                        city,
-                        phone,
-                        fax,
-                        mobile,
-                        email,
-                        website,
-                        function,
-                        is_type_partenaire,
-                        is_region_id,
-                        is_secteur_activite_id 
-                    from res_partner
-                    where parent_id is not null and active='t'
+                        rp1.id,
+                        rp1.parent_id,
+                        rp1.name,
+                        rp1.is_company,
+                        rp1.street,
+                        rp1.zip,
+                        rp1.city,
+                        rp1.phone,
+                        rp1.fax,
+                        rp1.mobile,
+                        rp1.email,
+                        rp1.website,
+                        rp1.function,
+                        rp2.is_type_partenaire,
+                        rp2.is_region_id,
+                        rp2.is_secteur_activite_id 
+                    from res_partner rp1 inner join res_partner rp2 on rp1.parent_id=rp2.id
+                    where rp1.parent_id is not null and rp1.active='t'
 
                     union
 
