@@ -59,13 +59,19 @@
         id="is_sale_order_controle_gestion_menu"
         action="is_sale_order_controle_gestion_action"
         parent="sales_team.menu_sales"
-        sequence="13"
+        sequence="20"
     />
     <menuitem 
         id="is_gestion_offres_menu"
         action="is_gestion_offres_action"
         parent="sales_team.menu_sales"
-        sequence="14"
+        sequence="30"
+    />
+    <menuitem 
+        id="is_res_partner_menu"
+        action="is_res_partner_action"
+        parent="sales_team.menu_sales"
+        sequence="40"
     />
 
 

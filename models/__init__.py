@@ -10,4 +10,5 @@ import is_sale_order_line
 import is_account_invoice_line
 import is_filet
 import is_suivi_budget
+import is_res_partner
 
