@@ -87,7 +87,18 @@ class is_filet_mouvement(models.Model):
     chantier_id = fields.Many2one('is.chantier', u'Chantier')
 
 
+    @api.multi
+    def get_position_selection(self):
+        """Retourne pour l'application mobile, la liste de selection du champ position"""
+        return _POSITIONS
 
+
+    @api.multi
+    def get_etat_filet_selection(self):
+        """Retourne pour l'application mobile, la liste de selection du champ etat_filet"""
+        # Methode en accèdant directement au champ sans passer par la liste _ETAT_FILET
+        res = self.env["is.filet.mouvement"]._fields["etat_filet"].selection
+        return res
 
 
 
