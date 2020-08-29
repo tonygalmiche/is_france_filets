@@ -74,6 +74,13 @@ class is_filet(models.Model):
                 obj.longitude   = longitude
 
 
+    @api.multi
+    def get_nb_filets(self,chantier_id):
+        """Retourne pour l'application mobile, le nombre de filets pour un chantier"""
+        ids = self.env['is.filet'].search([('chantier_id','=',chantier_id)])
+        return len(ids)
+
+
 class is_filet_mouvement(models.Model):
     _name='is.filet.mouvement'
     _order='name desc'
