@@ -39,6 +39,14 @@ class is_filet(models.Model):
     mouvement_ids = fields.One2many('is.filet.mouvement', 'filet_id', u"Mouvements")
 
 
+    @api.multi
+    def get_type_filet_selection(self):
+        """Retourne pour l'application mobile, la liste de selection du champ type_filet"""
+        res = self.env["is.filet"]._fields["type_filet"].selection
+        return res
+
+
+
     @api.model
     def create(self, vals):
         data_obj = self.env['ir.model.data']
