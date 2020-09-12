@@ -1024,6 +1024,7 @@ class IsChantier(models.Model):
     hauteur           = fields.Char(u'Hauteur', readonly=True)
     type_chantier     = fields.Selection(_TYPE_CHANTIER, u'Type de chantier', readonly=True)
     planning_ids      = fields.One2many('is.chantier.planning', 'chantier_id', u"Planning")
+    filet_ids        = fields.One2many('is.filet', 'chantier_id', u"Filets")
     informations      = fields.Text(u'Informations diverses', readonly=True)
     piece_jointe_ids  = fields.Many2many('ir.attachment', 'is_chantier_piece_jointe_attachment_rel', 'is_chantier_id', 'attachment_id', u'Pièces jointes', readonly=True)
     fin_chantier_ids  = fields.Many2many('ir.attachment', 'is_chantier_fin_chantier_attachment_rel', 'is_chantier_id', 'attachment_id', u'Documents de fin de chantier')

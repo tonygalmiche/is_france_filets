@@ -805,13 +805,25 @@
                                 </tree>
                             </field>
                         </group>
+                        <group string="Filets" attrs="{'invisible': [('filet_ids', '=', [])]}">
+                            <field name="filet_ids" nolabel="1" readonly="1">
+                                 <tree>
+                                    <field name="name"/>
+                                    <field name="type_filet"/>
+                                    <field name="dimensions"/>
+                                    <field name="fabriquant"/>
+                                    <field name="etat_filet"/>
+                                    <field name="position"/>
+                                    <field name="depuis_le"/>
+                                </tree>
+                            </field>
+                        </group>
                         <group string="Pièces jointes">
                             <field name="piece_jointe_ids" nolabel="1" widget="many2many_binary"/>
                         </group>
                         <group string="Documents de fin de chantier">
                             <field name="fin_chantier_ids" nolabel="1" widget="many2many_binary"/>
                         </group>
-
                         <group string="Informations diverses">
                             <field name="informations" nolabel="1"/>
                         </group>
