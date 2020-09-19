@@ -84,20 +84,38 @@
                 </xpath>
                 <xpath expr="//page[1]" position="after"> 
                     <page string="Planning">
-                        <field name="is_planning_ids">
-                             <tree editable="bottom">
-                                <field name="date_debut" on_change="onchange_dates(date_debut,date_fin)"/>
-                                <field name="date_fin"   on_change="onchange_dates(date_debut,date_fin)"/>
-                                <field name="commentaire"/>
-                                <field name="equipe_ids" widget="many2many_tags"/>
-                                <field name="pose_depose"/>
-                                <field name="etat"/>
-                                <field name="realisation"/>
-                                <field name="pv_realise"   readonly="1"/>
-                                <field name="sms_heure"    readonly="1" string="SMS"/>
-                                <field name="sms_resultat" readonly="1" string="Err"/>
-                            </tree>
-                        </field>
+                        <group string="Planning">
+                            <field name="is_planning_ids" nolabel="1">
+                                 <tree editable="bottom">
+                                    <field name="date_debut" on_change="onchange_dates(date_debut,date_fin)"/>
+                                    <field name="date_fin"   on_change="onchange_dates(date_debut,date_fin)"/>
+                                    <field name="commentaire"/>
+                                    <field name="equipe_ids" widget="many2many_tags"/>
+                                    <field name="pose_depose"/>
+                                    <field name="etat"/>
+                                    <field name="realisation"/>
+                                    <field name="pv_realise"   readonly="1"/>
+                                    <field name="sms_heure"    readonly="1" string="SMS"/>
+                                    <field name="sms_resultat" readonly="1" string="Err"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="Filets" attrs="{'invisible': [('is_filet_ids', '=', [])]}">
+                            <field name="is_filet_ids" nolabel="1" readonly="1">
+                                 <tree>
+                                    <field name="name"/>
+                                    <field name="type_filet"/>
+                                    <field name="dimensions"/>
+                                    <field name="fabriquant"/>
+                                    <field name="etat_filet"/>
+                                    <field name="position"/>
+                                    <field name="depuis_le"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group attrs="{'invisible': [('is_filet_ids', '=', [])]}">
+                            <field name="is_chantier_id"/>
+                        </group>
                     </page>
                     <page string="Contrôle de gestion">
                         <field name="is_controle_gestion_ids">

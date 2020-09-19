@@ -291,6 +291,15 @@ class SaleOrder(models.Model):
             obj.is_suivi_ht = obj.amount_untaxed*obj.is_suivi/100
 
 
+    @api.depends('is_planning_ids')
+    def _compute_chantier_id(self):
+        for obj in self:
+            chantiers = self.env['is.chantier'].search([('order_id','=',obj.id)])
+            for chantier in chantiers:
+                obj.is_chantier_id = chantier.id
+                obj.is_filet_ids   = chantier.filet_ids
+
+
     is_nom_chantier         = fields.Char(u'Nom du chantier')
     is_date_previsionnelle  = fields.Date(u'Date prévisionnelle du chantier')
     is_contact_id           = fields.Many2one('res.partner', u'Contact du client')
@@ -312,6 +321,10 @@ class SaleOrder(models.Model):
     is_type_prestation_id   = fields.Many2one('is.type.prestation', u'Type de prestation')
     is_nacelle_id           = fields.Many2one('is.nacelle', u'Nacelle')
     is_planning_ids         = fields.One2many('is.sale.order.planning', 'order_id', u"Planning")
+
+    is_chantier_id          = fields.Many2one('is.chantier', u'Chantier', compute='_compute_chantier_id', readonly=True, store=False)
+    is_filet_ids            = fields.One2many('is.filet', 'chantier_id', u"Filets", compute='_compute_chantier_id', readonly=True, store=False)
+
     is_etat_planning        = fields.Char(u"Etat planning", compute='_compute', readonly=True, store=True)
     is_info_fiche_travail   = fields.Text(u'Informations fiche de travail')
     is_piece_jointe_ids     = fields.Many2many('ir.attachment', 'sale_order_piece_jointe_attachment_rel', 'order_id', 'attachment_id', u'Pièces jointes')
