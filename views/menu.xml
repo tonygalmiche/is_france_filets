@@ -106,7 +106,7 @@
 
 
 
-
+    <!-- Tables -->>
     <menuitem 
         id="is_ventes_table_menu"
         sequence="900" 
@@ -134,7 +134,6 @@
         parent="is_ventes_table_menu"
         action="is_origine_action"
     />
-
     <menuitem 
         id="is_type_prestation_menu" 
         sequence="30" 
@@ -142,7 +141,6 @@
         parent="is_ventes_table_menu" 
         action="is_type_prestation_action" 
     />
-
     <menuitem 
         id="is_nacelle_menu" 
         sequence="40" 
@@ -150,8 +148,6 @@
         parent="is_ventes_table_menu" 
         action="is_nacelle_action" 
     />
-
-
     <menuitem 
         id="is_equipe_menu" 
         sequence="50" 
@@ -159,7 +155,6 @@
         parent="is_ventes_table_menu" 
         action="is_equipe_action" 
     />
-
     <menuitem 
         id="is_motif_archivage_menu" 
         sequence="60" 
@@ -167,8 +162,6 @@
         parent="is_ventes_table_menu" 
         action="is_motif_archivage_action" 
     />
-
-
     <menuitem 
         id="is_controle_gestion_menu"
         sequence="70" 
@@ -176,9 +169,16 @@
         parent="is_ventes_table_menu"
         action="is_controle_gestion_action"
     />
+    <menuitem 
+        id="is_groupe_client_menu"
+        sequence="80" 
+        name="Groupe client"
+        parent="is_ventes_table_menu"
+        action="is_groupe_client_action"
+    />
 
 
-
+    <!-- Analyses -->
     <menuitem 
         id="is_analyses_top_menu"
         sequence="90" 

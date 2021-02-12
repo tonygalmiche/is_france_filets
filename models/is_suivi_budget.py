@@ -15,8 +15,9 @@ class IsSuiviBudget(models.Model):
     objectif_autre           = fields.Integer(u"Objectif autres clients")
     objectif_new_affaire_val = fields.Integer(u"Objectif nouvelles affaires (en valeur)")
     objectif_new_affaire_pou = fields.Integer(u"Objectif nouvelles affaires (en pourcentage)")
-    mois_ids                 = fields.One2many('is.suivi.budget.mois', 'suivi_id', u"Mois du suivi budget"  , copy=True)
-    top_client_ids           = fields.One2many('is.suivi.budget.top.client', 'suivi_id', u"Top Client"      , copy=True)
+    mois_ids                 = fields.One2many('is.suivi.budget.mois', 'suivi_id', u"Mois du suivi budget"          , copy=True)
+    top_client_ids           = fields.One2many('is.suivi.budget.top.client'      , 'suivi_id', u"Top Client"        , copy=True)
+    groupe_client_ids        = fields.One2many('is.suivi.budget.groupe.client'   , 'suivi_id', u"Groupe Client"     , copy=True)
     secteur_activite_ids     = fields.One2many('is.suivi.budget.secteur.activite', 'suivi_id', u"Secteur d'activité", copy=True)
     date_debut               = fields.Date(u"Date début (Journal des ventes)")
     date_fin                 = fields.Date(u"Date fin (Journal des ventes)")
@@ -101,15 +102,11 @@ class IsSuiviBudget(models.Model):
 
             html+=u'<table style="border:1px solid black; width:30%;border-collapse: collapse;">'
 
-
             cde_moyenne = '{:,.0f}'.format(cde_moyenne).replace(","," ").replace(".",",")
             html+=u'<tr style="background-color:white"><td style="text-align:left">Cde moyenne : </td><td style="text-align:right">'+cde_moyenne+u' €</td></tr>'
 
             top = '{:,.0f}'.format(top).replace(","," ").replace(".",",")
             html+=u'<tr style="background-color:LightPink"><td style="text-align:left">Top : </td><td style="text-align:right">'+top+u' €</td></tr>'
-
-            #clair_top = '{:,.0f}'.format(clair_top).replace(","," ").replace(".",",")
-            #html+=u'<tr style="background-color:white"><td style="text-align:left">Clair Top : </td><td style="text-align:right">'+clair_top+u' €</td></tr>'
 
             nouveau = '{:,.0f}'.format(nouveau).replace(","," ").replace(".",",")
             html+=u'<tr style="background-color:Khaki"><td style="text-align:left">Nouveau : </td><td style="text-align:right">'+nouveau+u' €</td></tr>'
@@ -119,7 +116,6 @@ class IsSuiviBudget(models.Model):
 
             autre = '{:,.0f}'.format(autre).replace(","," ").replace(".",",")
             html+=u'<tr style="background-color:white"><td style="text-align:left">Autres clients : </td><td style="text-align:right">'+autre+u' €</td></tr>'
-
 
             html+=u'</table>'
 
@@ -139,11 +135,11 @@ class IsSuiviBudget(models.Model):
         tab={}
         for obj in self:
             html=u'<table style="border:1px solid black; width:100%;border-collapse: collapse;">'
-            html+=u'<tr><td>Mois</td>'
+            html+=u'<tr><th style="width:20%">Mois</th>'
             for m in obj.mois_ids:
                 html+=u'<th>'+obj.get_periode(m)['mois']+u'</th>'
-            html+=u'<td>Total</td>'
-            html+=u'<td>Objectifs</td>'
+            html+=u'<th>Total</th>'
+            html+=u'<th>Objectifs</th>'
             html+=u'</tr>'
 
             html+='<tr><td>CA Budget</td>'
@@ -235,7 +231,6 @@ class IsSuiviBudget(models.Model):
             html+=u'<tr><td>Écart avec budget en % </td>'
             total = 0
             for m in obj.get_mois():
-                #=100*(1-90000/83713)
                 val = 0
                 if tab['ca_realise'][m.mois]>0:
                     val =  100*(1 - m.ca_budget / tab['ca_realise'][m.mois])
@@ -244,6 +239,8 @@ class IsSuiviBudget(models.Model):
             html+=u'<td class="style1">'+obj.val2html(total)+u'</td>'
             html+=u'<td></td>'
             html+=u'</tr>'
+
+
 
             html+=u'<tr><td colspan="15" class="titre">Résultat réalisé</td></tr>'
             html+=u'<tr><td>RE  prévisionnel en valeur</td>'
@@ -264,8 +261,16 @@ class IsSuiviBudget(models.Model):
             html+=u'<td></td>'
             html+=u'</tr>'
 
-            html+=u'<tr><td colspan="15" class="titre">Indicateur de carnet Cde</td></tr>'
+            html+=u'<tr><td>Part Achats dans le CA réalisé</td>'
+            total = 0
+            for m in obj.get_mois():
+                html+=u'<td class="style1">'+m.part_achat_html+u'</td>'
+                total+=m.part_achat
+            html+=u'<td class="style1">'+obj.val2html(total)+u'</td>'
+            html+=u'<td></td>'
+            html+=u'</tr>'
 
+            html+=u'<tr><td colspan="15" class="titre">Indicateur de carnet Cde</td></tr>'
 
             html+=u'<tr><td>Cde Moyenne</td>'
             total = 0
@@ -288,16 +293,26 @@ class IsSuiviBudget(models.Model):
             html+=u'<td></td>'
             html+=u'</tr>'
 
-
-            html+=u'<tr><td>Facture > '+str(obj.montant_facture)+u' € (en quantité)</td>'
+            html+=u'<tr><td>Factures entre 20K€ et 50K€ (en quantité)</td>'
             total = 0
             for m in obj.get_mois():
-                val = obj.get_nb_factures_30k(m)
+                val = obj.get_nb_factures(m,20000,50000)
                 html+=u'<td class="style1">'+str(val)+u'</td>'
                 total+=val
             html+=u'<td class="style1">'+str(total)+u'</td>'
             html+=u'<td></td>'
             html+=u'</tr>'
+
+            html+=u'<tr><td>Factures >=50K€ (en quantité)</td>'
+            total = 0
+            for m in obj.get_mois():
+                val = obj.get_nb_factures(m,50000,9999999999)
+                html+=u'<td class="style1">'+str(val)+u'</td>'
+                total+=val
+            html+=u'<td class="style1">'+str(total)+u'</td>'
+            html+=u'<td></td>'
+            html+=u'</tr>'
+
 
             html+=u'<tr><td colspan="15" class="titre">Suivi  Top Clients (11)</td></tr>'
             total_objectif = 0
@@ -323,10 +338,11 @@ class IsSuiviBudget(models.Model):
             total = 0
             for m in obj.get_mois():
                 periode = self.get_periode(m)
-                val = obj.get_ca_realise_top(m)
                 if periode['fin']>now:
+                    val = obj.get_ca_commande_ferme_top(m)
                     html+=u'<td class="style1" style="background-color:LemonChiffon;"><b>'+obj.val2html(val)+u'</b></td>'
                 else:
+                    val = obj.get_ca_realise_top(m)
                     html+=u'<td class="style1"><b>'+obj.val2html(val)+u'</b></td>'
                 total+=val
             html+=u'<td class="style1"><b>'+obj.val2html(total)+u'</b></td>'
@@ -344,6 +360,51 @@ class IsSuiviBudget(models.Model):
             html+=u'</tr>'
 
 
+            html+=u'<tr><td colspan="15" class="titre">Groupes de clients</td></tr>'
+            total_objectif = 0
+            for c in obj.get_groupe_clients():
+                html+=u'<tr><td>'+c.groupe_client_id.name+u'</td>'
+                total = 0
+                for m in obj.get_mois():
+                    periode = self.get_periode(m)
+                    if periode['fin']>now:
+                        val = obj.get_ca_commande_ferme(m,groupe_client_ids=[str(c.groupe_client_id.id)])
+                        html+=u'<td class="style1" style="background-color:LemonChiffon;">'+obj.val2html(val)+u'</td>'
+                    else:
+                        val = obj.get_ca_realise(m,groupe_client_ids=[str(c.groupe_client_id.id)])
+                        html+=u'<td class="style1">'+obj.val2html(val)+u'</td>'
+                    total+=val
+                html+=u'<td class="style1">'+obj.val2html(total)+u'</td>'
+                html+=u'<td class="style1">'+obj.val2html(c.objectif)+'</td>'
+                html+=u'</tr>'
+                total_objectif+=c.objectif
+
+            html+=u'<tr><td>Total</td>'
+            total = 0
+            for m in obj.get_mois():
+                periode = self.get_periode(m)
+                if periode['fin']>now:
+                    val = obj.get_ca_commande_ferme_groupe(m)
+                    html+=u'<td class="style1" style="background-color:LemonChiffon;"><b>'+obj.val2html(val)+u'</b></td>'
+                else:
+                    val = obj.get_ca_realise_groupe(m)
+                    html+=u'<td class="style1"><b>'+obj.val2html(val)+u'</b></td>'
+                total+=val
+            html+=u'<td class="style1"><b>'+obj.val2html(total)+u'</b></td>'
+            html+=u'<td class="style1"><b>'+obj.val2html(total_objectif)+u'</b></td>'
+            html+=u'</tr>'
+
+
+            html+=u'</table>'
+            html+=u'<div style="page-break-after:always;" />'
+            html+=u'<table style="border:1px solid black; width:100%;border-collapse: collapse;">'
+            html+=u'<tr><th style="width:20%">Mois</th>'
+            for m in obj.mois_ids:
+                html+=u'<th>'+obj.get_periode(m)['mois']+u'</th>'
+            html+=u'<th>Total</th>'
+            html+=u'<th>Objectifs</th>'
+            html+=u'</tr>'
+
 
             html+=u'<tr><td colspan="15" class="titre">Suivi Secteurs d\'activités</td></tr>'
             total_objectif = 0
@@ -353,7 +414,6 @@ class IsSuiviBudget(models.Model):
                 for m in obj.get_mois():
                     periode = self.get_periode(m)
                     if periode['fin']>now:
-                        #val = obj.get_ca_commande_ferme(m)
                         val = obj.get_ca_commande_ferme(m,secteur_activite_id=s.secteur_activite_id.id)
                         html+=u'<td class="style1" style="background-color:LemonChiffon;">'+obj.val2html(val)+u'</td>'
                     else:
@@ -406,6 +466,18 @@ class IsSuiviBudget(models.Model):
             html+=u'<td class="style1">'+obj.val2html(total)+u'</td>'
             html+=u'<td></td>'
             html+=u'</tr>'
+
+
+            html+=u'<tr><td>Factures >=20K€ (en quantité)</td>'
+            total = 0
+            for m in obj.get_mois():
+                val = obj.get_nb_factures(m,20000,9999999999,sud=True)
+                html+=u'<td class="style1">'+str(val)+u'</td>'
+                total+=val
+            html+=u'<td class="style1">'+str(total)+u'</td>'
+            html+=u'<td></td>'
+            html+=u'</tr>'
+
             html+=u'</table>'
             return html
 
@@ -437,18 +509,10 @@ class IsSuiviBudget(models.Model):
                 m.ca_budget_html       = self.val2html(m.ca_budget)
                 m.re_previsionnel_html = self.val2htmlcolor(m.re_previsionnel)
                 m.re_realise_html      = self.val2htmlcolor(m.re_realise)
+                m.part_achat_html      = self.val2htmlcolor(m.part_achat)
                 m.objectif_ca_sud_html = self.val2html(m.objectif_ca_sud)
-
-                #m.ca_carnet_commande_ferme = self.get_ca_commande_ferme(m)
-                #m.ca_carnet_commande_prev  = self.get_ca_commande_prev(m)
-                #m.total_prevision          = m.ca_carnet_commande_ferme + m.ca_carnet_commande_prev
-                #m.ecart_budget = m.total_prevision - m.ca_budget
-
-
-
                 mois.append(m)
         return mois
-
 
 
     @api.multi
@@ -458,6 +522,15 @@ class IsSuiviBudget(models.Model):
             for c in obj.top_client_ids:
                 clients.append(c)
         return clients
+
+
+    @api.multi
+    def get_groupe_clients(self):
+        groupe_clients=[]
+        for obj in self:
+            for c in obj.groupe_client_ids:
+                groupe_clients.append(c)
+        return groupe_clients
 
 
     @api.multi
@@ -555,13 +628,24 @@ class IsSuiviBudget(models.Model):
 
 
     @api.multi
-    def get_ca_realise(self,m,partner_ids=False,not_in=False,secteur_activite_id=False):
+    def get_ca_realise_groupe(self,m):
+        groupe_client_ids=[]
+        for obj in self:
+            for c in obj.groupe_client_ids:
+                groupe_client_ids.append(str(c.groupe_client_id.id))
+        val = self.get_ca_realise(m,groupe_client_ids=groupe_client_ids)
+        return val
+
+
+    @api.multi
+    def get_ca_realise(self,m,partner_ids=False,not_in=False,secteur_activite_id=False,groupe_client_ids=False):
         cr = self._cr
         periode = self.get_periode(m)
         SQL="""
             SELECT
                 sum(ai.amount_untaxed)
             FROM account_invoice ai inner join res_partner rp on ai.partner_id=rp.id
+                               left outer join is_groupe_client igc on rp.id=igc.id
             WHERE 
                 ai.date_invoice>='"""+str(periode['debut'])+"""' and
                 ai.date_invoice<'"""+str(periode['fin'])+"""' and
@@ -576,6 +660,9 @@ class IsSuiviBudget(models.Model):
                 SQL=SQL+' and partner_id not in ('+partner_ids+') '
             else:
                 SQL=SQL+' and partner_id in ('+partner_ids+') '
+        if groupe_client_ids:
+            groupe_client_ids=','.join(groupe_client_ids)
+            SQL=SQL+' and is_groupe_client_id in ('+groupe_client_ids+') '
         cr.execute(SQL)
         res = cr.fetchall()
         val = 0
@@ -634,21 +721,25 @@ class IsSuiviBudget(models.Model):
 
 
     @api.multi
-    def get_nb_factures_30k(self,m):
-        """Nombre de factures supérieures au paramètre indiqué (30K€)"""
+    def get_nb_factures(self,m,mini,maxi,sud=False):
+        """Nombre de factures entre mini et maxi"""
         cr = self._cr
         for obj in self:
             periode = self.get_periode(m)
             SQL="""
                 SELECT count(*)
-                FROM account_invoice ai
+                FROM account_invoice ai inner join res_partner rp on ai.partner_id=rp.id
+                                   left outer join is_region   ir on rp.is_region_id=ir.id
                 WHERE 
                     ai.date_invoice>='"""+str(periode['debut'])+"""' and
                     ai.date_invoice<'"""+str(periode['fin'])+"""' and
                     ai.type='out_invoice' and
                     ai.state in ('open','paid') and
-                    ai.amount_untaxed>"""+str(obj.montant_facture)+"""
+                    ai.amount_untaxed>="""+str(mini)+""" and
+                    ai.amount_untaxed<"""+str(maxi)+"""
             """
+            if sud:
+                SQL+=" and ir.name in ('SE','SO') "
             cr.execute(SQL)
             res = cr.fetchall()
             val = 0
@@ -659,7 +750,24 @@ class IsSuiviBudget(models.Model):
 
 
     @api.multi
-    def get_ca_commande_ferme(self,m,partner_ids=False,not_in=False,secteur_activite_id=False):
+    def get_ca_commande_ferme_top(self,m):
+        partner_ids = self.get_top()
+        val = self.get_ca_commande_ferme(m,partner_ids)
+        return val
+
+
+    @api.multi
+    def  get_ca_commande_ferme_groupe(self,m):
+        groupe_client_ids=[]
+        for obj in self:
+            for c in obj.groupe_client_ids:
+                groupe_client_ids.append(str(c.groupe_client_id.id))
+        val = self.get_ca_commande_ferme(m,groupe_client_ids=groupe_client_ids)
+        return val
+
+
+    @api.multi
+    def get_ca_commande_ferme(self,m,partner_ids=False,not_in=False,secteur_activite_id=False,groupe_client_ids=False):
         cr = self._cr
         periode = self.get_periode(m)
         #Prise en compte du retard de 90 jours
@@ -671,6 +779,7 @@ class IsSuiviBudget(models.Model):
             SELECT
                 sum(so.amount_untaxed)
             FROM sale_order so inner join res_partner rp on so.partner_id=rp.id
+                             left outer join is_groupe_client igc on rp.id=igc.id
             WHERE 
                 so.is_date_previsionnelle>='"""+str(debut)+"""' and
                 so.is_date_previsionnelle<'"""+str(periode['fin'])+"""' and
@@ -684,13 +793,15 @@ class IsSuiviBudget(models.Model):
                 SQL=SQL+' and partner_id not in ('+partner_ids+') '
             else:
                 SQL=SQL+' and partner_id in ('+partner_ids+') '
+        if groupe_client_ids:
+            groupe_client_ids=','.join(groupe_client_ids)
+            SQL=SQL+' and is_groupe_client_id in ('+groupe_client_ids+') '
         cr.execute(SQL)
         res = cr.fetchall()
         for row in res:
             if row[0]:
                 val=row[0]
         return val
-
 
 
     @api.multi
@@ -718,11 +829,7 @@ class IsSuiviBudget(models.Model):
                 for row in res:
                     if row[0]:
                         val=row[0] * obj.taux_transformation/100
-            #else:
-            #    val = self.get_ca_realise(m)
             return val
-
-
 
 
 class IsSuiviBudgetMois(models.Model):
@@ -734,7 +841,9 @@ class IsSuiviBudgetMois(models.Model):
     ca_budget       = fields.Integer(u"CA Budget")
     re_previsionnel = fields.Integer(u"RE prévisionnel en valeur")
     re_realise      = fields.Integer(u"RE réalisé en valeur")
+    part_achat      = fields.Integer(u"Part achats dans CA")
     objectif_ca_sud = fields.Integer(u"Objectif CA Sud Ouest et Sud Est")
+
 
 class IsSuiviBudgetTopClient(models.Model):
     _name='is.suivi.budget.top.client'
@@ -745,6 +854,14 @@ class IsSuiviBudgetTopClient(models.Model):
     objectif   = fields.Integer(u"Objectif")
 
 
+class IsSuiviBudgetGroupeClient(models.Model):
+    _name='is.suivi.budget.groupe.client'
+    _order='groupe_client_id'
+
+    suivi_id         = fields.Many2one('is.suivi.budget', 'Suivi Budget', required=True, ondelete='cascade',index=True)
+    groupe_client_id = fields.Many2one('is.groupe.client', u"Groupe Client")
+    objectif         = fields.Integer(u"Objectif")
+
 
 class IsSuiviBudgetSecteurActivite(models.Model):
     _name='is.suivi.budget.secteur.activite'
@@ -753,6 +870,4 @@ class IsSuiviBudgetSecteurActivite(models.Model):
     suivi_id            = fields.Many2one('is.suivi.budget', 'Suivi Budget', required=True, ondelete='cascade',index=True)
     secteur_activite_id = fields.Many2one('is.secteur.activite', u"Secteur d'activité")
     objectif            = fields.Integer(u"Objectif")
-
-
 

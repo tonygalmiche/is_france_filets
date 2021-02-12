@@ -26,7 +26,7 @@
                             <group>
                                 <field name="name"/>
                                 <field name="taux_transformation"/>
-                                <field name="montant_facture"/>
+                                <!-- <field name="montant_facture"/> -->
 
                             </group>
                             <group>
@@ -52,12 +52,19 @@
                                 <field name="ca_budget"       sum="Total"/>
                                 <field name="re_previsionnel" sum="Total"/>
                                 <field name="re_realise"      sum="Total"/>
+                                <field name="part_achat"      sum="Total"/>
                                 <field name="objectif_ca_sud" sum="Total"/>
                             </tree>
                         </field>
                         <field name="top_client_ids">
                              <tree editable="bottom">
                                 <field name="partner_id"/>
+                                <field name="objectif" sum="Total"/>
+                            </tree>
+                        </field>
+                        <field name="groupe_client_ids">
+                             <tree editable="bottom">
+                                <field name="groupe_client_id"/>
                                 <field name="objectif" sum="Total"/>
                             </tree>
                         </field>

@@ -2,12 +2,57 @@
 <odoo>
     <data>
 
+        <!-- Groupe client -->
+        <record id="is_groupe_client_form_view" model="ir.ui.view">
+            <field name="name">is_groupe_client_from_view</field>
+            <field name="model">is.groupe.client</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                            </group>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_groupe_client_tree_view">
+            <field name="name">is_groupe_client_tree_view</field>
+            <field name="model">is.groupe.client</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record id="is_groupe_client_search_view" model="ir.ui.view">
+            <field name="name">is_groupe_client_search_view</field>
+            <field name="model">is.groupe.client</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" />
+                </search>
+            </field>
+        </record>
+        <record id="is_groupe_client_action" model="ir.actions.act_window">
+            <field name="name">Groupe client</field>
+            <field name="res_model">is.groupe.client</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
 
         <record id="is_view_partner_tree" model="ir.ui.view">
             <field name="name">is_view_partner_tree</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_tree" />
             <field name="arch" type="xml">
+                <field name="email" position="before">
+                    <field name="is_groupe_client_id"/>
+                </field>
                 <field name="email" position="after">
                     <field name="is_secteur_activite_id"/>
                     <field name="is_region_id"/>
@@ -23,6 +68,9 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form" />
             <field name="arch" type="xml">
+                <field name="website" position="before">
+                    <field name="is_groupe_client_id"/>
+                </field>
                 <xpath expr="//field[@name='category_id']" position="after">
                     <field name="is_type_partenaire"     attrs="{'invisible': ['|',('is_company', '=', False),('customer', '=', False)]}" />
                     <field name="is_date_commande"       attrs="{'invisible': ['|','|',('is_company', '=', False),('customer', '=', False),('is_type_partenaire', '!=', 'Client')]}" />

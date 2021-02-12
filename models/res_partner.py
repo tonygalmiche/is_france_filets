@@ -30,6 +30,13 @@ class IsOrigine(models.Model):
     name = fields.Char(u"Origine Client")
 
 
+class IsGroupeClient(models.Model):
+    _name='is.groupe.client'
+    _order='name'
+
+    name      = fields.Char(u"Groupe client", required=True)
+
+
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
@@ -53,6 +60,7 @@ class ResPartner(models.Model):
     is_region_id           = fields.Many2one('is.region'          , u'Région')
     is_secteur_activite_id = fields.Many2one('is.secteur.activite', u"Secteur d'activité")
     is_origine_id          = fields.Many2one('is.origine'         , u'Origine Client')
+    is_groupe_client_id    = fields.Many2one('is.groupe.client'   , u'Groupe client')
 
 
 
