@@ -314,12 +314,11 @@ class IsSuiviBudget(models.Model):
             html+=u'</tr>'
 
 
-            html+=u'<tr><td colspan="15" class="titre">Suivi  Top Clients (11)</td></tr>'
+            html+=u'<tr><td colspan="15" class="titre">Suivi  Top Clients</td></tr>'
             total_objectif = 0
             for c in obj.get_clients():
                 html+=u'<tr><td>'+c.partner_id.name+u'</td>'
                 total = 0
-
                 for m in obj.get_mois():
                     periode = self.get_periode(m)
                     if periode['fin']>now:
@@ -334,33 +333,25 @@ class IsSuiviBudget(models.Model):
                 html+=u'</tr>'
                 total_objectif+=c.objectif
 
-            html+=u'<tr><td>Total</td>'
-            total = 0
-            for m in obj.get_mois():
-                periode = self.get_periode(m)
-                if periode['fin']>now:
-                    val = obj.get_ca_commande_ferme_top(m)
-                    html+=u'<td class="style1" style="background-color:LemonChiffon;"><b>'+obj.val2html(val)+u'</b></td>'
-                else:
-                    val = obj.get_ca_realise_top(m)
-                    html+=u'<td class="style1"><b>'+obj.val2html(val)+u'</b></td>'
-                total+=val
-            html+=u'<td class="style1"><b>'+obj.val2html(total)+u'</b></td>'
-            html+=u'<td class="style1"><b>'+obj.val2html(total_objectif)+u'</b></td>'
-            html+=u'</tr>'
 
-            html+=u'<tr><td>Autres clients</td>'
-            total = 0
-            for m in obj.get_mois():
-                val = obj.get_ca_realise_autre(m)
-                html+=u'<td class="style1">'+obj.val2html(val)+u'</td>'
-                total+=val
-            html+=u'<td class="style1">'+obj.val2html(total)+u'</td>'
-            html+=u'<td class="style1">'+obj.val2html(obj.objectif_autre)+'</td>'
-            html+=u'</tr>'
+            # html+=u'<tr><td>Total</td>'
+            # total = 0
+            # for m in obj.get_mois():
+            #     periode = self.get_periode(m)
+            #     if periode['fin']>now:
+            #         val = obj.get_ca_commande_ferme_top(m)
+            #         html+=u'<td class="style1" style="background-color:LemonChiffon;"><b>'+obj.val2html(val)+u'</b></td>'
+            #     else:
+            #         val = obj.get_ca_realise_top(m)
+            #         html+=u'<td class="style1"><b>'+obj.val2html(val)+u'</b></td>'
+            #     total+=val
+            # html+=u'<td class="style1"><b>'+obj.val2html(total)+u'</b></td>'
+            # html+=u'<td class="style1"><b>'+obj.val2html(total_objectif)+u'</b></td>'
+            # html+=u'</tr>'
 
 
-            html+=u'<tr><td colspan="15" class="titre">Groupes de clients</td></tr>'
+
+            # html+=u'<tr><td colspan="15" class="titre">Groupes de clients</td></tr>'
             total_objectif = 0
             for c in obj.get_groupe_clients():
                 html+=u'<tr><td>'+c.groupe_client_id.name+u'</td>'
@@ -384,10 +375,14 @@ class IsSuiviBudget(models.Model):
             for m in obj.get_mois():
                 periode = self.get_periode(m)
                 if periode['fin']>now:
-                    val = obj.get_ca_commande_ferme_groupe(m)
+                    val1 = obj.get_ca_commande_ferme_top(m)
+                    val2 = obj.get_ca_commande_ferme_groupe(m)
+                    val=val1+val2
                     html+=u'<td class="style1" style="background-color:LemonChiffon;"><b>'+obj.val2html(val)+u'</b></td>'
                 else:
-                    val = obj.get_ca_realise_groupe(m)
+                    val1 = obj.get_ca_realise_top(m)
+                    val2 = obj.get_ca_realise_groupe(m)
+                    val=val1+val2
                     html+=u'<td class="style1"><b>'+obj.val2html(val)+u'</b></td>'
                 total+=val
             html+=u'<td class="style1"><b>'+obj.val2html(total)+u'</b></td>'
@@ -395,15 +390,28 @@ class IsSuiviBudget(models.Model):
             html+=u'</tr>'
 
 
-            html+=u'</table>'
-            html+=u'<div style="page-break-after:always;" />'
-            html+=u'<table style="border:1px solid black; width:100%;border-collapse: collapse;">'
-            html+=u'<tr><th style="width:20%">Mois</th>'
-            for m in obj.mois_ids:
-                html+=u'<th>'+obj.get_periode(m)['mois']+u'</th>'
-            html+=u'<th>Total</th>'
-            html+=u'<th>Objectifs</th>'
+            html+=u'<tr><td>Autres clients</td>'
+            total = 0
+            for m in obj.get_mois():
+                val = obj.get_ca_realise_autre(m)
+                html+=u'<td class="style1">'+obj.val2html(val)+u'</td>'
+                total+=val
+            html+=u'<td class="style1">'+obj.val2html(total)+u'</td>'
+            html+=u'<td class="style1">'+obj.val2html(obj.objectif_autre)+'</td>'
             html+=u'</tr>'
+
+
+
+
+            # html+=u'</table>'
+            # html+=u'<div style="page-break-after:always;" />'
+            # html+=u'<table style="border:1px solid black; width:100%;border-collapse: collapse;">'
+            # html+=u'<tr><th style="width:20%">Mois</th>'
+            # for m in obj.mois_ids:
+            #     html+=u'<th>'+obj.get_periode(m)['mois']+u'</th>'
+            # html+=u'<th>Total</th>'
+            # html+=u'<th>Objectifs</th>'
+            # html+=u'</tr>'
 
 
             html+=u'<tr><td colspan="15" class="titre">Suivi Secteurs d\'activités</td></tr>'
@@ -613,9 +621,21 @@ class IsSuiviBudget(models.Model):
 
     @api.multi
     def get_ca_realise_autre(self,m):
+        cr = self._cr
         ids1 = self.get_top()
         ids2 = self.get_nouveaux_clients()
-        partner_ids = ids1 + ids2
+        groupes = self.get_groupe_clients()
+        groupe_client_ids=[]
+        for groupe in groupes:
+            groupe_client_ids.append(str(groupe.groupe_client_id.id))
+        groupe_client_ids=",".join(groupe_client_ids)
+        SQL="select id from res_partner where is_groupe_client_id in ("+groupe_client_ids+")"
+        cr.execute(SQL)
+        res = cr.fetchall()
+        ids3=[]
+        for row in res:
+            ids3.append(str(row[0]))
+        partner_ids = ids1 + ids2 + ids3
         val = self.get_ca_realise(m,partner_ids,not_in=True)
         return val
 
