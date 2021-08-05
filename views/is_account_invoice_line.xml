@@ -1,1 +1,173 @@
-<?xml version="1.0" encoding="utf-8"?><openerp><data>        <record id="is_account_invoice_line_form_view" model="ir.ui.view">        <field name="name">is_account_invoice_line_form_view</field>        <field name="model">is.account.invoice.line</field>        <field name="arch" type="xml">            <form>                <sheet>                    <group>                        <group>                            <field name="invoice_id"/>                            <field name="date_invoice"/>                            <field name="partner_id"/>                            <field name="is_type_partenaire"/>                            <field name="is_region_id"/>                            <field name="is_secteur_activite_id"/>                            <field name="product_id"/>                            <field name="default_code"/>                            <field name="description"/>                            <field name="quantity"/>                            <field name="price_unit"/>                            <field name="price_subtotal"/>                            <field name="state"/>                        </group>                    </group>                </sheet>            </form>        </field>    </record>    <record id="is_account_invoice_line_graph_view" model="ir.ui.view">        <field name="name">is_account_invoice_line_graph_view</field>        <field name="model">is.account.invoice.line</field>        <field name="arch" type="xml">            <graph>                <field name="partner_id"/>                <field name="date_invoice" type="col"/>                <field name="price_subtotal"         type="measure"/>            </graph>        </field>    </record>    <record id="is_account_invoice_line_search_view" model="ir.ui.view">        <field name="name">is_account_invoice_line_search_view</field>        <field name="model">is.account.invoice.line</field>        <field name="arch" type="xml">            <search string="Recherche">                <field name="invoice_id"/>                <field name="partner_id"/>                <field name="is_type_partenaire"/>                <field name="is_region_id"/>                <field name="is_secteur_activite_id"/>                <field name="product_id"/>                <field name="default_code"/>                <field name="description"/>                <field name="state"/>            </search>        </field>    </record>    <record id="is_account_invoice_line_tree_view" model="ir.ui.view">        <field name="name">is_account_invoice_line_tree_view</field>        <field name="model">is.account.invoice.line</field>        <field name="arch" type="xml">            <tree>                <field name="invoice_id"/>                <field name="date_invoice"/>                <field name="partner_id"/>                <field name="is_type_partenaire"/>                <field name="is_region_id"/>                <field name="is_secteur_activite_id"/>                <field name="product_id"/>                <field name="default_code"/>                <field name="description"/>                <field name="quantity" sum="Total"/>                <field name="price_unit"/>                <field name="price_subtotal" sum="Total"/>                <field name="state"/>           </tree>        </field>    </record>    <record id="is_account_invoice_line_action" model="ir.actions.act_window">        <field name="name">Lignes de commandes</field>        <field name="res_model">is.account.invoice.line</field>        <field name="view_type">form</field>        <field name="view_id" ref="is_account_invoice_line_tree_view"/>        <field name="view_mode">tree,form,graph,pivot</field>    </record>    <record id="is_account_invoice_line_region_pivot_view" model="ir.ui.view">        <field name="name">is_account_invoice_line_graph_view</field>        <field name="model">is.account.invoice.line</field>        <field name="arch" type="xml">            <pivot>                <field name="is_region_id"/>                <field name="date_invoice" type="col"/>                <field name="price_subtotal"         type="measure"/>            </pivot>        </field>    </record>    <record id="is_account_invoice_line_region_action" model="ir.actions.act_window">        <field name="name">par Région</field>        <field name="res_model">is.account.invoice.line</field>        <field name="view_type">form</field>        <field name="view_id" ref="is_account_invoice_line_region_pivot_view"/>        <field name="view_mode">pivot,tree,form,graph</field>    </record>    <record id="is_account_invoice_line_secteur_pivot_view" model="ir.ui.view">        <field name="name">is_account_invoice_line_graph_view</field>        <field name="model">is.account.invoice.line</field>        <field name="arch" type="xml">            <pivot>                <field name="is_secteur_activite_id"/>                <field name="date_invoice" type="col"/>                <field name="price_subtotal"         type="measure"/>            </pivot>        </field>    </record>    <record id="is_account_invoice_line_secteur_action" model="ir.actions.act_window">        <field name="name">par Secteur</field>        <field name="res_model">is.account.invoice.line</field>        <field name="view_type">form</field>        <field name="view_id" ref="is_account_invoice_line_secteur_pivot_view"/>        <field name="view_mode">pivot,tree,form,graph</field>    </record>    <record id="is_account_invoice_line_product_pivot_view" model="ir.ui.view">        <field name="name">is_account_invoice_line_graph_view</field>        <field name="model">is.account.invoice.line</field>        <field name="arch" type="xml">            <pivot>                <field name="default_code"/>                <field name="date_invoice" type="col"/>                <field name="price_subtotal"         type="measure"/>            </pivot>        </field>    </record>    <record id="is_account_invoice_line_product_action" model="ir.actions.act_window">        <field name="name">par Article</field>        <field name="res_model">is.account.invoice.line</field>        <field name="view_type">form</field>        <field name="view_id" ref="is_account_invoice_line_product_pivot_view"/>        <field name="view_mode">pivot,tree,form,graph</field>    </record>    <record id="is_account_invoice_line_state_pivot_view" model="ir.ui.view">        <field name="name">is_account_invoice_line_graph_view</field>        <field name="model">is.account.invoice.line</field>        <field name="arch" type="xml">            <pivot>                <field name="state"/>                <field name="date_invoice" type="col"/>                <field name="price_subtotal"         type="measure"/>            </pivot>        </field>    </record>    <record id="is_account_invoice_line_state_action" model="ir.actions.act_window">        <field name="name">par État</field>        <field name="res_model">is.account.invoice.line</field>        <field name="view_type">form</field>        <field name="view_id" ref="is_account_invoice_line_state_pivot_view"/>        <field name="view_mode">pivot,tree,form,graph</field>    </record></data></openerp>
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+    
+    <record id="is_account_invoice_line_form_view" model="ir.ui.view">
+        <field name="name">is_account_invoice_line_form_view</field>
+        <field name="model">is.account.invoice.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="invoice_id"/>
+                            <field name="date_invoice"/>
+                            <field name="partner_id"/>
+                            <field name="is_type_partenaire"/>
+                            <field name="is_region_id"/>
+                            <field name="is_secteur_activite_id"/>
+                            <field name="product_id"/>
+                            <field name="default_code"/>
+                            <field name="description"/>
+                            <field name="quantity"/>
+                            <field name="price_unit"/>
+                            <field name="price_subtotal"/>
+                            <field name="state"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="is_account_invoice_line_graph_view" model="ir.ui.view">
+        <field name="name">is_account_invoice_line_graph_view</field>
+        <field name="model">is.account.invoice.line</field>
+        <field name="arch" type="xml">
+            <graph>
+                <field name="partner_id"/>
+                <field name="date_invoice" type="col"/>
+                <field name="price_subtotal"         type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="is_account_invoice_line_search_view" model="ir.ui.view">
+        <field name="name">is_account_invoice_line_search_view</field>
+        <field name="model">is.account.invoice.line</field>
+        <field name="arch" type="xml">
+            <search string="Recherche">
+                <field name="invoice_id"/>
+                <field name="partner_id"/>
+                <field name="is_type_partenaire"/>
+                <field name="is_region_id"/>
+                <field name="is_secteur_activite_id"/>
+                <field name="product_id"/>
+                <field name="default_code"/>
+                <field name="description"/>
+                <field name="state"/>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="is_account_invoice_line_tree_view" model="ir.ui.view">
+        <field name="name">is_account_invoice_line_tree_view</field>
+        <field name="model">is.account.invoice.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="invoice_id"/>
+                <field name="date_invoice"/>
+                <field name="partner_id"/>
+                <field name="is_type_partenaire"/>
+                <field name="is_region_id"/>
+                <field name="is_secteur_activite_id"/>
+                <field name="product_id"/>
+                <field name="default_code"/>
+                <field name="description"/>
+                <field name="quantity" sum="Total"/>
+                <field name="price_unit"/>
+                <field name="price_subtotal" sum="Total"/>
+                <field name="state"/>
+           </tree>
+        </field>
+    </record>
+    <record id="is_account_invoice_line_action" model="ir.actions.act_window">
+        <field name="name">Lignes de commandes</field>
+        <field name="res_model">is.account.invoice.line</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="is_account_invoice_line_tree_view"/>
+        <field name="view_mode">tree,form,graph,pivot</field>
+    </record>
+
+
+
+    <record id="is_account_invoice_line_region_pivot_view" model="ir.ui.view">
+        <field name="name">is_account_invoice_line_graph_view</field>
+        <field name="model">is.account.invoice.line</field>
+        <field name="arch" type="xml">
+            <pivot string="pivot">
+                <field name="is_region_id"/>
+                <field name="date_invoice" type="col"/>
+                <field name="price_subtotal"         type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="is_account_invoice_line_region_action" model="ir.actions.act_window">
+        <field name="name">par Région</field>
+        <field name="res_model">is.account.invoice.line</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="is_account_invoice_line_region_pivot_view"/>
+        <field name="view_mode">pivot,tree,form,graph</field>
+    </record>
+
+
+    <record id="is_account_invoice_line_secteur_pivot_view" model="ir.ui.view">
+        <field name="name">is_account_invoice_line_graph_view</field>
+        <field name="model">is.account.invoice.line</field>
+        <field name="arch" type="xml">
+            <pivot string="pivot">
+                <field name="is_secteur_activite_id"/>
+                <field name="date_invoice" type="col"/>
+                <field name="price_subtotal"         type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="is_account_invoice_line_secteur_action" model="ir.actions.act_window">
+        <field name="name">par Secteur</field>
+        <field name="res_model">is.account.invoice.line</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="is_account_invoice_line_secteur_pivot_view"/>
+        <field name="view_mode">pivot,tree,form,graph</field>
+    </record>
+
+    <record id="is_account_invoice_line_product_pivot_view" model="ir.ui.view">
+        <field name="name">is_account_invoice_line_graph_view</field>
+        <field name="model">is.account.invoice.line</field>
+        <field name="arch" type="xml">
+            <pivot string="pivot">
+                <field name="default_code"/>
+                <field name="date_invoice" type="col"/>
+                <field name="price_subtotal"         type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="is_account_invoice_line_product_action" model="ir.actions.act_window">
+        <field name="name">par Article</field>
+        <field name="res_model">is.account.invoice.line</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="is_account_invoice_line_product_pivot_view"/>
+        <field name="view_mode">pivot,tree,form,graph</field>
+    </record>
+
+    <record id="is_account_invoice_line_state_pivot_view" model="ir.ui.view">
+        <field name="name">is_account_invoice_line_graph_view</field>
+        <field name="model">is.account.invoice.line</field>
+        <field name="arch" type="xml">
+            <pivot string="pivot">
+                <field name="state"/>
+                <field name="date_invoice" type="col"/>
+                <field name="price_subtotal"         type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="is_account_invoice_line_state_action" model="ir.actions.act_window">
+        <field name="name">par État</field>
+        <field name="res_model">is.account.invoice.line</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="is_account_invoice_line_state_pivot_view"/>
+        <field name="view_mode">pivot,tree,form,graph</field>
+    </record>
+
+
+
+</data>
+</openerp>
