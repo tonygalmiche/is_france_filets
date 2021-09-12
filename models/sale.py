@@ -5,6 +5,11 @@ from datetime import datetime, timedelta
 from odoo.exceptions import Warning
 import os
 import unicodedata
+from pyPdf import PdfFileWriter, PdfFileReader
+import tempfile
+from shutil import copy
+from contextlib import closing
+import os.path
 
 
 _ETAT_PLANNING=[
@@ -643,11 +648,9 @@ class IsCreationPlanning(models.Model):
                 ('sms_heure','=',False),
             ])
             for line in lines:
-                print line.date_debut,line.order_id
                 order = line.order_id
                 mobile = order.is_contact_id.mobile or order.is_contact_id.phone
                 mobile,err = self._format_mobile(mobile)
-                print order.name,order.is_contact_id,mobile,err
                 message=''
                 quota=0
                 if err=='':
@@ -671,24 +674,16 @@ class IsCreationPlanning(models.Model):
                         '&to='+to+\
                         '&message='+message
                     cde = 'curl --data "'+param+'" https://www.ovh.com/cgi-bin/sms/http2sms.cgi'
-                    print 'cde=',cde
                     res=os.popen(cde).readlines()
-
-                    print 'res =',res
-
                     if len(res)>=2:
                         if res[0].strip()=='OK':
                             err='OK'
-
-                            print 'res[1] =',res[1].strip()
-
                             quota = int(float(res[1].strip()))
                     else:
                         err='\n'.join(res)
                     ct=0
                     for l in res:
                         ct+=1
-                        print ct,l.strip()
                 line.write({
                     'sms_heure' : date_debut,
                     'sms_message': message,
@@ -907,6 +902,14 @@ class IsCreationPlanning(models.Model):
             }
 
 
+class IsPlanningPDF(models.Model):
+    _name='is.planning.pdf'
+    _order='name desc'
+
+    name    = fields.Char(u'Planning', required=True)
+    user_id = fields.Many2one('res.users', u"Créateur", required=True)
+
+
 class IsPlanningLine(models.Model):
     _name='is.planning.line'
     _order='chantier_id'
@@ -923,6 +926,125 @@ class IsPlanning(models.Model):
     creation_planning_id = fields.Many2one('is.creation.planning', u"Préparation Planning", required=True, index=True)
     equipe_id            = fields.Many2one('is.equipe', u"Equipe")
     chantier_ids         = fields.One2many('is.planning.line', 'planning_id', u"Chantiers")
+
+
+    @api.multi
+    def _merge_pdf(self, documents):
+        """Merge PDF files into one.
+        :param documents: list of path of pdf files
+        :returns: path of the merged pdf
+        """
+        writer = PdfFileWriter()
+        streams = []  # We have to close the streams *after* PdfFilWriter's call to write()
+        for document in documents:
+            pdfreport = file(document, 'rb')
+            streams.append(pdfreport)
+            reader = PdfFileReader(pdfreport)
+            for page in range(0, reader.getNumPages()):
+                writer.addPage(reader.getPage(page))
+        merged_file_fd, merged_file_path = tempfile.mkstemp(suffix='.pdf', prefix='report.merged.tmp.')
+        with closing(os.fdopen(merged_file_fd, 'w')) as merged_file:
+            writer.write(merged_file)
+        for stream in streams:
+            stream.close()
+        return merged_file_path
+
+
+    @api.multi
+    def generer_planning_pdf_action(self):
+        cr , uid, context = self.env.args
+        db = self._cr.dbname
+        path="/tmp/planning-"+str(uid)
+        cde="rm -Rf " + path
+        os.popen(cde).readlines()
+        if not os.path.exists(path):
+            os.makedirs(path)
+        paths=[]
+        for obj in self:
+            # ** Ajout des plannings ******************************************
+            filestore = os.environ.get('HOME')+"/.local/share/Odoo/filestore/"+db+"/"
+            filtre=[
+                ('name','=','planning.pdf'),
+                ('res_model','=','is.planning'),
+                ('res_id','=',obj.id),
+            
+            ]
+            attachments = self.env['ir.attachment'].search(filtre,limit=1)
+            for attachment in attachments:
+                src = filestore+attachment.store_fname
+                dst = path+"/"+str(attachment.id)+".pdf"
+                if os.path.exists(src):
+                    copy(src, dst)
+                    paths.append(dst)
+            # *****************************************************************
+
+        # ** Merge des PDF *************************************************
+        try:
+           path_merged=self.env['is.planning']._merge_pdf(paths)
+        except:
+           raise Warning(u"Impossible de générer le PDF")
+        pdfs = open(path_merged,'rb').read().encode('base64')
+        # ******************************************************************
+
+ 
+        # ** Creation ou modification du planning PDF **********************
+        planning_pdf_obj = self.env['is.planning.pdf']
+        name = 'plannings.pdf'
+        plannings_pdf = planning_pdf_obj.search([('name','=',name),('user_id','=',uid)],limit=1)
+        vals = {
+            'name':    name,
+            'user_id': uid,
+        }
+        if plannings_pdf:
+            for planning_pdf in plannings_pdf:
+                planning_pdf_id=planning_pdf.id
+        else:
+            planning_pdf=planning_pdf_obj.create(vals)
+            planning_pdf_id=planning_pdf.id
+        #**********************************************************************
+
+
+        # ** Recherche si une pièce jointe est déja associèe ******************
+        attachment_obj = self.env['ir.attachment']
+        filtre=[
+            ('name','=',name),
+            ('res_model','=','is.planning.pdf'),
+            ('res_id','=',planning_pdf_id),
+        ]
+        attachments = attachment_obj.search(filtre,limit=1)
+        # ******************************************************************
+
+
+        # ** Creation ou modification de la pièce jointe *******************
+        vals = {
+            'name'       : name,
+            'datas_fname': name,
+            'type'       : 'binary',
+            'datas'      : pdfs,
+            'res_model'  : 'is.planning.pdf',
+            'res_id'     : planning_pdf_id,
+        }
+        if attachments:
+            for attachment in attachments:
+                attachment.write(vals)
+                attachment_id=attachment.id
+        else:
+            attachment = attachment_obj.create(vals)
+            attachment_id=attachment.id
+        #******************************************************************
+
+        #** Envoi du PDF mergé dans le navigateur *************************
+        if attachment_id:
+            return {
+                'type' : 'ir.actions.act_url',
+                'url': '/web/binary/saveas?model=ir.attachment&field=datas&id='+str(attachment_id)+'&filename_field=name',
+                'target': 'new',
+            }
+        #******************************************************************
+
+
+
+
 
 
 class IsChantierPlanning(models.Model):

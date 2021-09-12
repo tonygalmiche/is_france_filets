@@ -22,6 +22,13 @@
         action="is_planning_action" 
     />
     <menuitem 
+        id="is_planning_pdf_menu" 
+        sequence="20" 
+        name="Planning PDF"
+        parent="is_planning_main_menu" 
+        action="is_planning_pdf_action" 
+    />
+    <menuitem 
         id="is_chantier_main_menu" 
         sequence="20" 
         name="Chantiers"

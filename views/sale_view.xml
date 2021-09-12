@@ -734,7 +734,63 @@
 
 
 
-        <!-- Planning -->
+        <!-- is.planning.pdf -->
+        <record id="is_planning_pdf_form_view" model="ir.ui.view">
+            <field name="name">is_planning_pdf_form_view</field>
+            <field name="model">is.planning.pdf</field>
+            <field name="arch" type="xml">
+                <form create="0" edit="0">
+                    <sheet>
+                        <group>
+                            <field name="name"    readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="is_planning_pdf_tree_view">
+            <field name="name">is_planning_pdf_tree_view</field>
+            <field name="model">is.planning.pdf</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree create="0">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="is_planning_pdf_search_view" model="ir.ui.view">
+            <field name="name">is_planning_pdf_search_view</field>
+            <field name="model">is.planning.pdf</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="user_id"/>
+                </search>
+            </field>
+        </record>
+        <record id="is_planning_pdf_action" model="ir.actions.act_window">
+            <field name="name">Planning PDF</field>
+            <field name="res_model">is.planning.pdf</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+
+        <!-- is.planning -->
+        <record id="generer_planning_pdf_action_server" model="ir.actions.server">
+             <field name="name">Générer le planning PDF</field>
+            <field name="model_id" ref="model_is_planning"/>
+            <field name="code">records.generer_planning_pdf_action()</field>
+        </record>
+        <record id="generer_planning_pdf_ir_value" model="ir.values">
+            <field eval="'client_action_multi'" name="key2"/>
+            <field eval="'is.planning'" name="model"/>
+            <field name="name">Générer le planning PDF</field>
+            <field eval="'ir.actions.server,%d'%generer_planning_pdf_action_server" name="value"/>
+        </record>
         <record id="is_planning_form_view" model="ir.ui.view">
             <field name="name">is_planning_from_view</field>
             <field name="model">is.planning</field>

@@ -41,3 +41,5 @@ access_is_res_partner,access_is_res_partner,model_is_res_partner,sales_team.grou
 
 access_is_groupe_client,access_is_groupe_client,model_is_groupe_client,sales_team.group_sale_manager,1,1,1,1
 access_is_suivi_budget_groupe_client,access_is_suivi_budget_groupe_client,model_is_suivi_budget_groupe_client,sales_team.group_sale_manager,1,1,1,1
+
+access_is_planning_pdf,access_is_planning_pdf,model_is_planning_pdf,base.group_user,1,1,1,1

@@ -82,6 +82,21 @@
     </record>
 
 
+    <record id="is_planning_pdf_access"  model="ir.rule" >
+        <field name="name">Accès uniquement à ses planning PDF</field>
+        <field name="model_id" ref="model_is_planning_pdf"/>
+        <field name="domain_force">[('user_id.id','=',user.id)]</field>
+        <field name="groups" eval="[(6,0,[
+            ref('base.group_user'),
+        ])]"/>
+        <field name="perm_create" eval="0" />
+        <field name="perm_read"   eval="1" />
+        <field name="perm_write"  eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+
+
 
 
 </odoo>
